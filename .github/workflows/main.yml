@@ -10,10 +10,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - uses: actions/setup-node@v3
-      - name: Move to okr-nest
-        run: cd ${{ github.workspace }}/okr-nest
+
+      # Install dependencies in the 'okr-nest' directory
       - name: Install Dependencies
-        run: npm i
+        run: npm install
+        working-directory: ${{ github.workspace }}/okr-nest
+
+      # Run tests in the 'okr-nest' directory
       - name: Run Tests
         run: npm run test
+        working-directory: ${{ github.workspace }}/okr-nest
