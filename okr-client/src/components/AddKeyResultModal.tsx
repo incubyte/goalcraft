@@ -4,7 +4,7 @@ import {
     KeyResultModalType,
 } from "../types/OKRTypes";
 import Input from "./Input";
-import {CircleX} from "lucide-react";
+import {CircleX, PackagePlus} from "lucide-react";
 import {OkrContext} from "../context/OkrProvider";
 import {addKeyResultToObjective} from "../database/OKRStore.ts";
 
@@ -56,13 +56,13 @@ export default function AddKeyResultModal({
     }
 
     return (
-        <div className="inset-0 fixed bg-gray-500 flex bg-opacity-50 justify-center items-center">
+        <div className="inset-0 fixed bg-gray-500 flex bg-opacity-50 justify-center items-center z-20">
             <div
                 id="firstKeyResult"
                 className="bg-white relative border-3 rounded-md p-10 w-1/2 flex flex-col space-y-2"
             >
                 <div className="w-full flex justify-between mb-3">
-                    <h1 className="text-blue-500 font-medium">{objectives != null && objectives[keyResultModal.objectiveIndex].objective}</h1>
+                    <h1 className="text-secondary font-medium">{objectives != null && objectives[keyResultModal.objectiveIndex].objective}</h1>
                     <button
                         onClick={closeModal}
                         className="text-red-500"
@@ -122,9 +122,10 @@ export default function AddKeyResultModal({
                     />
                     <button
                         onClick={() => handleAddKeyResult()}
-                        className="bg-blue-400 hover:bg-blue-500  px-4 py-2 rounded-md text-white text-sm font-medium"
+                        className="bg-white h-full border border-[#12a6a7] text-primary p-3 px-4 hover:bg-gray-50 rounded-md text-sm font-medium flex items-center justify-center gap-x-1"
                     >
-                        Add key Result
+                        Create New
+                        <PackagePlus className="w-4 h-4" />
                     </button>
                 </div>
             </div>

@@ -6,6 +6,7 @@ import AddKeyResultModal from "./AddKeyResultModal";
 import {OkrContext} from "../context/OkrProvider";
 import * as React from "react";
 import {deleteKeyResultOfObjective, deleteOkrsDataFromDB, getOkrsData} from "../database/OKRStore.ts";
+import NoGoalImage from "../assets/NoGoal.svg"
 
 export default function OKRDisplay({
                                        objectiveForUpdate,
@@ -155,7 +156,12 @@ export default function OKRDisplay({
                     );
                 })
             ) : (
-                <p>Nothing to show!</p>
+                <div className="w-full h-full flex flex-col items-center justify-center">
+                    <img src={NoGoalImage} alt="No Goal" width={350}/>
+                    <p className="mt-5 font-medium text-gray-700">
+                        No goals set yet. <span className="text-primary">Start now</span> to achieve your success!
+                    </p>
+                </div>
             )}
             {keyResultModal.isOpen && (
                 <AddKeyResultModal
