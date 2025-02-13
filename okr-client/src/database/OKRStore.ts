@@ -93,8 +93,8 @@ async function addKeyResultToObjective(keyResult: InsertKeyResultType[], objecti
     return [...keyResultsData];
 }
 
-async function generateKeyResultFromLLM(objective: string): Promise<KeyResultType> {
-    const response = await fetch(`${import.meta.env.VITE_LOCAL_URL}/rag?objective=${objective}`);
+async function generateKeyResultFromLLM(objective: string, noOfKeyResultsWant: number): Promise<KeyResultType[]> {
+    const response = await fetch(`${import.meta.env.VITE_LOCAL_URL}/rag?objective=${objective}&noOfKeyResultsWant=${noOfKeyResultsWant}`);
     return await response.json();
 }
 

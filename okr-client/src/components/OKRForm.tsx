@@ -93,8 +93,8 @@ export default function OKRForm({
             alert("Please fill all required field value");
         } else {
             setIsGenerating(true);
-            generateKeyResultFromLLM(newObjective).then((keyResult: KeyResultType) => {
-                setKeyResults([keyResult]);
+            generateKeyResultFromLLM(newObjective, keyResults.length).then((generatedKeyResults: KeyResultType[]) => {
+                setKeyResults(generatedKeyResults);
                 setIsGenerating(false);
             }).catch((error) => {
                 alert(error)
@@ -134,7 +134,7 @@ export default function OKRForm({
                 setTimeout(() => {
                     setIsUpdateForm(false);
                     setIsWaitingForResponse(false);
-                }, 3000);
+                }, 1000);
             }
         );
     }

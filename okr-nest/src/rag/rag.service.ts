@@ -16,7 +16,7 @@ export class RagService {
     });
   }
 
-  async get(objective: string) {
+  async get(objective: string, noOfKeyResultsWant: number) {
     const promptTemplate = ChatPromptTemplate.fromMessages([
       [
         'system',
@@ -24,16 +24,17 @@ export class RagService {
       ],
       [
         'user',
-        '{text} Give me keyResults of give objective in the form of only json string. Important Note: Dont give me other explanation or anything, Make sure that you generate output must contain these keys name only (title, initialValue, targetValue, currentValue, metric) and i just want json string only not in md format not in any other format only in json string text. Must follow this: Dont give me ```json``` i only want json string of data and only give just one object not multiple in array form.',
+        '{text} Give me keyResults of give objective in the form of only json string. Important Note: Dont give me other explanation or anything, Make sure that you generate output must contain these keys name only (title, initialValue, targetValue, currentValue, metric) and i just want json string only not in md format not in any other format only in json string text. Must follow this: Dont give me ```json``` i only want json string of data and give exact only and only ' + noOfKeyResultsWant + ' different key-results json string-objects as mentioned in above in array form even if there only one keyresults then also in array.',
       ],
     ]);
+
+    console.log('{text} Give me keyResults of give objective in the form of only json string. Important Note: Dont give me other explanation or anything, Make sure that you generate output must contain these keys name only (title, initialValue, targetValue, currentValue, metric) and i just want json string only not in md format not in any other format only in json string text. Must follow this: Dont give me ```json``` i only want json string of data and give exact only and only ' + noOfKeyResultsWant + ' different key-results json string-objects as mentioned in above in array form even if there only one keyresults then also in array.');
 
     const promptValue = await promptTemplate.invoke({
       text: objective,
     });
 
     const response = await this.model.invoke(promptValue);
-    console.log(response.content);
     return JSON.parse(response.content as string);
   }
 }

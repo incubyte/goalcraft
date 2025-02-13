@@ -67,7 +67,7 @@ export default function OKRDisplay({
     return (
         <div
             id="showObjectives"
-            className="w-1/2 h-[90%] rounded-md overflow-y-scroll flex flex-wrap gap-10"
+            className="w-1/2 h-[90%] rounded-md overflow-y-scroll flex flex-wrap items-center justify-evenly gap-10"
         >
             {objectives != null && objectives.length > 0 ? (
                 objectives.map((objective, objectiveIdx) => {

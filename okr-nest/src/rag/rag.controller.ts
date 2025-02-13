@@ -6,7 +6,7 @@ export class RagController {
   constructor(private readonly ragService: RagService) {}
 
   @Get("/")
-  get(@Query("objective") objective: string){
-    return this.ragService.get(objective);
+  get(@Query() query: {objective: string, noOfKeyResultsWant: number}) {
+    return this.ragService.get(query.objective, query.noOfKeyResultsWant);
   }
 }
