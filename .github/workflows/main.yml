@@ -1,0 +1,24 @@
+name: Run Tests
+
+on:
+  push:
+    branches:
+     - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+
+      # Install dependencies in the 'okr-nest' directory
+      - name: Install Dependencies
+        run: npm install
+        working-directory: ${{ github.workspace }}/okr-nest
+
+      # Run tests in the 'okr-nest' directory
+      - name: Run Tests
+        run: npm run test
+        working-directory: ${{ github.workspace }}/okr-nest
