@@ -67,7 +67,7 @@ export default function OKRDisplay({
     return (
         <div
             id="showObjectives"
-            className="w-1/2 h-[90%] rounded-md overflow-y-scroll flex flex-wrap items-center justify-evenly gap-10"
+            className="w-1/2 h-[90%] rounded-md p-10 bg-white border-1 shadow overflow-y-scroll flex flex-wrap items-center justify-evenly gap-10"
         >
             {objectives != null && objectives.length > 0 ? (
                 objectives.map((objective, objectiveIdx) => {
@@ -86,7 +86,7 @@ export default function OKRDisplay({
                                 <h1 className="font-bold text-center text-base w-full truncate mb-2">
                                     {objective.objective}
                                 </h1>
-                                <div className="items-center gap-x-3 -mt-2 hidden group-hover:flex absolute -top-3 bg-white p-2 shadow px-5 border rounded-full left-1/2 -translate-x-1/2">
+                                <div className="items-center gap-x-3 z-10 -mt-2 hidden group-hover:flex absolute -top-3 bg-white p-2 shadow px-5 border rounded-full left-1/2 -translate-x-1/2">
                                     <button
                                         onClick={() => deleteObjective(objective.id, objectiveIdx)}
                                         className="text-red-500"
@@ -94,6 +94,7 @@ export default function OKRDisplay({
                                         <Trash2 className="w-4 h-4"/>
                                     </button>
                                     <button onClick={() => {
+                                        console.log(objective)
                                         setObjectiveForUpdate(objective)
                                     }}>
                                         <FilePenLine className="w-4 h-4 text-primary"/>
@@ -158,9 +159,9 @@ export default function OKRDisplay({
                 })
             ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center">
-                    <img src={NoGoalImage} alt="No Goal" width={350}/>
-                    <p className="mt-5 font-medium text-gray-700">
-                        No goals set yet. <span className="text-primary">Start now</span> to achieve your success!
+                    <img src={NoGoalImage} alt="No Goal" width={300}/>
+                    <p className="mt-6 font-medium text-gray-700">
+                        Ready to <span className="text-primary">level up?</span> Set your first goal.
                     </p>
                 </div>
             )}
