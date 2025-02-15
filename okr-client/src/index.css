@@ -4,19 +4,27 @@
 
 
 .text-primary{
-    color: #12a6a7;
+    @apply text-[#12a6a7];
 }
 
 .bg-primary{
-    background-color: #12a6a7;
+    @apply bg-[#12a6a7];
 }
 
 .text-secondary{
-    color: #91b30f;
+    @apply text-[#91b30f];
 }
 
 .bg-secondary{
-    background-color: #91b30f;
+    @apply bg-[#91b30f];
+}
+
+.border-primary{
+    @apply border-[#12a6a7];
+}
+
+.border-secondary{
+    @apply border-[#91b30f];
 }
 
 /* width */

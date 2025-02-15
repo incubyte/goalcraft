@@ -93,17 +93,6 @@ export default function OKRDisplay({
                                     >
                                         <Trash2 className="w-4 h-4"/>
                                     </button>
-                                    <button
-                                        onClick={() =>
-                                            setKeyResultModal({
-                                                isOpen: true,
-                                                objectiveIndex: objectiveIdx,
-                                            })
-                                        }
-                                        className="text-secondary"
-                                    >
-                                        <SquarePlus className="w-4 h-4"/>
-                                    </button>
                                     <button onClick={() => {
                                         setObjectiveForUpdate(objective)
                                     }}>
@@ -114,10 +103,12 @@ export default function OKRDisplay({
 
                             {objective.keyResults && objective.keyResults.length > 0 ? (
                                 objective.keyResults.map((keyResult, index) => (
-                                    <div key={index} className={`relative pt-2 bg-gray-100 shadow p-3 ${keyResult.currentValue >= keyResult.targetValue && index != 0 ? "mt-8" : "mt-3"} rounded-md shadow`}>
+                                    <div key={index}
+                                         className={`relative pt-2 bg-gray-100 shadow p-3 ${keyResult.currentValue >= keyResult.targetValue && index != 0 ? "mt-8" : "mt-3"} rounded-md shadow`}>
                                         {
                                             keyResult.currentValue >= keyResult.targetValue &&
-                                             <p className="absolute -top-4 flex items-center gap-x-1 text-xs bg-gray-600 font-medium text-white rounded-full px-2 py-1"><CircleCheck className="w-3.5 h-3.5" /> Done</p>
+                                            <p className="absolute -top-4 flex items-center gap-x-1 text-xs bg-gray-600 font-medium text-white rounded-full px-2 py-1">
+                                                <CircleCheck className="w-3.5 h-3.5"/> Done</p>
                                         }
                                         <button
                                             onClick={() => deleteKeyResult(objectiveIdx, index, keyResult.id)}
@@ -131,7 +122,8 @@ export default function OKRDisplay({
                                             value={keyResult.title}
                                         />
                                         <MetricsLabel label={"Metrics"} value={keyResult.metric}/>
-                                        <MetricsLabel label={"Completion"} value={keyResult.currentValue} target={keyResult.targetValue}/>
+                                        <MetricsLabel label={"Completion"} value={keyResult.currentValue}
+                                                      target={keyResult.targetValue}/>
 
                                         <div className="w-full flex items-center justify-between mt-3">
                                             <StatisticsCard
@@ -152,6 +144,18 @@ export default function OKRDisplay({
                             ) : (
                                 <p className="text-sm text-center">No Key-Results Exists.</p>
                             )}
+
+                            <button
+                                onClick={() =>
+                                    setKeyResultModal({
+                                        isOpen: true,
+                                        objectiveIndex: objectiveIdx,
+                                    })
+                                }
+                                className="absolute -bottom-5 left-1/2 -translate-x-1/2 p-2 rounded-full border border-secondary hover:bg-white bg-secondary hover:text-[#91b30f] text-white"
+                            >
+                                <SquarePlus className="w-4 h-4"/>
+                            </button>
                         </div>
                     );
                 })
