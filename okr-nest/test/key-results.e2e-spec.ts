@@ -81,7 +81,7 @@ describe('KeyResults Integration', () => {
             };
 
             const response = await request(app.getHttpServer()).post(`/key-results/`).send([keyResult]).expect(201);
-            expect(response.body.count).toBe(1);
+            expect(response.body.length).toBe(1);
         })
     })
 
@@ -111,5 +111,30 @@ describe('KeyResults Integration', () => {
             const response = await request(app.getHttpServer()).patch(`/key-results/`).send(keyResultsToBeUpdated).expect(200);
             expect(response.body).toEqual(keyResultsToBeUpdated);
         });
+    })
+
+    describe("@Get /key-results/:id/progress", () => {
+        it("should get progress of key-results with given id", async () => {
+            // arrange
+            const objectiveToBeCreated = await prismaService.objectives.create({data: objective});
+            let keyResult = {
+                title: "Key Result Progress",
+                initialValue: 0,
+                currentValue: 5,
+                targetValue: 10,
+                metric: "%",
+                objectiveId: objectiveToBeCreated.id,
+            };
+            const keyResultResponse = await request(app.getHttpServer()).post(`/key-results/`).send([keyResult]).expect(201);
+            let keyResultId = keyResultResponse.body[0].id;
+
+            // act
+            const response = await request(app.getHttpServer()).get(`/key-results/${keyResultId}/progress`).expect(200);
+
+            // assert
+            const body = response.body;
+            expect(body.percentage).toBeDefined();
+            expect(body.percentage).toBe(50);
+        })
     })
 })
