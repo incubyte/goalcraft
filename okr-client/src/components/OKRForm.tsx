@@ -20,8 +20,10 @@ const defaultKeyResults = {
 
 export default function OKRForm({
                                     objectiveForUpdate,
+                                    setObjectiveForUpdate
                                 }: {
     objectiveForUpdate: ObjectiveType;
+    setObjectiveForUpdate:  React.Dispatch<React.SetStateAction<ObjectiveType>>
 }) {
     const {
         objectives,
@@ -36,6 +38,27 @@ export default function OKRForm({
     ]);
 
     const [isGenerating, setIsGenerating] = useState<boolean>(false);
+
+    function handleCancelUpdateORKs(){
+        setNewObjective("");
+        setKeyResults([defaultKeyResults]);
+        setIsUpdateForm(false);
+        setObjectiveForUpdate({
+            id: "",
+            objective: "",
+            keyResults: [
+                {
+                    id: "",
+                    title: "",
+                    initialValue: 0,
+                    currentValue: 0,
+                    targetValue: 0,
+                    metric: "",
+                    objectiveId: "",
+                },
+            ],
+        });
+    }
 
     useEffect(() => {
         if (objectiveForUpdate.id) {
@@ -154,9 +177,9 @@ export default function OKRForm({
     return (
         <div
             id="addObjective"
-            className="w-2/5 h-[90%] overflow-y-scroll space-y-4 rounded-md bg-gray-50 border-1 shadow-md"
+            className="w-2/5 h-[90%] overflow-hidden flex flex-col space-y-2 rounded-md bg-gray-50 border-1 shadow"
         >
-            <div className="sticky top-0 bg-gray-50 space-y-8 px-8 py-4 z-10">
+            <div className="relative top-0 bg-gray-50 space-y-8 px-8 py-4 z-10">
                 <h1 className="font-medium text-lg mt-2 text-center">
                     <span className="text-primary">Goal</span>Sync - <span
                     className="text-secondary">OKR Application</span>
@@ -166,7 +189,7 @@ export default function OKRForm({
                     <Input
                         label={"Objective"}
                         type="text"
-                        placeholder="Enter a objective"
+                        placeholder="E.g.: Increase brand awareness"
                         className="flex-grow"
                         value={newObjective}
                         onChange={(e) => {
@@ -174,24 +197,20 @@ export default function OKRForm({
                         }}
                     />
                 </div>
+                <button
+                    onClick={() => handleGenerateKeyResultFromLLM()}
+                    className="bg-white absolute left-1/2 -translate-x-1/2 z-10 -bottom-7 border-2 border-[#12a6a7] hover:border-gray-700 hover:bg-gray-700 hover:text-white text-primary ease-linear flex items-center gap-x-1.5 px-4 py-2 rounded-md text-sm font-medium shadow-md"
+                >
+                    <Sparkles
+                        className={`w-4 h-4 -rotate-45 ${isGenerating ? "animate-ping" : ""}`}/> Generate
+                </button>
             </div>
             <hr/>
+
             <div
-                className="w-full flex flex-col space-y-4 px-8 py-4"
+                className="w-full h-full overflow-y-scroll relative flex flex-col space-y-4 px-8 py-4 pt-5"
                 id="keyResultForm"
             >
-                <div className="w-full flex justify-between items-center">
-                    <h2 className="font-medium">
-                        Your Objective's Key Results
-                    </h2>
-                    <button
-                        onClick={() => handleGenerateKeyResultFromLLM()}
-                        className="bg-white border-2 border-[#12a6a7] hover:border-gray-700 hover:bg-gray-700 hover:text-white text-primary ease-linear flex items-center gap-x-1.5 px-4 py-2 rounded-md text-sm font-medium"
-                    >
-                        <Sparkles
-                            className={`w-4 h-4 -rotate-45 ${isGenerating ? "animate-ping" : ""}`}/> Generate
-                    </button>
-                </div>
                 {keyResults && keyResults.length > 0 && keyResults.map((keyResult, index) => (
                     <div
                         key={index}
@@ -203,7 +222,7 @@ export default function OKRForm({
                             className="flex-grow"
                             value={keyResult.title}
                             type="text"
-                            placeholder="Enter a specific key-results of defined objective"
+                            placeholder="E.g.: Increase website traffic by 30%"
                             onChange={(e) => {
                                 handleChange("title", e.target.value, index);
                             }}
@@ -212,12 +231,6 @@ export default function OKRForm({
                             id="firstKeyResultMetrics"
                             className="flex justify-between flex-wrap gap-y-2 relative"
                         >
-                            <button
-                                onClick={() => deleteKeyResultInputList(index)}
-                                className="bg-white border border-red-500 text-red-500 hover:bg-red-500 hover:text-white absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 shadow-lg hover:shadow-inner rounded-full p-2"
-                            >
-                                <Trash2 className="w-4 h-4"/>
-                            </button>
                             <Input
                                 label={"Initial Value"}
                                 value={keyResult.initialValue}
@@ -240,7 +253,7 @@ export default function OKRForm({
                                 label={"Metric"}
                                 type="text"
                                 value={keyResult.metric}
-                                placeholder="Metrics Value"
+                                placeholder="Number of visitors"
                                 onChange={(e) => {
                                     handleChange("metric", e.target.value, index);
                                 }}
@@ -254,6 +267,12 @@ export default function OKRForm({
                                     handleChange("targetValue", parseInt(e.target.value), index);
                                 }}
                             />
+                            <button
+                                onClick={() => deleteKeyResultInputList(index)}
+                                className={`bg-white border border-red-500 text-red-500 hover:bg-red-500 hover:text-white absolute left-1/2 -translate-x-1/2 top-1/2 ${keyResults.length == 1 ? "hidden" : "visible"} -translate-y-1/2 shadow-lg hover:shadow-inner rounded-full p-2`}
+                            >
+                                <Trash2 className="w-4 h-4"/>
+                            </button>
                         </div>
                     </div>
                 ))}
@@ -261,21 +280,17 @@ export default function OKRForm({
 
             <div
                 id="submitButton"
-                className="w-full flex justify-between sticky bottom-0 bg-gray-50 px-8 py-5"
+                className="w-full flex justify-between bg-gray-50 px-8 py-5"
             >
                 {isUpdateForm ? <button
                         className="bg-secondary hover:bg-gray-800 ease-linear px-4 py-2 rounded-md text-white text-sm font-medium"
-                        onClick={() => {
-                            setIsUpdateForm(false);
-                            setNewObjective("");
-                            setKeyResults([defaultKeyResults]);
-                        }}>Cancel</button> :
+                        onClick={handleCancelUpdateORKs}>Cancel</button> :
                     <button
                         onClick={addNewKeyResults}
                         className="bg-secondary hover:bg-gray-800 ease-linear px-4 py-2 rounded-md text-white text-sm font-medium flex items-center gap-x-1"
                     >
                         <BetweenHorizonalStart className="w-4 h-4"/>
-                        Add Inputs
+                        Add Key Result
                     </button>
                 }
                 <button

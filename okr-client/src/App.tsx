@@ -43,7 +43,7 @@ function App() {
             {
                 isLoadingInitData ? <InitialLoader/> :
                     <>
-                        <OKRForm objectiveForUpdate={objectiveForUpdate}/>
+                        <OKRForm objectiveForUpdate={objectiveForUpdate} setObjectiveForUpdate={setObjectiveForUpdate}/>
                         <OKRDisplay
                             objectiveForUpdate={objectiveForUpdate}
                             setObjectiveForUpdate={setObjectiveForUpdate}
