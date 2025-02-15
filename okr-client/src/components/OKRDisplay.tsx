@@ -1,7 +1,7 @@
 import {useContext, useEffect, useState} from "react";
 import {KeyResultModalType, ObjectiveType} from "../types/OKRTypes";
 import MetricsLabel from "./MetricLabel";
-import {CircleCheck, FilePenLine, LoaderCircle, SquarePlus, Trash2} from "lucide-react";
+import {CircleCheck, FilePenLine, LoaderCircle, Package, SquarePlus, Trash2} from "lucide-react";
 import AddKeyResultModal from "./AddKeyResultModal";
 import {OkrContext} from "../context/OkrProvider";
 import * as React from "react";
@@ -74,7 +74,7 @@ export default function OKRDisplay({
                     return (
                         <div
                             key={objectiveIdx}
-                            className="relative w-72 h-max border border-gray-200 rounded-md p-5 shadow"
+                            className="relative w-72 h-max border border-gray-200 rounded-md p-5 shadow group"
                         >
                             {objective.id === objectiveForUpdate.id && isWaitingForResponse ?
                                 (<div
@@ -82,11 +82,11 @@ export default function OKRDisplay({
                                     <LoaderCircle className="w-10 h-10 mr-1 animate-spin"/>
                                 </div>)
                                 : ""}
-                            <div className="flex items-center justify-between">
-                                <h1 className="font-bold text-lg w-[170px] truncate mb-2">
+                            <div className="flex items-center justify-between mb-3">
+                                <h1 className="font-bold text-center text-base w-full truncate mb-2">
                                     {objective.objective}
                                 </h1>
-                                <div className="flex items-center gap-x-3 -mt-2">
+                                <div className="items-center gap-x-3 -mt-2 hidden group-hover:flex absolute -top-3 bg-white p-2 shadow px-5 border rounded-full left-1/2 -translate-x-1/2">
                                     <button
                                         onClick={() => deleteObjective(objective.id, objectiveIdx)}
                                         className="text-red-500"
@@ -104,10 +104,10 @@ export default function OKRDisplay({
                             {objective.keyResults && objective.keyResults.length > 0 ? (
                                 objective.keyResults.map((keyResult, index) => (
                                     <div key={index}
-                                         className={`relative pt-2 bg-gray-100 shadow p-3 ${keyResult.currentValue >= keyResult.targetValue && index != 0 ? "mt-8" : "mt-3"} rounded-md shadow`}>
+                                         className={`relative pt-2 p-3 ${keyResult.currentValue >= keyResult.targetValue && index == 0 ? "mt-4" : (keyResult.currentValue >= keyResult.targetValue) ? "mt-8" : "mt-3"} bg-gray-100 rounded-md shadow`}>
                                         {
                                             keyResult.currentValue >= keyResult.targetValue &&
-                                            <p className="absolute -top-4 flex items-center gap-x-1 text-xs bg-gray-600 font-medium text-white rounded-full px-2 py-1">
+                                            <p className="absolute -top-3 left-5 flex items-center gap-x-1 text-xs bg-gray-600 font-medium text-white rounded-full px-2 py-1">
                                                 <CircleCheck className="w-3.5 h-3.5"/> Done</p>
                                         }
                                         <button
@@ -116,11 +116,7 @@ export default function OKRDisplay({
                                         >
                                             <Trash2 className="w-4 h-4"/>
                                         </button>
-                                        <MetricsLabel
-                                            className={`text-primary font-medium ${keyResult.currentValue >= keyResult.targetValue ? "mt-2" : ""}`}
-                                            label={"Key"}
-                                            value={keyResult.title}
-                                        />
+                                        <p className={`text-primary text-xs text-center w-full truncate font-medium mb-3 ${keyResult.currentValue >= keyResult.targetValue ? "mt-3" : "mt-1"}`}>{keyResult.title}</p>
                                         <MetricsLabel label={"Metrics"} value={keyResult.metric}/>
                                         <MetricsLabel label={"Completion"} value={keyResult.currentValue}
                                                       target={keyResult.targetValue}/>
@@ -142,7 +138,8 @@ export default function OKRDisplay({
                                     </div>
                                 ))
                             ) : (
-                                <p className="text-sm text-center">No Key-Results Exists.</p>
+                                <p className="text-sm font-medium text-gray-600 my-5 flex flex-col items-center justify-center">
+                                    <Package className="w-5 h-5 mr-1"/>No Key-Results Defined.</p>
                             )}
 
                             <button
@@ -152,7 +149,7 @@ export default function OKRDisplay({
                                         objectiveIndex: objectiveIdx,
                                     })
                                 }
-                                className="absolute -bottom-5 left-1/2 -translate-x-1/2 p-2 rounded-full border border-secondary hover:bg-white bg-secondary hover:text-[#91b30f] text-white"
+                                className="absolute -bottom-5 left-1/2 -translate-x-1/2 p-2 rounded-full border border-secondary hover:bg-white bg-secondary hover:text-[#91b30f] text-white shadow-md"
                             >
                                 <SquarePlus className="w-4 h-4"/>
                             </button>
