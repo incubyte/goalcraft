@@ -30,6 +30,8 @@ export default function AddKeyResultModal({
     function handleAddKeyResult() {
         if (objectives === null) return;
 
+        if(keyResult.title === "" || keyResult.metric === "") { alert("Please enter a field!"); return; }
+
         console.log(keyResult);
 
         const foundObj = objectives.find(
@@ -62,7 +64,7 @@ export default function AddKeyResultModal({
                 className="bg-white relative border-3 rounded-md p-10 w-1/2 flex flex-col space-y-2"
             >
                 <div className="w-full flex justify-between mb-3">
-                    <h1 className="text-secondary font-medium">{objectives != null && objectives[keyResultModal.objectiveIndex].objective}</h1>
+                    <h1 className="text-secondary font-medium mb-2">{objectives != null && objectives[keyResultModal.objectiveIndex].objective}</h1>
                     <button
                         onClick={closeModal}
                         className="text-red-500"
@@ -120,13 +122,15 @@ export default function AddKeyResultModal({
                             handleChange("metric", e.target.value);
                         }}
                     />
+                    <div className="flex h-full gap-x-5">
                     <button
                         onClick={() => handleAddKeyResult()}
-                        className="bg-white h-full border border-[#12a6a7] text-primary p-3 px-4 hover:bg-gray-50 rounded-md text-sm font-medium flex items-center justify-center gap-x-1"
+                        className="hover:bg-white h-full border hover:border-[#12a6a7] bg-primary text-white hover:text-[#12a6a7] p-3 px-4 rounded-md text-sm font-medium flex items-center justify-center gap-x-1.5 ease-in-out"
                     >
-                        Create New
                         <PackagePlus className="w-4 h-4" />
+                        Add Key Result
                     </button>
+                    </div>
                 </div>
             </div>
         </div>
