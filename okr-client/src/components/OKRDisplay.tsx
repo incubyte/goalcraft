@@ -1,10 +1,10 @@
+import * as React from "react";
 import {useContext, useEffect, useState} from "react";
 import {KeyResultModalType, ObjectiveType} from "../types/OKRTypes";
 import MetricsLabel from "./MetricLabel";
-import {CircleCheck, FilePenLine, LoaderCircle, Package, SquarePlus, Trash2} from "lucide-react";
+import {CircleCheck, FilePenLine, Goal, LoaderCircle, Package, SquarePlus, Trash2} from "lucide-react";
 import AddKeyResultModal from "./AddKeyResultModal";
 import {OkrContext} from "../context/OkrProvider";
-import * as React from "react";
 import {deleteKeyResultOfObjective, deleteOkrsDataFromDB, getOkrsData} from "../database/OKRStore.ts";
 import NoGoalImage from "../assets/NoGoal.svg"
 
@@ -24,6 +24,7 @@ export default function OKRDisplay({
 
     useEffect(() => {
         if (!keyResultModal.isOpen) {
+            console.log("keyResultModal is opened");
             (async () => {
                 const objectivesResponse = await getOkrsData();
                 setObjectives(objectivesResponse);
@@ -64,10 +65,23 @@ export default function OKRDisplay({
     }
 
 
+    function getProgress(init:number, target: number, current: number): [number, number, number, number] {
+        const progress: [number, number, number, number] = [0, 33, 66, 80];
+
+        if (target !== 0) {
+            progress[0] = (current - init)  / (target - init) * 100; // percentage
+            progress[1] = (target * 0.33) / target * 100; // low
+            progress[2] = (target * 0.66) / target * 100 // high
+            progress[3] = (target * 0.80) / target * 100 // optimum
+        }
+
+        return progress;
+    }
+
     return (
         <div
             id="showObjectives"
-            className="w-1/2 h-[90%] rounded-md p-10 bg-white border-1 shadow overflow-y-scroll flex flex-wrap items-center justify-evenly gap-10"
+            className="w-1/2 h-[90%] rounded-md p-10 bg-white border-1 shadow overflow-y-scroll flex flex-wrap justify-between gap-14"
         >
             {objectives != null && objectives.length > 0 ? (
                 objectives.map((objective, objectiveIdx) => {
@@ -86,7 +100,8 @@ export default function OKRDisplay({
                                 <h1 className="font-bold text-center text-base w-full truncate mb-2">
                                     {objective.objective}
                                 </h1>
-                                <div className="items-center gap-x-3 z-10 -mt-2 hidden group-hover:flex absolute -top-3 bg-white p-2 shadow px-5 border rounded-full left-1/2 -translate-x-1/2">
+                                <div
+                                    className="items-center gap-x-3 z-10 -mt-2 hidden group-hover:flex absolute -top-3 bg-white p-2 shadow px-5 border rounded-full left-1/2 -translate-x-1/2">
                                     <button
                                         onClick={() => deleteObjective(objective.id, objectiveIdx)}
                                         className="text-red-500"
@@ -94,8 +109,7 @@ export default function OKRDisplay({
                                         <Trash2 className="w-4 h-4"/>
                                     </button>
                                     <button onClick={() => {
-                                        console.log(objective)
-                                        setObjectiveForUpdate(objective)
+                                        setObjectiveForUpdate({...objective})
                                     }}>
                                         <FilePenLine className="w-4 h-4 text-primary"/>
                                     </button>
@@ -117,11 +131,13 @@ export default function OKRDisplay({
                                         >
                                             <Trash2 className="w-4 h-4"/>
                                         </button>
-                                        <p className={`text-primary text-xs text-center w-full truncate font-medium mb-3 ${keyResult.currentValue >= keyResult.targetValue ? "mt-3" : "mt-1"}`}>{keyResult.title}</p>
-                                        <MetricsLabel label={"Metrics"} value={keyResult.metric}/>
-                                        <MetricsLabel label={"Completion"} value={keyResult.currentValue}
-                                                      target={keyResult.targetValue}/>
-
+                                        <div
+                                            className={`mb-3 bg-white ${keyResult.currentValue >= keyResult.targetValue ? "mt-3" : "mt-1"} rounded-md flex items-center justify-between shadow-sm`}>
+                                            <Goal className="w-4 h-4 text-gray-700 ml-3 "/>
+                                            <p className={`text-primary text-xs w-full p-2 font-medium rounded-md`}>
+                                                {keyResult.title}</p>
+                                        </div>
+                                        <MetricsLabel label={"Metric"} value={keyResult.metric}/>
                                         <div className="w-full flex items-center justify-between mt-3">
                                             <StatisticsCard
                                                 label={"Initial"}
@@ -135,6 +151,21 @@ export default function OKRDisplay({
                                                 label={"Target"}
                                                 value={keyResult.targetValue}
                                             />
+                                        </div>
+                                        <meter
+                                            className="w-full rounded-full mt-2"
+                                            id="stress"
+                                            min={0}
+                                            max={100}
+                                            optimum={getProgress(keyResult.initialValue, keyResult.targetValue, keyResult.currentValue)[3]}
+                                            low={getProgress(keyResult.initialValue, keyResult.targetValue, keyResult.currentValue)[1]}
+                                            high={getProgress(keyResult.initialValue, keyResult.targetValue, keyResult.currentValue)[2]}
+                                            value={getProgress(keyResult.initialValue, keyResult.targetValue, keyResult.currentValue)[0]}></meter>
+                                        <div className="flex w-full font-medium items-center justify-between">
+                                            <p className="text-xs">{keyResult.currentValue} of <span
+                                                className="text-gray-500">{keyResult.targetValue} (Progress)</span>
+                                            </p>
+                                            <p className="text-xs text-primary">{getProgress(keyResult.initialValue, keyResult.targetValue, keyResult.currentValue)[0].toFixed(2)} %</p>
                                         </div>
                                     </div>
                                 ))
@@ -165,23 +196,26 @@ export default function OKRDisplay({
                     </p>
                 </div>
             )}
-            {keyResultModal.isOpen && (
-                <AddKeyResultModal
-                    keyResultModal={keyResultModal}
-                    closeModal={() =>
-                        setKeyResultModal({isOpen: false, objectiveIndex: -1})
-                    }
-                />
-            )}
+            {
+                keyResultModal.isOpen && (
+                    <AddKeyResultModal
+                        keyResultModal={keyResultModal}
+                        closeModal={() =>
+                            setKeyResultModal({isOpen: false, objectiveIndex: -1})
+                        }
+                    />
+                )
+            }
         </div>
-    );
+    )
+        ;
 }
 
 
 const StatisticsCard = ({label, value}: { label: string, value: number | string }) => {
     return (
-        <div className="flex flex-col bg-white w-[60px] items-center justify-center text-xs font-medium p-2 rounded-md">
-            <p className="text-primary mb-1">{label}</p>
+        <div className="flex flex-col bg-white shadow-sm w-[60px] items-center justify-center text-xs font-medium p-2 rounded-md">
+            <p className="text-secondary mb-1">{label}</p>
             <p>{value}</p>
         </div>
     )

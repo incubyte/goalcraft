@@ -3,27 +3,27 @@
 @tailwind utilities;
 
 
-.text-primary{
+.text-primary {
     @apply text-[#12a6a7];
 }
 
-.bg-primary{
+.bg-primary {
     @apply bg-[#12a6a7];
 }
 
-.text-secondary{
+.text-secondary {
     @apply text-[#91b30f];
 }
 
-.bg-secondary{
+.bg-secondary {
     @apply bg-[#91b30f];
 }
 
-.border-primary{
+.border-primary {
     @apply border-[#12a6a7];
 }
 
-.border-secondary{
+.border-secondary {
     @apply border-[#91b30f];
 }
 
@@ -45,4 +45,21 @@
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
     background: #1f1f1f;
+}
+
+
+::-webkit-meter-bar {
+    @apply rounded-sm h-1.5 shadow-lg;
+}
+
+::-webkit-meter-even-less-good-value {
+    background: #ef4444;
+}
+
+::-webkit-meter-suboptimum-value {
+    background: #595757;
+}
+
+::-webkit-meter-optimum-value {
+    background: #12a6a7;
 }

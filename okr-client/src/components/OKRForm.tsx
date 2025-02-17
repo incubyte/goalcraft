@@ -4,7 +4,7 @@ import {KeyResultType, ObjectiveType} from "../types/OKRTypes";
 import {
     addKeyResultToObjective,
     addOkrsDataToDB,
-    generateKeyResultFromLLM,
+    generateKeyResultFromLLM, getOkrsData,
     updateOkrsDataToDb
 } from "../database/OKRStore";
 import {BetweenHorizonalStart, Goal, LoaderCircle, Sparkles, Trash2} from "lucide-react";
@@ -23,7 +23,7 @@ export default function OKRForm({
                                     setObjectiveForUpdate
                                 }: {
     objectiveForUpdate: ObjectiveType;
-    setObjectiveForUpdate:  React.Dispatch<React.SetStateAction<ObjectiveType>>
+    setObjectiveForUpdate: React.Dispatch<React.SetStateAction<ObjectiveType>>
 }) {
     const {
         objectives,
@@ -39,10 +39,7 @@ export default function OKRForm({
 
     const [isGenerating, setIsGenerating] = useState<boolean>(false);
 
-    function handleCancelUpdateORKs(){
-        setNewObjective("");
-        setKeyResults([defaultKeyResults]);
-        setIsUpdateForm(false);
+    function handleCancelUpdateORKs() {
         setObjectiveForUpdate({
             id: "",
             objective: "",
@@ -58,21 +55,34 @@ export default function OKRForm({
                 },
             ],
         });
+        setKeyResults([defaultKeyResults]);
+        setNewObjective("");
+        setIsUpdateForm(false);
+        (async () => {
+            const objectivesResponse = await getOkrsData();
+            setObjectives(objectivesResponse);
+        })();
     }
 
     useEffect(() => {
-        if (objectiveForUpdate.id) {
+        if (objectiveForUpdate.id != "") {
+            console.warn(objectives, keyResults, objectiveForUpdate);
             setNewObjective(objectiveForUpdate.objective);
             setKeyResults(objectiveForUpdate.keyResults);
             setIsUpdateForm(true);
         }
     }, [objectiveForUpdate]);
 
-    function handleChange(key: string, value: string | number, index: number) {
-        const keyResultToBeUpdated = keyResults[index];
-        keyResults[index] = {...keyResultToBeUpdated, [key]: value};
 
-        setKeyResults([...keyResults]);
+    function handleChange(key: string, value: string | number, index: number) {
+        console.warn(objectives, value, keyResults);
+
+
+        setKeyResults((prev) => {
+            const keyResultToBeUpdated = {...prev[index]};
+            prev[index] = {...keyResultToBeUpdated, [key]: value};
+            return [...prev]
+        });
     }
 
     function addNewObjective() {
@@ -250,21 +260,21 @@ export default function OKRForm({
                                 }}
                             />
                             <Input
-                                label={"Metric"}
-                                type="text"
-                                value={keyResult.metric}
-                                placeholder="Number of visitors"
-                                onChange={(e) => {
-                                    handleChange("metric", e.target.value, index);
-                                }}
-                            />
-                            <Input
                                 label={"Target Value"}
                                 type="number"
                                 value={keyResult.targetValue}
                                 placeholder="Target Value"
                                 onChange={(e) => {
                                     handleChange("targetValue", parseInt(e.target.value), index);
+                                }}
+                            />
+                            <Input
+                                label={"Metric"}
+                                type="text"
+                                value={keyResult.metric}
+                                placeholder="Number of visitors"
+                                onChange={(e) => {
+                                    handleChange("metric", e.target.value, index);
                                 }}
                             />
                             <button

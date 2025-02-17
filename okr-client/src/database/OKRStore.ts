@@ -40,7 +40,6 @@ async function updateOkrsDataToDb(objectiveTobeUpdated: ObjectiveType): Promise<
             }
         });
     }
-    console.log(objectiveTobeUpdated);
     return await response.json();
 }
 
