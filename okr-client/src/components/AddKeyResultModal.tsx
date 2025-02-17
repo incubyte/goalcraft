@@ -77,7 +77,7 @@ export default function AddKeyResultModal({
                     value={keyResult.title}
                     className="flex-grow"
                     type="text"
-                    placeholder="Key Result Title 1"
+                    placeholder="Increase brand awarness"
                     onChange={(e) => {
                         handleChange("title", e.target.value);
                     }}
@@ -117,7 +117,7 @@ export default function AddKeyResultModal({
                         label={"Metric"}
                         value={keyResult.metric}
                         type="text"
-                        placeholder="Metrics Value"
+                        placeholder="%"
                         onChange={(e) => {
                             handleChange("metric", e.target.value);
                         }}

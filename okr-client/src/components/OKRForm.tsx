@@ -207,6 +207,8 @@ export default function OKRForm({
                         }}
                     />
                 </div>
+                {
+                    !isUpdateForm &&
                 <button
                     onClick={() => handleGenerateKeyResultFromLLM()}
                     className="bg-white absolute left-1/2 -translate-x-1/2 z-10 -bottom-7 border-2 border-[#12a6a7] hover:border-gray-700 hover:bg-gray-700 hover:text-white text-primary ease-linear flex items-center gap-x-1.5 px-4 py-2 rounded-md text-sm font-medium shadow-md"
@@ -214,6 +216,7 @@ export default function OKRForm({
                     <Sparkles
                         className={`w-4 h-4 -rotate-45 ${isGenerating ? "animate-ping" : ""}`}/> Generate
                 </button>
+                }
             </div>
             <hr/>
 
