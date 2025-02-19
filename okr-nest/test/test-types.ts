@@ -3,4 +3,14 @@ type Objective = {
   objective: string;
 };
 
-export type { Objective };
+type KeyResult = {
+  id: string;
+  title: string;
+  initialValue: number;
+  currentValue: number;
+  targetValue: number;
+  metric: string;
+  objectiveId: string;
+}
+
+export type { Objective, KeyResult };
