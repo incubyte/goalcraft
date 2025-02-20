@@ -11,6 +11,6 @@ type KeyResult = {
   targetValue: number;
   metric: string;
   objectiveId: string;
-}
+};
 
 export type { Objective, KeyResult };

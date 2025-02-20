@@ -13,24 +13,25 @@ describe('Objective Integration', () => {
   let objectiveToBeInserted: Omit<Objective, 'id'>;
   let insertedObjective: Objective;
 
-    beforeAll(async () => {
-        const module: TestingModule = await Test.createTestingModule({
-            imports: [AppModule],
-        }).compile();
+  beforeAll(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
 
     app = module.createNestApplication();
     prismaService = module.get<PrismaService>(PrismaService);
-    objectiveToBeInserted = { objective: 'Test 1' };
     await app.init();
   });
 
-    afterAll(async () => {
-        await app.close();
-    })
+  afterAll(async () => {
+    await app.close();
+  });
 
   beforeEach(async () => {
     await prismaService.keyResults.deleteMany();
     await prismaService.objectives.deleteMany();
+
+    objectiveToBeInserted = { objective: 'Test 1' };
 
     insertedObjective = await prismaService.objectives.create({
       data: objectiveToBeInserted,
