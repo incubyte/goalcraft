@@ -1,13 +1,42 @@
-## GoalSync OKR Application
-- OKR is objective key-results application to keep track of your goal.
+## GoalCraft
 
-### Features
-- ✅ Create Objectives – Users can add new objectives with a title and description.
-- ✅ Read/View Objectives – List all objectives with their details.
-- ✅ Update Objectives – Edit an existing objective's title or description.
-- ✅ Delete Objectives – Remove objectives that are no longer needed.
+It is an application designed to empower you in setting, tracking, and achieving your goals.  It's your personal progress tracker, helping you move from where you are today to where you aspire to be.  With GoalCraft, you define your targets, document your current standing, and visualize your journey from initial state to ultimate success. 
 
-- ✅ Create Key Results – Add key results under an objective with measurable targets.
-- ✅ Read/View Key Results – Display all key results linked to an objective.
-- ✅ Update Key Results – Modify key result details such as title, initial value, current value, target value, and metrics.
-- ✅ Delete Key Results – Remove key results from an objective.
+## Getting Started
+
+### To run the client:
+
+```bash
+# Navigate to client directory
+cd okr-client
+
+# Start the development server
+npm run dev
+```
+
+### To run the server:
+```bash
+# Navigate to server directory
+cd okr-nest
+
+# Start the development server
+pnpm start:dev
+```
+
+### To run E2E Tests
+```bash
+# Make sure you're in the server directory
+cd okr-nest
+
+# Run e2e tests
+pnpm test:e2e
+```
+
+### To run all the Tests:
+```bash
+# Make sure you're in the server directory
+cd okr-nest
+
+# Run all tests
+pnpm test
+```
