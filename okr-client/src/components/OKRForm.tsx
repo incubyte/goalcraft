@@ -135,7 +135,6 @@ export default function OKRForm({
                 type: "error",
                 autoClose: 3000
             });
-            console.log("hello")
         } else {
             setIsGenerating(true);
             generateKeyResultFromLLM(newObjective, keyResults.length).then((generatedKeyResults: KeyResultType[]) => {
