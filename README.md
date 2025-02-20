@@ -40,3 +40,5 @@ cd okr-nest
 # Run all tests
 pnpm test
 ```
+
+### Whenever you merge any changes make sure you are merging to goalcraft's main branch
