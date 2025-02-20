@@ -1,11 +1,10 @@
-import {Module} from '@nestjs/common';
-import {ObjectivesController} from './objectives.controller';
-import {ObjectivesService} from './objectives.service';
-import {PrismaService} from "../prisma/prisma.service";
+import { Module } from '@nestjs/common';
+import { ObjectivesController } from './objectives.controller';
+import { ObjectivesService } from './objectives.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Module({
-    controllers: [ObjectivesController],
-    providers: [ObjectivesService, PrismaService],
+  controllers: [ObjectivesController],
+  providers: [ObjectivesService, PrismaService],
 })
-export class ObjectivesModule {
-}
+export class ObjectivesModule {}

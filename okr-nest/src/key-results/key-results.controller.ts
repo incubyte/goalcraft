@@ -37,7 +37,7 @@ export class KeyResultsController {
 
   @Get('/:id/progress')
   async progress(
-    @Param("id") keyResultId: string,
+    @Param('id') keyResultId: string,
   ): Promise<{ percentage: number }> {
     return await this.keyResultsService.progress(keyResultId);
   }
