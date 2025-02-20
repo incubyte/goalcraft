@@ -53,7 +53,10 @@ describe('KeyResultsController', () => {
 
     it('Should return of unique key results of given id', async () => {
       // arrange
-      const mockedResponse: KeyResultResDTO = { id: keyResultId, ...keyResult };
+      const mockedResponse: KeyResultResDTO = {
+        id: keyResultId,
+        ...keyResult,
+      };
       mockKeyResultsService.fetchUnique.mockReturnValue(mockedResponse as any);
 
       // act
@@ -151,7 +154,9 @@ describe('KeyResultsController', () => {
         objectiveId: '1',
       };
 
-      mockKeyResultsService.progress.mockResolvedValue({ percentage: 50 });
+      mockKeyResultsService.progress.mockResolvedValue({
+        percentage: 50,
+      });
 
       // act
       const response = await controller.progress(keyResult.id);
@@ -173,7 +178,9 @@ describe('KeyResultsController', () => {
         objectiveId: '1',
       };
 
-      mockKeyResultsService.progress.mockResolvedValue({ percentage: 20 });
+      mockKeyResultsService.progress.mockResolvedValue({
+        percentage: 20,
+      });
 
       // act
       const response = await controller.progress(keyResult.id);
