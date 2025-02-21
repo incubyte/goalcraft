@@ -30,7 +30,7 @@ export default function AddKeyResultModal({
     function handleAddKeyResult() {
         if (objectives === null) return;
 
-        if(keyResult.title === "" || keyResult.metric === "") { alert("Please enter a field!"); return; }
+        if(keyResult.title === "") { alert("Please enter a field!"); return; }
 
         console.log(keyResult);
 
