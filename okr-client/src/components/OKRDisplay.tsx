@@ -69,7 +69,11 @@ export default function OKRDisplay({
         const progress: [number, number, number, number] = [0, 33, 66, 80];
 
         if (target !== 0) {
-            progress[0] = (current - init)  / (target - init) * 100; // percentage
+            if(current === target && target === init){
+                progress[0] = 100;
+            } else{
+                progress[0] = (current - init)  / (target - init) * 100; // percentage
+            }
             progress[1] = (target * 0.33) / target * 100; // low
             progress[2] = (target * 0.66) / target * 100 // high
             progress[3] = (target * 0.80) / target * 100 // optimum
@@ -121,7 +125,7 @@ export default function OKRDisplay({
                                     <div key={index}
                                          className={`relative pt-2 p-3 ${keyResult.currentValue >= keyResult.targetValue && index == 0 ? "mt-4" : (keyResult.currentValue >= keyResult.targetValue) ? "mt-8" : "mt-3"} bg-gray-100 rounded-md shadow`}>
                                         {
-                                            keyResult.currentValue >= keyResult.targetValue &&
+                                            getProgress(keyResult.initialValue, keyResult.targetValue, keyResult.currentValue)[0] == 100 &&
                                             <p className="absolute -top-3 left-5 flex items-center gap-x-1 text-xs bg-gray-600 font-medium text-white rounded-full px-2 py-1">
                                                 <CircleCheck className="w-3.5 h-3.5"/> Done</p>
                                         }
