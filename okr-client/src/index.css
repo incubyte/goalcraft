@@ -2,6 +2,77 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  font-size: 14px;
+}
+
+body {
+  font-family: var(--font-family);
+  font-weight: normal;
+  background: var(--surface-ground);
+  color: var(--text-color);
+  /*padding: 1rem;*/
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.card {
+  background: var(--surface-card);
+  padding: 2rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+
+.p-dialog-footer {
+  display: flex;
+  justify-content: flex-end; /* Align items to the end (right side) */
+  gap: 10px; /* Adds space between buttons */
+  /*padding: 10px; !* Optional: Adds some spacing inside *!*/
+}
+
+
+.p-confirm-dialog-accept {
+  background-color: #12a6a7 !important;  /* Green background */
+  color: white !important;              /* White text */
+  border: none !important;               /* Remove border */
+  border-radius: 5px !important;         /* Rounded corners */
+  padding: 10px 20px !important;         /* Adjust padding */
+  font-weight: bold !important;          /* Bold text */
+  transition: all 0.3s ease-in-out;
+}
+
+.p-confirm-dialog-accept:hover {
+  background-color: #109191 !important; /* Darker green on hover */
+}
+
+.p-confirm-dialog-accept:active {
+  border: 2px solid #109191 ;
+  background-color: #1e7e34 !important; /* Even darker on click */
+}
+
+
+
+.p-confirm-dialog-reject {
+  background-color: #D25A58 !important;  /* Green background */
+  color: white !important;              /* White text */
+  border: none !important;               /* Remove border */
+  border-radius: 5px !important;         /* Rounded corners */
+  padding: 10px 20px !important;         /* Adjust padding */
+  font-weight: bold !important;          /* Bold text */
+  transition: all 0.3s ease-in-out;
+}
+
+.p-confirm-dialog-reject:hover {
+  background-color: #B16360 !important; /* Darker green on hover */
+}
+
+.p-confirm-dialog-reject:active {
+  border: 2px solid #2B8FBA ;
+  background-color: #B16360 !important; /* Even darker on click */
+}
+
+
 .text-primary {
   @apply text-[#12a6a7];
 }

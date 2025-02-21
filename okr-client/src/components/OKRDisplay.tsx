@@ -19,6 +19,8 @@ import {
   getOkrsData,
 } from '../database/OKRStore.ts';
 import NoGoalImage from '../assets/NoGoal.svg';
+import { toast } from 'react-toastify';
+import { confirmDialog } from 'primereact/confirmdialog';
 
 export default function OKRDisplay({
   objectiveForUpdate,
@@ -83,6 +85,55 @@ export default function OKRDisplay({
     setObjectives(updatedObjectives);
   }
 
+  const acceptDeleteObjective = (objectiveId: string, objectiveIndex: number) => {
+    deleteObjective(objectiveId, objectiveIndex);
+    toast('Update objective successfully!', {
+      position: 'top-center',
+      type: 'success',
+      autoClose: 3000,
+    });
+  };
+
+  const reject = () => {
+    // toast('Failed to update objective!', {
+    //   position: 'top-center',
+    //   type: 'error',
+    //   autoClose: 3000,
+    // });
+  };
+
+  function confirmDeleteObjective(objectiveId: string, objectiveIndex: number) {
+    confirmDialog({
+      message: 'Are you sure you want to delete the objective?',
+      header: 'Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      defaultFocus: 'accept',
+      accept: () => acceptDeleteObjective(objectiveId, objectiveIndex),
+      reject,
+    });
+  }
+
+  const acceptDeleteKeyResult = (objectiveIndex: number, keyResultIndex: number, keyResultId: string) => {
+    deleteKeyResult(objectiveIndex, keyResultIndex, keyResultId);
+    toast('Key result deleted successfully!', {
+      position: 'top-center',
+      type: 'success',
+      autoClose: 3000,
+    });
+  };
+
+
+  function confirmDeleteKeyResult(objectiveIndex: number, keyResultIndex: number, keyResultId: string) {
+    confirmDialog({
+      message: 'Are you sure you want to delete the key result?',
+      header: 'Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      defaultFocus: 'accept',
+      accept: () => acceptDeleteKeyResult(objectiveIndex, keyResultIndex, keyResultId),
+      reject,
+    });
+  }
+
   function getProgress(
     init: number,
     target: number,
@@ -126,7 +177,9 @@ export default function OKRDisplay({
                 </h1>
                 <div className="items-center gap-x-3 z-10 -mt-2 hidden group-hover:flex absolute -top-3 bg-white p-2 shadow px-5 border rounded-full left-1/2 -translate-x-1/2">
                   <button
-                    onClick={() => deleteObjective(objective.id, objectiveIdx)}
+                    onClick={() =>
+                      confirmDeleteObjective(objective.id, objectiveIdx)
+                    }
                     className="text-red-500"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -156,7 +209,7 @@ export default function OKRDisplay({
                     )}
                     <button
                       onClick={() =>
-                        deleteKeyResult(objectiveIdx, index, keyResult.id)
+                        confirmDeleteKeyResult(objectiveIdx, index, keyResult.id)
                       }
                       className="border bg-red-500 text-white hover:text-red-500 hover:bg-white hover:border-red-500 absolute top-1/2 -translate-y-1/2 -right-10 shadow-lg hover:shadow-inner rounded-full p-2"
                     >

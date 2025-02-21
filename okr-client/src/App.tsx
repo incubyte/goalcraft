@@ -5,6 +5,8 @@ import OKRDisplay from './components/OKRDisplay';
 import { getOkrsData } from './database/OKRStore';
 import { OkrContext } from './context/OkrProvider';
 import InitialLoader from './components/InitialLoader.tsx';
+import { ToastContainer } from 'react-toastify';
+import { ConfirmDialog } from 'primereact/confirmdialog';
 
 function App() {
   const { setObjectives } = useContext(OkrContext);
@@ -52,6 +54,8 @@ function App() {
           />
         </>
       )}
+      <ToastContainer />
+      <ConfirmDialog />
     </main>
   );
 }
