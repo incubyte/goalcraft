@@ -6,7 +6,7 @@ import {generateKeyResultFromLLM} from "../database/OKRStore.ts";
 import {KeyResultType} from "../types/OKRTypes.ts";
 import {toast, ToastContainer} from "react-toastify";
 
-type NumberOfKeyResultsModalPropType = {
+type OKRFormProps = {
     setIsGenerating: React.Dispatch<React.SetStateAction<boolean>>,
     newObjective: string,
     setKeyResults: React.Dispatch<React.SetStateAction<KeyResultType[]>>,
@@ -20,7 +20,7 @@ export default function NumberOfKeyResultsModal({
                                                     setKeyResults,
                                                     isGenerating,
                                                     setIsGenerate
-                                                }: NumberOfKeyResultsModalPropType) {
+                                                }: OKRFormProps) {
 
     const [numberOfKeyResults, setNumberOfKeyResults] = useState<number>(3);
 

@@ -43,7 +43,7 @@ export default function OKRForm({
     const [keyResults, setKeyResults] = useState<KeyResultType[]>([
         defaultKeyResult,
     ]);
-    const [isGenerate, setIsGenerate] = useState<boolean>(false);
+    const [isNumberOfKeyResultModalOpen, setIsNumberOfKeyResultModalOpen] = useState<boolean>(false);
 
     const [isGenerating, setIsGenerating] = useState<boolean>(false);
 
@@ -131,7 +131,7 @@ export default function OKRForm({
                 autoClose: 3000
             });
         } else {
-            setIsGenerate(true);
+            setIsNumberOfKeyResultModalOpen(true);
         }
     }
 
@@ -322,9 +322,9 @@ export default function OKRForm({
                     </p>
                     }
                 </button>
-                {isGenerate && (
+                {isNumberOfKeyResultModalOpen && (
                     <NumberOfKeyResultsModal setKeyResults={setKeyResults} setIsGenerating={setIsGenerating}
-                                             isGenerating={isGenerating} setIsGenerate={setIsGenerate}
+                                             isGenerating={isGenerating} setIsGenerate={setIsNumberOfKeyResultModalOpen}
                                              newObjective={newObjective}/>
                 )}
             </div>
