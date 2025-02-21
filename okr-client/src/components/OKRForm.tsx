@@ -10,7 +10,8 @@ import {
 } from "../database/OKRStore";
 import {BetweenHorizonalStart, Goal, LoaderCircle, Sparkles, Trash2} from "lucide-react";
 import {OkrContext} from "../context/OkrProvider";
-import {toast, ToastContainer} from "react-toastify";
+import {toast} from "react-toastify";
+import {ToastContainer} from "react-toastify";
 
 const defaultKeyResults = {
     title: "",
@@ -90,7 +91,11 @@ export default function OKRForm({
     function addNewObjective() {
         // validation
         if (newObjective.length == 0 || keyResults.length == 0) {
-            alert("Please fill all required field value");
+            toast("Please fill all required field value", {
+                position: "top-center",
+                type: "error",
+                autoClose: 3000
+            });
             return;
         }
 
@@ -125,7 +130,7 @@ export default function OKRForm({
 
     function handleGenerateKeyResultFromLLM() {
         if (newObjective.length == 0) {
-            toast.error("Please fill all required field value", {
+            toast("Please fill all required field value", {
                 position: "top-center",
                 type: "error",
                 autoClose: 3000
@@ -223,7 +228,7 @@ export default function OKRForm({
                             <Sparkles
                                 className={`w-4 h-4 -rotate-45 ${isGenerating ? "animate-ping" : ""}`}/> Generate
                         </button>
-                        <ToastContainer/>
+                        <ToastContainer />
                     </>
                 }
             </div>
