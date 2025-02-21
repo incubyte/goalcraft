@@ -4,11 +4,14 @@ import {KeyResultType, ObjectiveType} from "../types/OKRTypes";
 import {
     addKeyResultToObjective,
     addOkrsDataToDB,
-    generateKeyResultFromLLM, getOkrsData,
+    generateKeyResultFromLLM,
+    getOkrsData,
     updateOkrsDataToDb
 } from "../database/OKRStore";
 import {BetweenHorizonalStart, Goal, LoaderCircle, Sparkles, Trash2} from "lucide-react";
 import {OkrContext} from "../context/OkrProvider";
+import {toast} from "react-toastify";
+import {ToastContainer} from "react-toastify";
 
 const defaultKeyResults = {
     title: "",
@@ -88,7 +91,11 @@ export default function OKRForm({
     function addNewObjective() {
         // validation
         if (newObjective.length == 0 || keyResults.length == 0) {
-            alert("Please fill all required field value");
+            toast("Please fill all required field value", {
+                position: "top-center",
+                type: "error",
+                autoClose: 3000
+            });
             return;
         }
 
@@ -123,7 +130,11 @@ export default function OKRForm({
 
     function handleGenerateKeyResultFromLLM() {
         if (newObjective.length == 0) {
-            alert("Please fill all required field value");
+            toast("Please fill all required field value", {
+                position: "top-center",
+                type: "error",
+                autoClose: 3000
+            });
         } else {
             setIsGenerating(true);
             generateKeyResultFromLLM(newObjective, keyResults.length).then((generatedKeyResults: KeyResultType[]) => {
@@ -209,13 +220,16 @@ export default function OKRForm({
                 </div>
                 {
                     !isUpdateForm &&
-                <button
-                    onClick={() => handleGenerateKeyResultFromLLM()}
-                    className="bg-white absolute left-1/2 -translate-x-1/2 z-10 -bottom-7 border-2 border-[#12a6a7] hover:border-gray-700 hover:bg-gray-700 hover:text-white text-primary ease-linear flex items-center gap-x-1.5 px-4 py-2 rounded-md text-sm font-medium shadow-md"
-                >
-                    <Sparkles
-                        className={`w-4 h-4 -rotate-45 ${isGenerating ? "animate-ping" : ""}`}/> Generate
-                </button>
+                    <>
+                        <button
+                            onClick={() => handleGenerateKeyResultFromLLM()}
+                            className="bg-white absolute left-1/2 -translate-x-1/2 z-10 -bottom-7 border-2 border-[#12a6a7] hover:border-gray-700 hover:bg-gray-700 hover:text-white text-primary ease-linear flex items-center gap-x-1.5 px-4 py-2 rounded-md text-sm font-medium shadow-md"
+                        >
+                            <Sparkles
+                                className={`w-4 h-4 -rotate-45 ${isGenerating ? "animate-ping" : ""}`}/> Generate
+                        </button>
+                        <ToastContainer />
+                    </>
                 }
             </div>
             <hr/>

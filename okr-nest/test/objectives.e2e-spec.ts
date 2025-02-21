@@ -32,7 +32,6 @@ describe('Objective Integration', () => {
     await prismaService.objectives.deleteMany();
 
     objectiveToInsert = { objective: 'Test 1' };
-
     insertedObjective = await prismaService.objectives.create({
       data: objectiveToInsert,
     });
