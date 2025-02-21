@@ -4,7 +4,6 @@ import {KeyResultType, ObjectiveType} from "../types/OKRTypes";
 import {
     addKeyResultToObjective,
     addOkrsDataToDB,
-    generateKeyResultFromLLM,
     getOkrsData,
     updateOkrsDataToDb
 } from "../database/OKRStore";
@@ -13,6 +12,7 @@ import {OkrContext} from "../context/OkrProvider";
 import {toast} from "react-toastify";
 import {ToastContainer} from "react-toastify";
 import * as React from "react";
+import NumberOfKeyResultsModal from "./NumberOfKeyResultsModal.tsx";
 
 const defaultKeyResult = {
     title: "",
@@ -22,24 +22,28 @@ const defaultKeyResult = {
     metric: "",
 };
 
+type OKRFormPropType = {
+    objectiveForUpdate: ObjectiveType;
+    setObjectiveForUpdate: React.Dispatch<React.SetStateAction<ObjectiveType>>
+}
+
 export default function OKRForm({
                                     objectiveForUpdate,
                                     setObjectiveForUpdate
-                                }: {
-    objectiveForUpdate: ObjectiveType;
-    setObjectiveForUpdate: React.Dispatch<React.SetStateAction<ObjectiveType>>
-}) {
+                                }: OKRFormPropType) {
     const {
         objectives,
         setObjectives,
         isWaitingForResponse,
         setIsWaitingForResponse,
     } = useContext(OkrContext);
+
     const [isUpdateForm, setIsUpdateForm] = useState<boolean>(false);
     const [newObjective, setNewObjective] = useState<string>("");
     const [keyResults, setKeyResults] = useState<KeyResultType[]>([
         defaultKeyResult,
     ]);
+    const [isGenerate, setIsGenerate] = useState<boolean>(false);
 
     const [isGenerating, setIsGenerating] = useState<boolean>(false);
 
@@ -127,14 +131,7 @@ export default function OKRForm({
                 autoClose: 3000
             });
         } else {
-            setIsGenerating(true);
-            generateKeyResultFromLLM(newObjective, keyResults.length).then((generatedKeyResults: KeyResultType[]) => {
-                setKeyResults(generatedKeyResults);
-                setIsGenerating(false);
-            }).catch((error) => {
-                alert(error);
-                setIsGenerating(false);
-            })
+            setIsGenerate(true);
         }
     }
 
@@ -220,7 +217,7 @@ export default function OKRForm({
                             <Sparkles
                                 className={`w-4 h-4 -rotate-45 ${isGenerating ? "animate-ping" : ""}`}/> Generate
                         </button>
-                        <ToastContainer />
+                        <ToastContainer/>
                     </>
                 }
             </div>
@@ -325,6 +322,11 @@ export default function OKRForm({
                     </p>
                     }
                 </button>
+                {isGenerate && (
+                    <NumberOfKeyResultsModal setKeyResults={setKeyResults} setIsGenerating={setIsGenerating}
+                                             isGenerating={isGenerating} setIsGenerate={setIsGenerate}
+                                             newObjective={newObjective}/>
+                )}
             </div>
         </div>
     );
