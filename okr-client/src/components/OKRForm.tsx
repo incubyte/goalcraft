@@ -12,6 +12,7 @@ import {BetweenHorizonalStart, Goal, LoaderCircle, Sparkles, Trash2} from "lucid
 import {OkrContext} from "../context/OkrProvider";
 import {toast} from "react-toastify";
 import {ToastContainer} from "react-toastify";
+import {Tooltip} from "@mui/material";
 
 const defaultKeyResults = {
     title: "",
@@ -221,14 +222,30 @@ export default function OKRForm({
                 {
                     !isUpdateForm &&
                     <>
-                        <button
-                            onClick={() => handleGenerateKeyResultFromLLM()}
-                            className="bg-white absolute left-1/2 -translate-x-1/2 z-10 -bottom-7 border-2 border-[#12a6a7] hover:border-gray-700 hover:bg-gray-700 hover:text-white text-primary ease-linear flex items-center gap-x-1.5 px-4 py-2 rounded-md text-sm font-medium shadow-md"
+                        <Tooltip
+                            title="Generates key results from given objective using AI"
+                            placement="right"
+                            slotProps={{
+                                tooltip: {
+                                    sx: {
+                                        color: "black",
+                                        backgroundColor: "#E1E1E1",
+                                        fontSize: "0.7em",
+                                    },
+                                },
+                            }}
                         >
-                            <Sparkles
-                                className={`w-4 h-4 -rotate-45 ${isGenerating ? "animate-ping" : ""}`}/> Generate
-                        </button>
-                        <ToastContainer />
+                            <button
+                                onClick={() => handleGenerateKeyResultFromLLM()}
+                                className="bg-white absolute left-1/2 -translate-x-1/2 z-10 -bottom-7 border-2 border-[#12a6a7] hover:border-gray-700 hover:bg-gray-700 hover:text-white text-primary ease-linear flex items-center gap-x-1.5 px-4 py-2 rounded-md text-sm font-medium shadow-md"
+                            >
+                                <Sparkles
+                                    className={`w-4 h-4 -rotate-45 ${isGenerating ? "animate-ping" : ""}`}
+                                />
+                                Generate
+                            </button>
+                        </Tooltip>
+                        <ToastContainer/>
                     </>
                 }
             </div>
