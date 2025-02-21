@@ -7,7 +7,7 @@ import { KeyResult, Objective, Okrs } from '../../test/test-types';
 describe('Objectives Controller', () => {
   let controller: ObjectivesController;
   let service: DeepMockProxy<ObjectivesService>;
-  let objectiveToInsert: Omit<Objective, 'id'>;
+  let objective: Omit<Objective, 'id'>;
 
   beforeAll(async () => {
     service = mockDeep<ObjectivesService>();
@@ -24,7 +24,7 @@ describe('Objectives Controller', () => {
 
     controller = module.get<ObjectivesController>(ObjectivesController);
 
-    objectiveToInsert = { objective: 'NEW OBJECTIVE' };
+    objective = { objective: 'NEW OBJECTIVE' };
   });
 
   describe('fetchAll()', () => {
@@ -35,89 +35,77 @@ describe('Objectives Controller', () => {
     });
 
     it('should return all objectives', async () => {
-      let okrsToInsert: Okrs = {
+      let okrs: Okrs[] = [{
         id: 'FAKE_OKR_ID',
         objective: 'FAKE_OBJECTIVE',
         keyResults: [],
-      };
-      service.fetchAll.mockResolvedValue([okrsToInsert]);
+      }];
+      service.fetchAll.mockResolvedValue(okrs);
 
       const response: Okrs[] = await controller.fetchAll();
 
-      expect(response).toEqual([okrsToInsert]);
+      expect(response).toEqual(okrs);
     });
   });
 
   describe('create()', () => {
     it('should be called create() of service by controller', async () => {
-      await controller.create(objectiveToInsert);
+      await controller.create(objective);
 
       expect(service.create).toHaveBeenCalled();
     });
 
     it('should create objective', async () => {
-      service.create.mockResolvedValue({
-        ...objectiveToInsert,
+      const insertedObjective = {
+        ...objective,
         id: 'FAKE_OBJECTIVE_ID',
-      });
+      };
+      service.create.mockResolvedValue(insertedObjective);
 
-      const response: Objective = await controller.create(objectiveToInsert);
+      const response: Objective = await controller.create(objective);
 
-      expect(response).toEqual({
-        ...objectiveToInsert,
-        id: 'FAKE_OBJECTIVE_ID',
-      });
+      expect(response).toEqual(insertedObjective);
     });
   });
 
   describe('delete()', () => {
-    it('should be called delete() of service by controller', async () => {
-      await controller.delete('FAKE_OBJECTIVE_ID');
+    const objectiveId: string = 'FAKE_OBJECTIVE_ID';
 
-      expect(service.create).toHaveBeenCalled();
+    it('should be called delete() of service by controller', async () => {
+      await controller.delete(objectiveId);
+
+      expect(service.delete).toHaveBeenCalled();
     });
 
     it('should delete objective', async () => {
-      service.delete.mockResolvedValue({
-        ...objectiveToInsert,
-        id: 'FAKE_OBJECTIVE_ID',
-      });
+      const deletedObjective = {
+        ...objective,
+        id: objectiveId,
+      };
+      service.delete.mockResolvedValue(deletedObjective);
 
-      const response: Objective = await controller.delete('FAKE_OBJECTIVE_ID');
+      const response: Objective = await controller.delete(objectiveId);
 
-      expect(response).toEqual({
-        ...objectiveToInsert,
-        id: 'FAKE_OBJECTIVE_ID',
-      });
+      expect(response).toEqual(deletedObjective);
     });
   });
 
   describe('patch()', () => {
+    const updatedObjective = {
+      objective: 'UPDATED OBJECTIVE',
+      id: 'FAKE_OBJECTIVE_ID',
+    };
+
     it('should be called patch() of service by controller', async () => {
-      await controller.patch({
-        id: 'FAKE_OBJECTIVE_ID',
-        objective: 'objective 1',
-      });
+      await controller.patch(updatedObjective);
 
       expect(service.patch).toHaveBeenCalled();
     });
 
     it('should update objective', async () => {
-      const objectiveToUpdate = {
-        id: 'FAKE_OBJECTIVE_ID',
-        objective: 'FAKE OBJECTIVE',
-      };
-      const updatedObjective = {
-        id: 'FAKE_OBJECTIVE_ID',
-        objective: 'UPDATED OBJECTIVE',
-      };
-
       service.patch.mockResolvedValue(updatedObjective);
 
-      const response: Objective = await controller.patch({
-        ...objectiveToUpdate,
-        objective: 'UPDATED OBJECTIVE',
-      });
+      const response: Objective = await controller.patch(updatedObjective);
 
       expect(response).toEqual(updatedObjective);
     });
