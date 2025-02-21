@@ -4,13 +4,17 @@ import {KeyResultType, ObjectiveType} from "../types/OKRTypes";
 import {
     addKeyResultToObjective,
     addOkrsDataToDB,
-    generateKeyResultFromLLM, getOkrsData,
+    generateKeyResultFromLLM,
+    getOkrsData,
     updateOkrsDataToDb
 } from "../database/OKRStore";
 import {BetweenHorizonalStart, Goal, LoaderCircle, Sparkles, Trash2} from "lucide-react";
 import {OkrContext} from "../context/OkrProvider";
+import {toast} from "react-toastify";
+import {ToastContainer} from "react-toastify";
+import * as React from "react";
 
-const defaultKeyResults = {
+const defaultKeyResult = {
     title: "",
     initialValue: 0,
     currentValue: 0,
@@ -34,7 +38,7 @@ export default function OKRForm({
     const [isUpdateForm, setIsUpdateForm] = useState<boolean>(false);
     const [newObjective, setNewObjective] = useState<string>("");
     const [keyResults, setKeyResults] = useState<KeyResultType[]>([
-        defaultKeyResults,
+        defaultKeyResult,
     ]);
 
     const [isGenerating, setIsGenerating] = useState<boolean>(false);
@@ -55,7 +59,7 @@ export default function OKRForm({
                 },
             ],
         });
-        setKeyResults([defaultKeyResults]);
+        setKeyResults([defaultKeyResult]);
         setNewObjective("");
         setIsUpdateForm(false);
         (async () => {
@@ -66,7 +70,6 @@ export default function OKRForm({
 
     useEffect(() => {
         if (objectiveForUpdate.id != "") {
-            console.warn(objectives, keyResults, objectiveForUpdate);
             setNewObjective(objectiveForUpdate.objective);
             setKeyResults(objectiveForUpdate.keyResults);
             setIsUpdateForm(true);
@@ -74,10 +77,7 @@ export default function OKRForm({
     }, [objectiveForUpdate]);
 
 
-    function handleChange(key: string, value: string | number, index: number) {
-        console.warn(objectives, value, keyResults);
-
-
+    function handleKeyResultChange(key: string, value: string | number, index: number) {
         setKeyResults((prev) => {
             const keyResultToBeUpdated = {...prev[index]};
             prev[index] = {...keyResultToBeUpdated, [key]: value};
@@ -86,51 +86,53 @@ export default function OKRForm({
     }
 
     function addNewObjective() {
-        // validation
         if (newObjective.length == 0 || keyResults.length == 0) {
-            alert("Please fill all required field value");
+            toast("Please fill all required field value", {
+                position: "top-center",
+                type: "error",
+                autoClose: 3000
+            });
             return;
         }
 
-        // set loader true
         setIsWaitingForResponse(true);
         const objectiveToBeAdded = {objective: newObjective};
 
-        // inserting objective into db.
         addOkrsDataToDB(objectiveToBeAdded)
             .then((objectiveResponse: ObjectiveType) => {
                 if (objectives === null) return;
-                console.log(keyResults);
                 if (keyResults[0].title != "") {
                     addKeyResultToObjective(keyResults, objectiveResponse.id).then((keyResultsResponse) => {
                         const objectiveToBeAddedToState = {...objectiveResponse, keyResults: keyResultsResponse};
-                        console.warn(objectiveToBeAddedToState);
-
                         setObjectives([...objectives, objectiveToBeAddedToState]);
-                    })
+                    });
                 } else {
                     setObjectives([...objectives, objectiveResponse]);
                 }
 
-                setKeyResults([defaultKeyResults]);
+                setKeyResults([defaultKeyResult]);
                 setNewObjective("");
                 setIsWaitingForResponse(false);
             })
             .catch((error) => {
-                alert(error)
+                alert(error);
             });
     }
 
     function handleGenerateKeyResultFromLLM() {
         if (newObjective.length == 0) {
-            alert("Please fill all required field value");
+            toast("Please fill all required field value", {
+                position: "top-center",
+                type: "error",
+                autoClose: 3000
+            });
         } else {
             setIsGenerating(true);
             generateKeyResultFromLLM(newObjective, keyResults.length).then((generatedKeyResults: KeyResultType[]) => {
                 setKeyResults(generatedKeyResults);
                 setIsGenerating(false);
             }).catch((error) => {
-                alert(error)
+                alert(error);
                 setIsGenerating(false);
             })
         }
@@ -148,22 +150,23 @@ export default function OKRForm({
                     id: objectiveForUpdate.keyResults[0].id,
                     objectiveId: objectiveForUpdate.keyResults[0].objectiveId
                 }
-            }),
+            })
         };
 
         updateOkrsDataToDb(okrsToBeUpdated).then(
             (data) => {
                 if (objectives === null) return;
+
                 const updatedObjectives = objectives.map((objective) => {
                     return objective.id === data.id ? okrsToBeUpdated
                         : objective;
                 });
 
                 setObjectives([...updatedObjectives]);
-
-                // Reset
                 setNewObjective("");
-                setKeyResults([defaultKeyResults]);
+                setKeyResults([defaultKeyResult]);
+
+                //TODO: remove set timeout
                 setTimeout(() => {
                     setIsUpdateForm(false);
                     setIsWaitingForResponse(false);
@@ -173,15 +176,15 @@ export default function OKRForm({
     }
 
     function addNewKeyResults() {
-        setKeyResults((prev) => [...prev, defaultKeyResults]);
+        setKeyResults((prev) => [...prev, defaultKeyResult]);
     }
 
-    function deleteKeyResultInputList(selectedInptListMapIndex: number) {
-        const updatedKeyResultInptList = keyResults.filter((_m, index) => {
-            return index !== selectedInptListMapIndex;
-        })
+    function deleteKeyResultInputList(selectedInputListMapIndex: number) {
+        const updatedKeyResultInputList = keyResults.filter((_m, index) => {
+            return index !== selectedInputListMapIndex;
+        });
 
-        setKeyResults(updatedKeyResultInptList);
+        setKeyResults(updatedKeyResultInputList);
     }
 
     return (
@@ -209,13 +212,16 @@ export default function OKRForm({
                 </div>
                 {
                     !isUpdateForm &&
-                <button
-                    onClick={() => handleGenerateKeyResultFromLLM()}
-                    className="bg-white absolute left-1/2 -translate-x-1/2 z-10 -bottom-7 border-2 border-[#12a6a7] hover:border-gray-700 hover:bg-gray-700 hover:text-white text-primary ease-linear flex items-center gap-x-1.5 px-4 py-2 rounded-md text-sm font-medium shadow-md"
-                >
-                    <Sparkles
-                        className={`w-4 h-4 -rotate-45 ${isGenerating ? "animate-ping" : ""}`}/> Generate
-                </button>
+                    <>
+                        <button
+                            className="bg-white absolute left-1/2 -translate-x-1/2 z-10 -bottom-7 border-2 border-[#12a6a7] hover:border-gray-700 hover:bg-gray-700 hover:text-white text-primary ease-linear flex items-center gap-x-1.5 px-4 py-2 rounded-md text-sm font-medium shadow-md"
+                            onClick={() => handleGenerateKeyResultFromLLM()}
+                        >
+                            <Sparkles
+                                className={`w-4 h-4 -rotate-45 ${isGenerating ? "animate-ping" : ""}`}/> Generate
+                        </button>
+                        <ToastContainer />
+                    </>
                 }
             </div>
             <hr/>
@@ -226,63 +232,63 @@ export default function OKRForm({
             >
                 {keyResults && keyResults.length > 0 && keyResults.map((keyResult, index) => (
                     <div
-                        key={index}
-                        id="firstKeyResult"
                         className="flex flex-col space-y-2"
+                        id="firstKeyResult"
+                        key={index}
                     >
                         <Input
                             label={"Title"}
-                            className="flex-grow"
-                            value={keyResult.title}
                             type="text"
                             placeholder="E.g.: Increase website traffic by 30%"
+                            className="flex-grow"
+                            value={keyResult.title}
                             onChange={(e) => {
-                                handleChange("title", e.target.value, index);
+                                handleKeyResultChange("title", e.target.value, index);
                             }}
                         />
                         <div
-                            id="firstKeyResultMetrics"
                             className="flex justify-between flex-wrap gap-y-2 relative"
+                            id="firstKeyResultMetrics"
                         >
                             <Input
                                 label={"Initial Value"}
-                                value={keyResult.initialValue}
                                 type="number"
                                 placeholder="Initial Value"
+                                value={keyResult.initialValue}
                                 onChange={(e) => {
-                                    handleChange("initialValue", parseInt(e.target.value), index);
+                                    handleKeyResultChange("initialValue", parseInt(e.target.value), index);
                                 }}
                             />
                             <Input
                                 label={"Current Value"}
                                 type="number"
-                                value={keyResult.currentValue}
                                 placeholder="Current Value"
+                                value={keyResult.currentValue}
                                 onChange={(e) => {
-                                    handleChange("currentValue", parseInt(e.target.value), index);
+                                    handleKeyResultChange("currentValue", parseInt(e.target.value), index);
                                 }}
                             />
                             <Input
                                 label={"Target Value"}
                                 type="number"
-                                value={keyResult.targetValue}
                                 placeholder="Target Value"
+                                value={keyResult.targetValue}
                                 onChange={(e) => {
-                                    handleChange("targetValue", parseInt(e.target.value), index);
+                                    handleKeyResultChange("targetValue", parseInt(e.target.value), index);
                                 }}
                             />
                             <Input
                                 label={"Metric"}
                                 type="text"
-                                value={keyResult.metric}
                                 placeholder="Number of visitors"
+                                value={keyResult.metric}
                                 onChange={(e) => {
-                                    handleChange("metric", e.target.value, index);
+                                    handleKeyResultChange("metric", e.target.value, index);
                                 }}
                             />
                             <button
-                                onClick={() => deleteKeyResultInputList(index)}
                                 className={`bg-white border border-red-500 text-red-500 hover:bg-red-500 hover:text-white absolute left-1/2 -translate-x-1/2 top-1/2 ${keyResults.length == 1 ? "hidden" : "visible"} -translate-y-1/2 shadow-lg hover:shadow-inner rounded-full p-2`}
+                                onClick={() => deleteKeyResultInputList(index)}
                             >
                                 <Trash2 className="w-4 h-4"/>
                             </button>
@@ -292,23 +298,23 @@ export default function OKRForm({
             </div>
 
             <div
-                id="submitButton"
                 className="w-full flex justify-between bg-gray-50 px-8 py-5"
+                id="submitButton"
             >
                 {isUpdateForm ? <button
                         className="bg-secondary hover:bg-gray-800 ease-linear px-4 py-2 rounded-md text-white text-sm font-medium"
                         onClick={handleCancelUpdateORKs}>Cancel</button> :
                     <button
-                        onClick={addNewKeyResults}
                         className="bg-secondary hover:bg-gray-800 ease-linear px-4 py-2 rounded-md text-white text-sm font-medium flex items-center gap-x-1"
+                        onClick={addNewKeyResults}
                     >
                         <BetweenHorizonalStart className="w-4 h-4"/>
                         Add Key Result
                     </button>
                 }
                 <button
-                    onClick={isUpdateForm ? handleUpdateObjective : addNewObjective}
                     className="bg-primary hover:bg-gray-800 px-4 py-2 rounded-md text-white text-sm font-medium flex items-center"
+                    onClick={isUpdateForm ? handleUpdateObjective : addNewObjective}
                 >
                     {isWaitingForResponse && (
                         <LoaderCircle className="w-4 h-4 mr-1 animate-spin"/>
