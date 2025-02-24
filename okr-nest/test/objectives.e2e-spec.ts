@@ -10,7 +10,7 @@ import { Response } from 'supertest';
 describe('Objective Integration', () => {
   let app: INestApplication<App>;
   let prismaService: PrismaService;
-  let objectiveToBeInserted: Omit<Objective, 'id'>;
+  let objectiveToInsert: Omit<Objective, 'id'>;
   let insertedObjective: Objective;
 
   beforeAll(async () => {
@@ -31,10 +31,9 @@ describe('Objective Integration', () => {
     await prismaService.keyResults.deleteMany();
     await prismaService.objectives.deleteMany();
 
-    objectiveToBeInserted = { objective: 'Test 1' };
-
+    objectiveToInsert = { objective: 'Test 1' };
     insertedObjective = await prismaService.objectives.create({
-      data: objectiveToBeInserted,
+      data: objectiveToInsert,
     });
   });
 
@@ -42,10 +41,10 @@ describe('Objective Integration', () => {
     it('should create objective with given types', async () => {
       const response: Response = await request(app.getHttpServer())
         .post('/objectives/')
-        .send(objectiveToBeInserted);
+        .send(objectiveToInsert);
 
       expect(response.body).toEqual({
-        ...objectiveToBeInserted,
+        ...objectiveToInsert,
         id: response.body.id,
       });
     });

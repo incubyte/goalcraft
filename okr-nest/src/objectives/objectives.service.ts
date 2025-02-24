@@ -36,13 +36,9 @@ export class ObjectivesService {
   }
 
   async delete(objectiveId: string) {
-    try {
       return await this.prismaService.objectives.delete({
         where: { id: objectiveId },
       });
-    } catch (error) {
-      return error;
-    }
   }
 
   async patch(okrs: { objective: string; id: string }) {

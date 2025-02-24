@@ -2,122 +2,112 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectivesController } from './objectives.controller';
 import { ObjectivesService } from './objectives.service';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+import { KeyResult, Objective, Okrs } from '../../test/test-types';
 
-describe('ObjectivesController', () => {
+describe('Objectives Controller', () => {
   let controller: ObjectivesController;
-  let mockedService: DeepMockProxy<ObjectivesService> =
-    mockDeep<ObjectivesService>();
-  let objective = {
-    objective: 'Objective 1',
-  };
+  let service: DeepMockProxy<ObjectivesService>;
+  let objective: Omit<Objective, 'id'>;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
+    service = mockDeep<ObjectivesService>();
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ObjectivesController],
       providers: [
         {
           provide: ObjectivesService,
-          useValue: mockedService,
+          useValue: service,
         },
       ],
     }).compile();
 
     controller = module.get<ObjectivesController>(ObjectivesController);
-  });
 
-  describe('Initial', () => {
-    it('Should be defined', () => {
-      expect(controller).toBeDefined();
-      expect(mockedService).toBeDefined();
-    });
+    objective = { objective: 'NEW OBJECTIVE' };
   });
 
   describe('fetchAll()', () => {
-    let objective = {
-      id: '1001',
-      objective: 'Objective 1',
-      keyResults: [
-        {
-          id: 'e957fb53-e7fe-4885-acb9-cee42fe9ef3a',
-          objectiveId: '95dd1b84-c92d-41a0-ae67-3930dab3344a',
-          title: 'Key Result 1',
-          initialValue: 0,
-          currentValue: 0,
-          targetValue: 0,
-          metric: '%',
-        },
-      ],
-    };
-
-    it('Should be called fetchAll() of service by controller', async () => {
+    it('should be called fetchAll() of service by controller', async () => {
       await controller.fetchAll();
 
-      expect(mockedService.fetchAll).toHaveBeenCalled();
+      expect(service.fetchAll).toHaveBeenCalled();
     });
 
-    it('Should return all objectives', async () => {
-      mockedService.fetchAll.mockResolvedValue([objective]);
+    it('should return all objectives', async () => {
+      let okrs: Okrs[] = [{
+        id: 'FAKE_OKR_ID',
+        objective: 'FAKE_OBJECTIVE',
+        keyResults: [],
+      }];
+      service.fetchAll.mockResolvedValue(okrs);
 
-      const response = await controller.fetchAll();
+      const response: Okrs[] = await controller.fetchAll();
 
-      expect(response).toEqual([objective]);
+      expect(response).toEqual(okrs);
     });
   });
 
   describe('create()', () => {
-    it('Should be called create() of service by controller', async () => {
+    it('should be called create() of service by controller', async () => {
       await controller.create(objective);
 
-      expect(mockedService.create).toHaveBeenCalled();
+      expect(service.create).toHaveBeenCalled();
     });
 
-    it('Should create objective', async () => {
-      mockedService.create.mockResolvedValue({
+    it('should create objective', async () => {
+      const insertedObjective = {
         ...objective,
-        id: '1001',
-      });
+        id: 'FAKE_OBJECTIVE_ID',
+      };
+      service.create.mockResolvedValue(insertedObjective);
 
-      const response = await controller.create(objective);
+      const response: Objective = await controller.create(objective);
 
-      expect(response).toEqual({ ...objective, id: '1001' });
+      expect(response).toEqual(insertedObjective);
     });
   });
 
   describe('delete()', () => {
-    it('Should be called delete() of service by controller', async () => {
-      await controller.delete('1001');
+    const objectiveId: string = 'FAKE_OBJECTIVE_ID';
 
-      expect(mockedService.create).toHaveBeenCalled();
+    it('should be called delete() of service by controller', async () => {
+      await controller.delete(objectiveId);
+
+      expect(service.delete).toHaveBeenCalled();
     });
 
-    it('Should delete objective', async () => {
-      mockedService.delete.mockResolvedValue({
+    it('should delete objective', async () => {
+      const deletedObjective = {
         ...objective,
-        id: '1001',
-      });
+        id: objectiveId,
+      };
+      service.delete.mockResolvedValue(deletedObjective);
 
-      const response = await controller.delete('1001');
+      const response: Objective = await controller.delete(objectiveId);
 
-      expect(response).toEqual({ ...objective, id: '1001' });
+      expect(response).toEqual(deletedObjective);
     });
   });
 
   describe('patch()', () => {
-    it('Should be called patch() of service by controller', async () => {
-      await controller.patch({ id: '1001', objective: 'objective 1' });
+    const updatedObjective = {
+      objective: 'UPDATED OBJECTIVE',
+      id: 'FAKE_OBJECTIVE_ID',
+    };
 
-      expect(mockedService.patch).toHaveBeenCalled();
+    it('should be called patch() of service by controller', async () => {
+      await controller.patch(updatedObjective);
+
+      expect(service.patch).toHaveBeenCalled();
     });
 
-    it('Should update objective', async () => {
-      const oldObjective = { id: '1001', objective: 'title 0' };
-      const newObjective = { id: '1001', objective: 'title 1' };
+    it('should update objective', async () => {
+      service.patch.mockResolvedValue(updatedObjective);
 
-      mockedService.patch.mockResolvedValue(newObjective);
+      const response: Objective = await controller.patch(updatedObjective);
 
-      const response = await controller.patch(oldObjective);
-
-      expect(response).toEqual(newObjective);
+      expect(response).toEqual(updatedObjective);
     });
   });
 });
