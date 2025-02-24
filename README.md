@@ -40,3 +40,6 @@ cd okr-nest
 # Run all tests
 pnpm test
 ```
+
+
+### Recreating commit issue changes
