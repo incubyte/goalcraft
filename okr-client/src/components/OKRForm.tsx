@@ -2,11 +2,11 @@ import {useContext, useEffect, useState} from "react";
 import Input from "./Input";
 import {KeyResultType, ObjectiveType} from "../types/OKRTypes";
 import {
-    addKeyResultToObjective,
-    addOkrsDataToDB,
-    generateKeyResultFromLLM, getOkrsData,
-    updateOkrsDataToDb
-} from "../database/OKRStore";
+    addKeyResultsToDB,
+    addObjectiveToDB,
+    generateKeyResultFromLLM, getOkrsFromDB,
+    updateOkrsToDB
+} from "../database/okr.store.ts";
 import {BetweenHorizonalStart, Goal, LoaderCircle, Sparkles, Trash2} from "lucide-react";
 import {OkrContext} from "../context/OkrProvider";
 
@@ -59,7 +59,7 @@ export default function OKRForm({
         setNewObjective("");
         setIsUpdateForm(false);
         (async () => {
-            const objectivesResponse = await getOkrsData();
+            const objectivesResponse = await getOkrsFromDB();
             setObjectives(objectivesResponse);
         })();
     }
@@ -97,12 +97,12 @@ export default function OKRForm({
         const objectiveToBeAdded = {objective: newObjective};
 
         // inserting objective into db.
-        addOkrsDataToDB(objectiveToBeAdded)
+        addObjectiveToDB(objectiveToBeAdded)
             .then((objectiveResponse: ObjectiveType) => {
                 if (objectives === null) return;
                 console.log(keyResults);
                 if (keyResults[0].title != "") {
-                    addKeyResultToObjective(keyResults, objectiveResponse.id).then((keyResultsResponse) => {
+                    addKeyResultsToDB(keyResults, objectiveResponse.id).then((keyResultsResponse) => {
                         const objectiveToBeAddedToState = {...objectiveResponse, keyResults: keyResultsResponse};
                         console.warn(objectiveToBeAddedToState);
 
@@ -151,7 +151,7 @@ export default function OKRForm({
             }),
         };
 
-        updateOkrsDataToDb(okrsToBeUpdated).then(
+        updateOkrsToDB(okrsToBeUpdated).then(
             (data) => {
                 if (objectives === null) return;
                 const updatedObjectives = objectives.map((objective) => {

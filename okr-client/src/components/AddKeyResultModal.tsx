@@ -6,7 +6,7 @@ import {
 import Input from "./Input";
 import {CircleX, PackagePlus} from "lucide-react";
 import {OkrContext} from "../context/OkrProvider";
-import {addKeyResultToObjective} from "../database/OKRStore.ts";
+import {addKeyResultsToDB} from "../database/okr.store.ts";
 
 const defaultKeyResults: InsertKeyResultType = {
     title: "",
@@ -39,7 +39,7 @@ export default function AddKeyResultModal({
         );
 
         if (foundObj === undefined) return;
-        addKeyResultToObjective([keyResult], foundObj.id).then((data) => {
+        addKeyResultsToDB([keyResult], foundObj.id).then((data) => {
             foundObj.keyResults.push({...keyResult, id: data[0].id, objectiveId: data[0].objectiveId});
 
             const updatedObjectives = objectives.map((objective, idx) => {

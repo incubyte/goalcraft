@@ -5,7 +5,7 @@ import MetricsLabel from "./MetricLabel";
 import {CircleCheck, FilePenLine, Goal, LoaderCircle, Package, SquarePlus, Trash2} from "lucide-react";
 import AddKeyResultModal from "./AddKeyResultModal";
 import {OkrContext} from "../context/OkrProvider";
-import {deleteKeyResultOfObjective, deleteOkrsDataFromDB, getOkrsData} from "../database/OKRStore.ts";
+import {deleteKeyResultFromDB, deleteOkrsFromDB, getOkrsFromDB} from "../database/okr.store.ts";
 import NoGoalImage from "../assets/NoGoal.svg"
 
 export default function OKRDisplay({
@@ -26,7 +26,7 @@ export default function OKRDisplay({
         if (!keyResultModal.isOpen) {
             console.log("keyResultModal is opened");
             (async () => {
-                const objectivesResponse = await getOkrsData();
+                const objectivesResponse = await getOkrsFromDB();
                 setObjectives(objectivesResponse);
             })();
         }
@@ -34,7 +34,7 @@ export default function OKRDisplay({
 
     function deleteKeyResult(objectiveIdx: number, keyResultIdx: number, keyResultDBId: string) {
         if (objectives === null) return;
-        deleteKeyResultOfObjective(keyResultDBId).then(() => {
+        deleteKeyResultFromDB(keyResultDBId).then(() => {
             const foundObj = objectives.find((_, idx) => objectiveIdx === idx);
 
             if (foundObj === undefined) return;
@@ -56,7 +56,7 @@ export default function OKRDisplay({
         if (objectives === null) return;
 
         try {
-            await deleteOkrsDataFromDB(objectiveIdx);
+            await deleteOkrsFromDB(objectiveIdx);
         } catch (error) {
             alert(error);
         }
