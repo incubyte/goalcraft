@@ -5,8 +5,18 @@ import MetricsLabel from "./MetricLabel";
 import {CircleCheck, FilePenLine, Goal, LoaderCircle, Package, SquarePlus, Trash2} from "lucide-react";
 import AddKeyResultModal from "./AddKeyResultModal";
 import {OkrContext} from "../context/OkrProvider";
-import {deleteKeyResultOfObjective, deleteOkrsDataFromDB, getOkrsData} from "../database/OKRStore.ts";
+import {
+    deleteKeyResultOfObjective,
+    deleteOkrsDataFromDB,
+    getOkrsData
+} from "../database/OKRStore.ts";
 import NoGoalImage from "../assets/NoGoal.svg"
+
+enum PROGRESS_THRESHOLD {
+    LOW = 0.33,
+    HIGH = 0.66,
+    OPTIMUM = 0.80
+}
 
 export default function OKRDisplay({
                                        objectiveForUpdate,
@@ -64,19 +74,19 @@ export default function OKRDisplay({
         setObjectives(updatedObjectives);
     }
 
-
-    function getProgress(init:number, target: number, current: number): [number, number, number, number] {
-        const progress: [number, number, number, number] = [0, 33, 66, 80];
-
-        if (target !== 0) {
-            progress[0] = (current - init)  / (target - init) * 100; // percentage
-            progress[1] = (target * 0.33) / target * 100; // low
-            progress[2] = (target * 0.66) / target * 100 // high
-            progress[3] = (target * 0.80) / target * 100 // optimum
-        }
-
-        return progress;
+    function isAlreadyCompleted(init: number, current: number, target: number): boolean {
+        return (target != 0 && current === target && target === init || getCompletionPercentage(init, current, target) == 100);
     }
+
+    function getCompletionPercentage(init: number, current: number, target: number): number {
+        const percentage: number =  (current - init) / (target - init) * 100;
+        return parseFloat(percentage.toFixed(2));
+    }
+
+    function getProgressThreshold(target: number, threshold: number): number {
+        return (target * threshold) / target * 100;
+    }
+
 
     return (
         <div
@@ -119,9 +129,9 @@ export default function OKRDisplay({
                             {objective.keyResults && objective.keyResults.length > 0 ? (
                                 objective.keyResults.map((keyResult, index) => (
                                     <div key={index}
-                                         className={`relative pt-2 p-3 ${keyResult.currentValue >= keyResult.targetValue && index == 0 ? "mt-4" : (keyResult.currentValue >= keyResult.targetValue) ? "mt-8" : "mt-3"} bg-gray-100 rounded-md shadow`}>
+                                         className={`relative pt-2 p-3 ${isAlreadyCompleted(keyResult.initialValue, keyResult.currentValue, keyResult.targetValue) && index == 0 ? "mt-4" : (isAlreadyCompleted(keyResult.initialValue, keyResult.currentValue, keyResult.targetValue)) ? "mt-8" : "mt-3"} bg-gray-100 rounded-md shadow`}>
                                         {
-                                            keyResult.currentValue >= keyResult.targetValue &&
+                                            isAlreadyCompleted(keyResult.initialValue, keyResult.currentValue, keyResult.targetValue) &&
                                             <p className="absolute -top-3 left-5 flex items-center gap-x-1 text-xs bg-gray-600 font-medium text-white rounded-full px-2 py-1">
                                                 <CircleCheck className="w-3.5 h-3.5"/> Done</p>
                                         }
@@ -132,7 +142,7 @@ export default function OKRDisplay({
                                             <Trash2 className="w-4 h-4"/>
                                         </button>
                                         <div
-                                            className={`mb-3 bg-white ${keyResult.currentValue >= keyResult.targetValue ? "mt-3" : "mt-1"} rounded-md flex items-center justify-between shadow-sm`}>
+                                            className={`mb-3 bg-white ${isAlreadyCompleted(keyResult.initialValue, keyResult.currentValue, keyResult.targetValue) ? "mt-3" : "mt-1"} rounded-md flex items-center justify-between shadow-sm`}>
                                             <Goal className="w-4 h-4 text-gray-700 ml-3 "/>
                                             <p className={`text-primary text-xs w-full p-2 font-medium rounded-md`}>
                                                 {keyResult.title}</p>
@@ -154,18 +164,19 @@ export default function OKRDisplay({
                                         </div>
                                         <meter
                                             className="w-full rounded-full mt-2"
-                                            id="stress"
                                             min={0}
                                             max={100}
-                                            optimum={getProgress(keyResult.initialValue, keyResult.targetValue, keyResult.currentValue)[3]}
-                                            low={getProgress(keyResult.initialValue, keyResult.targetValue, keyResult.currentValue)[1]}
-                                            high={getProgress(keyResult.initialValue, keyResult.targetValue, keyResult.currentValue)[2]}
-                                            value={getProgress(keyResult.initialValue, keyResult.targetValue, keyResult.currentValue)[0]}></meter>
+                                            optimum={getProgressThreshold(keyResult.targetValue, PROGRESS_THRESHOLD.OPTIMUM)}
+                                            low={getProgressThreshold(keyResult.targetValue, PROGRESS_THRESHOLD.LOW)}
+                                            high={getProgressThreshold(keyResult.targetValue, PROGRESS_THRESHOLD.HIGH)}
+                                            value={getCompletionPercentage(keyResult.initialValue, keyResult.currentValue, keyResult.targetValue)}>
+                                        </meter>
+
                                         <div className="flex w-full font-medium items-center justify-between">
                                             <p className="text-xs">{keyResult.currentValue} of <span
                                                 className="text-gray-500">{keyResult.targetValue} (Progress)</span>
                                             </p>
-                                            <p className="text-xs text-primary">{getProgress(keyResult.initialValue, keyResult.targetValue, keyResult.currentValue)[0].toFixed(2)} %</p>
+                                            <p className="text-xs text-primary">{getCompletionPercentage(keyResult.initialValue, keyResult.currentValue, keyResult.targetValue)} %</p>
                                         </div>
                                     </div>
                                 ))
@@ -214,7 +225,8 @@ export default function OKRDisplay({
 
 const StatisticsCard = ({label, value}: { label: string, value: number | string }) => {
     return (
-        <div className="flex flex-col bg-white shadow-sm w-[60px] items-center justify-center text-xs font-medium p-2 rounded-md">
+        <div
+            className="flex flex-col bg-white shadow-sm w-[60px] items-center justify-center text-xs font-medium p-2 rounded-md">
             <p className="text-secondary mb-1">{label}</p>
             <p>{value}</p>
         </div>
