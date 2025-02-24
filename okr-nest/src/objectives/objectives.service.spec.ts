@@ -73,26 +73,26 @@ describe('Objectives Service', () => {
   });
 
   describe('delete()', () => {
-    const objectiveId: string = 'FAKE_OBJECTIVE_ID';
+    let objectiveToDelete: Objective = {
+      ...objective,
+      id: 'FAKE_OBJECTIVE_ID',
+    };
 
     it('should be called delete() of PrismaService by ObjectiveService', async () => {
-      await service.delete(objectiveId);
+      await service.delete({ id: objectiveToDelete.id });
 
       expect(prismaMock.objectives.delete).toHaveBeenCalled();
     });
 
     it('should delete objective', async () => {
-      const deletedObjective = {
-        ...objective,
-        id: 'FAKE_OBJECTIVE_ID',
-      };
+      prismaMock.objectives.delete.mockResolvedValue(objectiveToDelete);
 
-      prismaMock.objectives.delete.mockResolvedValue(deletedObjective);
-
-      const response: Objective = await service.delete(objectiveId);
+      const response: Objective = await service.delete({
+        id: objectiveToDelete.id,
+      });
 
       expect(response).toBeDefined();
-      expect(response).toEqual(deletedObjective);
+      expect(response).toEqual(objectiveToDelete);
     });
   });
 
@@ -101,7 +101,7 @@ describe('Objectives Service', () => {
       id: 'FAKE_OBJECTIVE_ID',
       objective: 'UPDATED OBJECTIVE',
     };
-    
+
     it('should be called patch() of PrismaService by ObjectiveService', async () => {
       await service.patch(updatedObjective);
 
