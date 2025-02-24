@@ -91,7 +91,7 @@ export default function OKRForm({
 
     function addNewObjective() {
         if (newObjective.length == 0 || keyResults.length == 0) {
-            toast("Please fill all required field value", {
+            toast("Please enter an Objective!", {
                 position: "top-center",
                 type: "error",
                 autoClose: 3000
@@ -125,7 +125,7 @@ export default function OKRForm({
 
     function handleGenerateKeyResultFromLLM() {
         if (newObjective.length == 0) {
-            toast("Please fill all required field value", {
+            toast("Please enter an Objective!", {
                 position: "top-center",
                 type: "error",
                 autoClose: 3000
