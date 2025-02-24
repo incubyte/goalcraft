@@ -5,12 +5,12 @@ export class ObjectiveReqDTO {
 }
 
 export class ObjectiveResDTO {
-  objective: string;
   id: string;
+  objective: string;
 }
 
 export class OkrsDTO {
-  objective: string;
   id: string;
+  objective: string;
   keyResults: KeyResultResDTO[];
 }
