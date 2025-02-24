@@ -1,122 +1,125 @@
-import {Test, TestingModule} from '@nestjs/testing';
-import {ObjectivesService} from './objectives.service';
-import {PrismaService} from "../prisma/prisma.service";
-import {mockDeep} from "jest-mock-extended";
+import { Test, TestingModule } from '@nestjs/testing';
+import { ObjectivesService } from './objectives.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { mockDeep } from 'jest-mock-extended';
 
 describe('ObjectivesService', () => {
-    let service: ObjectivesService;
-    let mockPrismaService = mockDeep<PrismaService>();
-    let objectiveResponse = {
-        objective: "Objective 1",
-        keyResults: [
-            {
-                id: "e957fb53-e7fe-4885-acb9-cee42fe9ef3a",
-                objectiveId: "95dd1b84-c92d-41a0-ae67-3930dab3344a",
-                title: "Key Result 1",
-                initialValue: 0,
-                currentValue: 0,
-                targetValue: 0,
-                metric: "%"
-            }
-        ]
-    };
+  let service: ObjectivesService;
+  let mockPrismaService = mockDeep<PrismaService>();
+  let objectiveResponse = {
+    objective: 'Objective 1',
+    keyResults: [
+      {
+        id: 'e957fb53-e7fe-4885-acb9-cee42fe9ef3a',
+        objectiveId: '95dd1b84-c92d-41a0-ae67-3930dab3344a',
+        title: 'Key Result 1',
+        initialValue: 0,
+        currentValue: 0,
+        targetValue: 0,
+        metric: '%',
+      },
+    ],
+  };
 
-    beforeEach(async () => {
-        const module: TestingModule = await Test.createTestingModule({
-            providers: [ObjectivesService, {
-                provide: PrismaService,
-                useValue: mockPrismaService
-            }],
-            /** Here we need to pass PrismaService Dependency even though here we mocking PrismaService.
-             * */
-        }).compile();
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        ObjectivesService,
+        {
+          provide: PrismaService,
+          useValue: mockPrismaService,
+        },
+      ],
+      /** Here we need to pass PrismaService Dependency even though here we mocking PrismaService.
+       * */
+    }).compile();
 
-        service = module.get<ObjectivesService>(ObjectivesService);
+    service = module.get<ObjectivesService>(ObjectivesService);
+  });
+
+  describe('Initial', () => {
+    it('Should be defined', () => {
+      expect(service).toBeDefined();
+      expect(mockPrismaService).toBeDefined();
+    });
+  });
+
+  describe('fetchAll()', () => {
+    it('Should be called findMany() of PrismaService by ObjectiveService', async () => {
+      await service.fetchAll();
+
+      expect(mockPrismaService.objectives.findMany).toHaveBeenCalled();
     });
 
-    describe("Initial", () => {
-        it('Should be defined', () => {
-            expect(service).toBeDefined();
-            expect(mockPrismaService).toBeDefined();
-        });
-    })
+    it('Should return all objectives', async () => {
+      let mockResponse = { id: '1000', ...objectiveResponse };
 
-    describe("fetchAll()", () => {
-        it('Should be called findMany() of PrismaService by ObjectiveService', async () => {
-            await service.fetchAll();
+      mockPrismaService.objectives.findMany.mockResolvedValue([mockResponse]);
 
-            expect(mockPrismaService.objectives.findMany).toHaveBeenCalled();
-        });
+      const response = await service.fetchAll();
 
-        it("Should return all objectives", async () => {
-            let mockResponse = {id: "1000", ...objectiveResponse};
+      expect(response).toBeDefined();
+      expect(response).toEqual([mockResponse]);
+    });
+  });
 
-            mockPrismaService.objectives.findMany.mockResolvedValue([mockResponse]);
+  describe('create()', () => {
+    let objectiveToBeCreated = { objective: 'Objective 1' };
 
-            const response = await service.fetchAll();
+    it('Should be called create() of PrismaService by ObjectiveService', async () => {
+      await service.create(objectiveToBeCreated);
 
-            expect(response).toBeDefined();
-            expect(response).toEqual([mockResponse]);
-        })
-    })
+      expect(mockPrismaService.objectives.create).toHaveBeenCalled();
+    });
 
-    describe("create()", () => {
-        let objectiveToBeCreated = {objective: "Objective 1"};
+    it('Should create objective', async () => {
+      let mockResponse = { id: '1001', ...objectiveToBeCreated };
 
-        it('Should be called create() of PrismaService by ObjectiveService', async () => {
-            await service.create(objectiveToBeCreated);
+      mockPrismaService.objectives.create.mockResolvedValue(mockResponse);
 
-            expect(mockPrismaService.objectives.create).toHaveBeenCalled();
-        });
+      const response = await service.create(objectiveToBeCreated);
 
-        it("Should create objective", async () => {
-            let mockResponse = {id: "1001", ...objectiveToBeCreated};
+      expect(response).toBeDefined();
+      expect(response).toEqual(mockResponse);
+    });
+  });
 
-            mockPrismaService.objectives.create.mockResolvedValue(mockResponse);
+  describe('delete()', () => {
+    let objectiveId: string = '1001';
+    it('Should be called delete() of PrismaService by ObjectiveService', async () => {
+      await service.delete(objectiveId);
 
-            const response = await service.create(objectiveToBeCreated);
+      expect(mockPrismaService.objectives.delete).toHaveBeenCalled();
+    });
 
-            expect(response).toBeDefined();
-            expect(response).toEqual(mockResponse);
-        })
-    })
+    it('Should delete objective and return deleted objective', async () => {
+      let mockResponse = { id: objectiveId, ...objectiveResponse };
 
-    describe("delete()", () => {
-        let objectiveId: string = "1001";
-        it('Should be called delete() of PrismaService by ObjectiveService', async () => {
-            await service.delete(objectiveId);
+      mockPrismaService.objectives.delete.mockResolvedValue(mockResponse);
 
-            expect(mockPrismaService.objectives.delete).toHaveBeenCalled();
-        })
+      const response = await service.delete(objectiveId);
 
-        it('Should delete objective and return deleted objective', async () => {
-            let mockResponse = {id: objectiveId, ...objectiveResponse};
+      expect(response).toBeDefined();
+      expect(response).toEqual(mockResponse);
+    });
+  });
 
-            mockPrismaService.objectives.delete.mockResolvedValue(mockResponse);
+  describe('patch()', () => {
+    it('Should be called patch() of PrismaService by ObjectiveService', async () => {
+      await service.patch({ id: '1001', objective: 'objective 1' });
 
-            const response = await service.delete(objectiveId);
+      expect(mockPrismaService.objectives.update).toHaveBeenCalled();
+    });
 
-            expect(response).toBeDefined();
-            expect(response).toEqual(mockResponse);
-        });
-    })
+    it('Should update objective', async () => {
+      const oldObjective = { id: '1001', objective: 'title 0' };
+      const newObjective = { id: '1001', objective: 'title 1' };
 
-    describe("patch()", ()=>{
-        it('Should be called patch() of PrismaService by ObjectiveService', async () => {
-            await service.patch({id: "1001", objective: "objective 1"});
+      mockPrismaService.objectives.update.mockResolvedValue(newObjective);
 
-            expect(mockPrismaService.objectives.update).toHaveBeenCalled();
-        });
+      const response = await service.patch(oldObjective);
 
-        it("Should update objective", async () => {
-            const oldObjective = {id: "1001", objective: "title 0"};
-            const newObjective = {id: "1001", objective: "title 1"};
-
-            mockPrismaService.objectives.update.mockResolvedValue(newObjective);
-
-            const response = await service.patch(oldObjective);
-
-            expect(response).toEqual(newObjective);
-        })
-    })
+      expect(response).toEqual(newObjective);
+    });
+  });
 });

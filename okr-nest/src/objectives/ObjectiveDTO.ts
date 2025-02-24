@@ -1,4 +1,4 @@
-import {KeyResultResDTO} from "../key-results/keyResultDTO";
+import { KeyResultResDTO } from '../key-results/keyResultDTO';
 
 export class ObjectiveReqDTO {
   objective: string;
