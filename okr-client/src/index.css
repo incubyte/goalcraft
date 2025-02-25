@@ -2,64 +2,62 @@
 @tailwind components;
 @tailwind utilities;
 
-
 .text-primary {
-    @apply text-[#12a6a7];
+  @apply text-[#12a6a7];
 }
 
 .bg-primary {
-    @apply bg-[#12a6a7];
+  @apply bg-[#12a6a7];
 }
 
 .text-secondary {
-    @apply text-[#91b30f];
+  @apply text-[#91b30f];
 }
 
 .bg-secondary {
-    @apply bg-[#91b30f];
+  @apply bg-[#91b30f];
 }
 
 .border-primary {
-    @apply border-[#12a6a7];
+  @apply border-[#12a6a7];
 }
 
 .border-secondary {
-    @apply border-[#91b30f];
+  @apply border-[#91b30f];
 }
 
 /* width */
 ::-webkit-scrollbar {
-    width: 3px;
+  width: 3px;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
-    background: #f1f1f1;
+  background: #f1f1f1;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    background: #4a4a4a;
+  background: #4a4a4a;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-    background: #1f1f1f;
+  background: #1f1f1f;
 }
 
-
 ::-webkit-meter-bar {
-    @apply rounded-sm h-1.5 shadow-lg;
+  @apply rounded-sm h-1.5 shadow-lg;
 }
 
 ::-webkit-meter-even-less-good-value {
-    background: #ef4444;
+  background: #ef4444;
 }
 
 ::-webkit-meter-suboptimum-value {
-    background: #595757;
+  background: #595757;
 }
 
 ::-webkit-meter-optimum-value {
-    background: #12a6a7;
+  background: #12a6a7;
 }
