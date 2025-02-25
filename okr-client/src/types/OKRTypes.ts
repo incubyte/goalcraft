@@ -6,9 +6,9 @@ type KeyResultType = {
   metric: string;
 };
 
-type InsertKeyResultType = Omit<KeyResultType, "id">;
+type InsertKeyResultType = Omit<KeyResultType, 'id'>;
 
-type KeyResultToBeRead = KeyResultType & {objectiveId: string, id: string};
+type KeyResultToBeRead = KeyResultType & { objectiveId: string; id: string };
 
 type ObjectiveType = {
   id: string;
@@ -21,7 +21,7 @@ type KeyResultModalType = {
   objectiveIndex: number;
 };
 
-type InsertObjectiveType = Omit<ObjectiveType, "id">
+type InsertObjectiveType = Omit<ObjectiveType, 'id'>;
 
 export type {
   KeyResultType,
@@ -29,5 +29,5 @@ export type {
   KeyResultModalType,
   InsertObjectiveType,
   InsertKeyResultType,
-  KeyResultToBeRead
+  KeyResultToBeRead,
 };
