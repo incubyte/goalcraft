@@ -1,9 +1,13 @@
-import { useContext, useState } from 'react';
-import { InsertKeyResultType, KeyResultModalType } from '../types/OKRTypes';
-import Input from './Input';
-import { CircleX, PackagePlus } from 'lucide-react';
-import { OkrContext } from '../context/OkrProvider';
-import { addKeyResultToObjective } from '../database/OKRStore.ts';
+
+import { CircleX, PackagePlus } from "lucide-react";
+import { useContext, useState } from "react";
+import { OkrContext } from "../context/OkrProvider";
+import { addKeyResultsToDB } from "../database/okr.store.ts";
+import {
+  InsertKeyResultType,
+  KeyResultModalType,
+} from "../types/OKRTypes";
+import Input from "./Input";
 
 const defaultKeyResults: InsertKeyResultType = {
   title: '',
@@ -26,10 +30,10 @@ export default function AddKeyResultModal({
 
   function handleAddKeyResult() {
     if (objectives === null) return;
-
     if (keyResult.title === '') {
       alert('Title cannot be empty!');
       return;
+
     }
 
     console.log(keyResult);
@@ -37,7 +41,7 @@ export default function AddKeyResultModal({
     const foundObj = objectives.find((_, idx) => keyResultModal.objectiveIndex === idx);
 
     if (foundObj === undefined) return;
-    addKeyResultToObjective([keyResult], foundObj.id)
+    addKeyResultsToDB([keyResult], foundObj.id)
       .then(data => {
         foundObj.keyResults.push({
           ...keyResult,

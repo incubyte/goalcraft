@@ -1,24 +1,13 @@
-import * as React from 'react';
-import { useContext, useEffect, useState } from 'react';
-import { KeyResultModalType, ObjectiveType } from '../types/OKRTypes';
-import MetricsLabel from './MetricLabel';
-import {
-  CircleCheck,
-  FilePenLine,
-  Goal,
-  LoaderCircle,
-  Package,
-  SquarePlus,
-  Trash2,
-} from 'lucide-react';
-import AddKeyResultModal from './AddKeyResultModal';
-import { OkrContext } from '../context/OkrProvider';
-import {
-  deleteKeyResultOfObjective,
-  deleteOkrsDataFromDB,
-  getOkrsData,
-} from '../database/OKRStore.ts';
-import NoGoalImage from '../assets/NoGoal.svg';
+
+import * as React from "react";
+import {useContext, useEffect, useState} from "react";
+import {KeyResultModalType, ObjectiveType} from "../types/OKRTypes";
+import MetricsLabel from "./MetricLabel";
+import {CircleCheck, FilePenLine, Goal, LoaderCircle, Package, SquarePlus, Trash2} from "lucide-react";
+import AddKeyResultModal from "./AddKeyResultModal";
+import {OkrContext} from "../context/OkrProvider";
+import {deleteKeyResultFromDB, deleteOkrsFromDB, getOkrsFromDB} from "../database/okr.store.ts";
+import NoGoalImage from "../assets/NoGoal.svg"
 
 enum PROGRESS_THRESHOLD {
   LOW = 0.33,
@@ -40,44 +29,45 @@ export default function OKRDisplay({
     objectiveIndex: -1,
   });
 
-  useEffect(() => {
-    if (!keyResultModal.isOpen) {
-      console.log('keyResultModal is opened');
-      (async () => {
-        const objectivesResponse = await getOkrsData();
-        setObjectives(objectivesResponse);
-      })();
-    }
-  }, [keyResultModal.isOpen]);
 
-  function deleteKeyResult(objectiveIdx: number, keyResultIdx: number, keyResultDBId: string) {
-    if (objectives === null) return;
-    deleteKeyResultOfObjective(keyResultDBId)
-      .then(() => {
-        const foundObj = objectives.find((_, idx) => objectiveIdx === idx);
+    useEffect(() => {
+        if (!keyResultModal.isOpen) {
+            console.log("keyResultModal is opened");
+            (async () => {
+                const objectivesResponse = await getOkrsFromDB();
+                setObjectives(objectivesResponse);
+            })();
+        }
+    }, [keyResultModal.isOpen])
 
-        if (foundObj === undefined) return;
-        foundObj.keyResults = foundObj?.keyResults.filter((_, krIdx) => krIdx !== keyResultIdx);
+    function deleteKeyResult(objectiveIdx: number, keyResultIdx: number, keyResultDBId: string) {
+        if (objectives === null) return;
+        deleteKeyResultFromDB(keyResultDBId).then(() => {
+            const foundObj = objectives.find((_, idx) => objectiveIdx === idx);
 
-        const updatedObjectives = objectives.map((objective, idx) => {
-          return idx === objectiveIdx ? foundObj : objective;
-        });
+            if (foundObj === undefined) return;
+            foundObj.keyResults = foundObj?.keyResults.filter(
+                (_, krIdx) => krIdx !== keyResultIdx
+            );
 
-        setObjectives(updatedObjectives);
-      })
-      .catch(error => {
-        console.log(error);
-      });
+            const updatedObjectives = objectives.map((objective, idx) => {
+                return idx === objectiveIdx ? foundObj : objective;
+            });
+
+            setObjectives(updatedObjectives);
+        }).catch((error) => {
+            console.log(error)
+        })
   }
 
   async function deleteObjective(objectiveIdx: string, index: number) {
     if (objectives === null) return;
 
     try {
-      await deleteOkrsDataFromDB(objectiveIdx);
-    } catch (error) {
+      await deleteOkrsFromDB(objectiveIdx);
+  } catch (error) {
       alert(error);
-    }
+  }
     const updatedObjectives = objectives.filter((_, idx) => index !== idx);
     setObjectives(updatedObjectives);
   }

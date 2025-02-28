@@ -79,7 +79,7 @@ describe('Objective Integration', () => {
     it('should delete objective of given id ', async () => {
       const response: Response = await request(app.getHttpServer())
         .delete(`/objectives`)
-        .send({ objectiveId: insertedObjective.id })
+        .send({ id: insertedObjective.id })
         .expect(200);
 
       expect(response.body).toEqual(insertedObjective);

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Input from './Input';
 import { CircleX, Sparkles } from 'lucide-react';
 import * as React from 'react';
-import { generateKeyResultFromLLM } from '../database/OKRStore.ts';
+import { generateKeyResultFromLLM } from '../database/okr.store.ts';
 import { KeyResultType } from '../types/OKRTypes.ts';
 import { toast, ToastContainer } from 'react-toastify';
 

@@ -1,28 +1,34 @@
-import { InsertKeyResultType, KeyResultType, ObjectiveType } from '../types/OKRTypes';
+import {
+  InsertKeyResultType,
+  InsertObjectiveType,
+  KeyResultType,
+  ObjectiveType,
+} from '../types/OKRTypes';
 
 const HTTP_RESPONSE_STATUS = {
   NOT_FOUND: 404,
 };
 
-async function getOkrsData(): Promise<ObjectiveType[]> {
-  const response = await fetch(`${import.meta.env.VITE_LOCAL_URL}/objectives`);
+async function getOkrsFromDB(): Promise<ObjectiveType[]> {
+  const response: Response = await fetch(`${import.meta.env.VITE_LOCAL_URL}/objectives`);
   return await response.json();
 }
 
-async function addOkrsDataToDB(objective: { objective: string }): Promise<ObjectiveType> {
-  const response = await fetch(`${import.meta.env.VITE_LOCAL_URL}/objectives`, {
+async function addObjectiveToDB(
+  objective: Omit<InsertObjectiveType, 'keyResults'>
+): Promise<ObjectiveType> {
+  const response: Response = await fetch(`${import.meta.env.VITE_LOCAL_URL}/objectives`, {
     method: 'POST',
     body: JSON.stringify(objective),
     headers: {
       'Content-Type': 'application/json',
     },
   });
-
   return await response.json();
 }
 
-async function updateOkrsDataToDb(objectiveTobeUpdated: ObjectiveType): Promise<ObjectiveType> {
-  let response;
+async function updateOkrsToDB(objectiveTobeUpdated: ObjectiveType): Promise<ObjectiveType> {
+  let response: Response;
   if (objectiveTobeUpdated.keyResults.length > 0) {
     response = await fetch(`${import.meta.env.VITE_LOCAL_URL}/objectives`, {
       method: 'PUT',
@@ -46,10 +52,10 @@ async function updateOkrsDataToDb(objectiveTobeUpdated: ObjectiveType): Promise<
   return await response.json();
 }
 
-async function deleteOkrsDataFromDB(okrId: string): Promise<ObjectiveType> {
-  const response = await fetch(`${import.meta.env.VITE_LOCAL_URL}/objectives`, {
+async function deleteOkrsFromDB(okrId: string): Promise<ObjectiveType> {
+  const response: Response = await fetch(`${import.meta.env.VITE_LOCAL_URL}/objectives`, {
     method: 'DELETE',
-    body: JSON.stringify({ objectiveId: okrId }),
+    body: JSON.stringify({ id: okrId }),
     headers: {
       'Content-Type': 'application/json',
     },
@@ -61,13 +67,13 @@ async function deleteOkrsDataFromDB(okrId: string): Promise<ObjectiveType> {
   return await response.json();
 }
 
-async function deleteKeyResultOfObjective(keyResultId: string): Promise<
+async function deleteKeyResultFromDB(keyResultId: string): Promise<
   KeyResultType & {
     id: string;
     objectiveId: string;
   }
 > {
-  const response = await fetch(`${import.meta.env.VITE_LOCAL_URL}/key-results`, {
+  const response: Response = await fetch(`${import.meta.env.VITE_LOCAL_URL}/key-results`, {
     method: 'DELETE',
     body: JSON.stringify({ id: keyResultId }),
     headers: {
@@ -79,22 +85,23 @@ async function deleteKeyResultOfObjective(keyResultId: string): Promise<
 }
 
 type ResponseKeyResultType = KeyResultType & { id: string; objectiveId: string };
-
-async function addKeyResultToObjective(
+async function addKeyResultsToDB(
   keyResult: InsertKeyResultType[],
   objectiveId: string
 ): Promise<ResponseKeyResultType[]> {
-  const keyResultToBeInserted = keyResult.map(keyResult => {
-    return { ...keyResult, objectiveId: objectiveId };
-  });
-  const response = await fetch(`${import.meta.env.VITE_LOCAL_URL}/key-results`, {
+  const keyResultToBeInserted: InsertKeyResultType[] = keyResult.map(
+    (keyResult: InsertKeyResultType) => {
+      return { ...keyResult, objectiveId: objectiveId };
+    }
+  );
+
+  const response: Response = await fetch(`${import.meta.env.VITE_LOCAL_URL}/key-results`, {
     method: 'POST',
     body: JSON.stringify(keyResultToBeInserted),
     headers: {
       'Content-Type': 'application/json',
     },
   });
-
   const keyResultsData = await response.json();
   return [...keyResultsData];
 }
@@ -110,11 +117,11 @@ async function generateKeyResultFromLLM(
 }
 
 export {
-  addKeyResultToObjective,
-  addOkrsDataToDB,
-  deleteKeyResultOfObjective,
-  deleteOkrsDataFromDB,
+  addKeyResultsToDB,
+  addObjectiveToDB,
+  deleteKeyResultFromDB,
+  deleteOkrsFromDB,
   generateKeyResultFromLLM,
-  getOkrsData,
-  updateOkrsDataToDb,
+  getOkrsFromDB,
+  updateOkrsToDB,
 };

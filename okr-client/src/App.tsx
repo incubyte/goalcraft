@@ -4,7 +4,7 @@ import InitialLoader from './components/InitialLoader.tsx';
 import OKRDisplay from './components/OKRDisplay';
 import OKRForm from './components/OKRForm';
 import { OkrContext } from './context/OkrProvider';
-import { getOkrsData } from './database/OKRStore';
+import { getOkrsFromDB } from './database/okr.store.ts';
 import { ObjectiveType } from './types/OKRTypes';
 
 function App() {
@@ -28,8 +28,8 @@ function App() {
   });
 
   useEffect(() => {
-    (async () => {
-      const objectivesResponse = await getOkrsData();
+    void (async () => {
+      const objectivesResponse: ObjectiveType[] = await getOkrsFromDB();
       setTimeout(() => {
         setObjectives(objectivesResponse);
         setIsLoadingInitData(false);
