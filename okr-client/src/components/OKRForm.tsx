@@ -2,12 +2,11 @@ import {useContext, useEffect, useState} from "react";
 import Input from "./Input";
 import {KeyResultType, ObjectiveType} from "../types/OKRTypes";
 import {
-    addKeyResultToObjective,
-    addOkrsDataToDB,
-    generateKeyResultFromLLM,
-    getOkrsData,
-    updateOkrsDataToDb
-} from "../database/OKRStore";
+    addKeyResultsToDB,
+    addObjectiveToDB,
+    generateKeyResultFromLLM, getOkrsFromDB,
+    updateOkrsToDB
+} from "../database/okr.store.ts";
 import {BetweenHorizonalStart, Goal, LoaderCircle, Sparkles, Trash2} from "lucide-react";
 import {OkrContext} from "../context/OkrProvider";
 import {toast} from "react-toastify";
@@ -69,7 +68,7 @@ export default function OKRForm({
         setNewObjective("");
         setIsUpdateForm(false);
         (async () => {
-            const objectivesResponse = await getOkrsData();
+            const objectivesResponse = await getOkrsFromDB();
             setObjectives(objectivesResponse);
         })();
     }
@@ -104,11 +103,11 @@ export default function OKRForm({
         setIsWaitingForResponse(true);
         const objectiveToBeAdded = {objective: newObjective};
 
-        addOkrsDataToDB(objectiveToBeAdded)
-            .then((objectiveResponse: ObjectiveType) => {
+        // inserting objective into db.
+        addObjectiveToDB(objectiveToBeAdded).then((objectiveResponse: ObjectiveType) => {
                 if (objectives === null) return;
                 if (keyResults[0].title != "") {
-                    addKeyResultToObjective(keyResults, objectiveResponse.id).then((keyResultsResponse) => {
+                    addKeyResultsToDB(keyResults, objectiveResponse.id).then((keyResultsResponse) => {
                         const objectiveToBeAddedToState = {...objectiveResponse, keyResults: keyResultsResponse};
                         setObjectives([...objectives, objectiveToBeAddedToState]);
                     });
@@ -152,7 +151,7 @@ export default function OKRForm({
             })
         };
 
-        updateOkrsDataToDb(okrsToBeUpdated).then(
+        updateOkrsToDB(okrsToBeUpdated).then(
             (data) => {
                 if (objectives === null) return;
 

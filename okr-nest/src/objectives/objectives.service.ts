@@ -1,21 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-
-type KeyResult = {
-  id: string;
-  title: string;
-  initialValue: number;
-  targetValue: number;
-  currentValue: number;
-  metric: string;
-  objectiveId: string;
-};
-
-type OKRsType = {
-  objective: string;
-  id: string;
-  keyResults: KeyResult[];
-};
+import {ObjectiveReqDTO, ObjectiveResDTO, OkrsDTO} from "./objectives.dto";
+import {KeyResultResDTO} from "../key-results/keyResultDTO";
 
 @Injectable()
 export class ObjectivesService {
@@ -29,32 +15,32 @@ export class ObjectivesService {
     });
   }
 
-  async create(okrs: { objective: string }) {
+  async create(objective: ObjectiveReqDTO) {
     return await this.prismaService.objectives.create({
-      data: okrs,
+      data: objective,
     });
   }
 
-  async delete(objectiveId: string) {
+  async delete(objective: Omit<ObjectiveResDTO, "objective">) {
       return await this.prismaService.objectives.delete({
-        where: { id: objectiveId },
+        where: { id: objective.id },
       });
   }
 
-  async patch(okrs: { objective: string; id: string }) {
+  async patch(objective: ObjectiveResDTO) {
     return await this.prismaService.objectives.update({
-      where: { id: okrs.id },
-      data: { objective: okrs.objective },
+      where: { id: objective.id },
+      data: { objective: objective.objective },
     });
   }
 
-  async put(okrs: OKRsType) {
+  async put(objective: OkrsDTO) {
     return await this.prismaService.objectives.update({
-      where: { id: okrs.id },
+      where: { id: objective.id },
       data: {
-        objective: okrs.objective,
+        objective: objective.objective,
         keyResults: {
-          updateMany: okrs.keyResults.map((keyResult) => ({
+          updateMany: objective.keyResults.map((keyResult: KeyResultResDTO) => ({
             where: { id: keyResult.id },
             data: {
               title: keyResult.title,

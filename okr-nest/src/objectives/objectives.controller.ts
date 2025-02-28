@@ -8,7 +8,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { ObjectivesService } from './objectives.service';
-import { ObjectiveReqDTO, OkrsDTO } from './ObjectiveDTO';
+import {ObjectiveReqDTO, ObjectiveResDTO, OkrsDTO} from './objectives.dto';
 
 @Controller('objectives')
 export class ObjectivesController {
@@ -20,22 +20,22 @@ export class ObjectivesController {
   }
 
   @Post('/')
-  create(@Body() okrs: ObjectiveReqDTO) {
-    return this.objectivesService.create(okrs);
+  create(@Body() objective: ObjectiveReqDTO) {
+    return this.objectivesService.create(objective);
   }
 
   @Delete('/')
-  delete(@Body('objectiveId') objectiveId: string) {
-    return this.objectivesService.delete(objectiveId);
+  delete(@Body() objective: Omit<ObjectiveResDTO, 'objective'>) {
+    return this.objectivesService.delete(objective);
   }
 
   @Patch('/')
-  patch(@Body() okr: ObjectiveReqDTO & { id: string }) {
-    return this.objectivesService.patch(okr);
+  patch(@Body() objective: ObjectiveResDTO) {
+    return this.objectivesService.patch(objective);
   }
 
   @Put('/')
-  put(@Body() okr: OkrsDTO) {
-    return this.objectivesService.put(okr);
+  put(@Body() objective: OkrsDTO) {
+    return this.objectivesService.put(objective);
   }
 }
