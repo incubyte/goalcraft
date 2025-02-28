@@ -1,4 +1,5 @@
 import { Controller, Get, Query } from '@nestjs/common';
+
 import { RagService } from './rag.service';
 
 @Controller('rag')

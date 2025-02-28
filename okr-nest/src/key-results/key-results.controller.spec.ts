@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+
 import { KeyResultsController } from './key-results.controller';
 import { KeyResultsService } from './key-results.service';
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { KeyResultReqDTO, KeyResultResDTO } from './keyResultDTO';
 
 describe('KeyResultsController', () => {
   let controller: KeyResultsController;
-  let mockKeyResultsService: DeepMockProxy<KeyResultsService> =
-    mockDeep<KeyResultsService>();
+  const mockKeyResultsService: DeepMockProxy<KeyResultsService> = mockDeep<KeyResultsService>();
 
-  let keyResult: KeyResultReqDTO = {
+  const keyResult: KeyResultReqDTO = {
     title: 'Hire frontend developer',
     initialValue: 0,
     currentValue: 0,
@@ -43,7 +43,7 @@ describe('KeyResultsController', () => {
   });
 
   describe('fetchUnique()', () => {
-    let keyResultId: string = '1001';
+    const keyResultId: string = '1001';
 
     it('Should be called findUnique() of Controller', async () => {
       await controller.fetchUnique(keyResultId);
@@ -69,7 +69,7 @@ describe('KeyResultsController', () => {
   });
 
   describe('create()', () => {
-    let keyResults: KeyResultReqDTO[] = [keyResult];
+    const keyResults: KeyResultReqDTO[] = [keyResult];
 
     it('Should be called create() of Controller', async () => {
       await controller.create(keyResults);
@@ -78,9 +78,7 @@ describe('KeyResultsController', () => {
     });
 
     it('Should create key results', async () => {
-      mockKeyResultsService.create.mockResolvedValue([
-        { ...keyResult, id: 'FAKE_KEYRESULT_ID' },
-      ]);
+      mockKeyResultsService.create.mockResolvedValue([{ ...keyResult, id: 'FAKE_KEYRESULT_ID' }]);
 
       const response = await controller.create(keyResults);
 
@@ -90,7 +88,7 @@ describe('KeyResultsController', () => {
   });
 
   describe('delete()', () => {
-    let keyResultId: string = '1002';
+    const keyResultId: string = '1002';
 
     it('Should be called delete() of Controller', async () => {
       await controller.delete(keyResultId);
@@ -110,12 +108,12 @@ describe('KeyResultsController', () => {
   });
 
   describe('patch()', () => {
-    let oldKeyResult: KeyResultResDTO = {
+    const oldKeyResult: KeyResultResDTO = {
       ...keyResult,
       id: '1001',
     };
 
-    let newKeyResult: KeyResultResDTO = {
+    const newKeyResult: KeyResultResDTO = {
       id: '1001',
       title: 'Hire frontend developer',
       initialValue: 0,
@@ -144,7 +142,7 @@ describe('KeyResultsController', () => {
   describe('progress()', () => {
     it('Should be return 50% progress', async () => {
       // arrange
-      let keyResult = {
+      const keyResult = {
         id: 'FACK_KEY_RESULT_ID',
         title: 'Hire frontend developer',
         initialValue: 0,
@@ -168,7 +166,7 @@ describe('KeyResultsController', () => {
 
     it('Should be return 20% progress', async () => {
       // arrange
-      let keyResult = {
+      const keyResult = {
         id: 'FACK_KEY_RESULT_ID',
         title: 'Hire frontend developer',
         initialValue: 0,

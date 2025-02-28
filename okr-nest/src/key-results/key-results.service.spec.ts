@@ -1,13 +1,14 @@
-import { KeyResultsService } from './key-results.service';
 import { Test, TestingModule } from '@nestjs/testing';
-import { PrismaService } from '../prisma/prisma.service';
 import { mockDeep } from 'jest-mock-extended';
+
+import { PrismaService } from '../prisma/prisma.service';
+import { KeyResultsService } from './key-results.service';
 import { KeyResultReqDTO, KeyResultResDTO } from './keyResultDTO';
 
 describe('KeyResultService', () => {
   let keyResultsService: KeyResultsService;
-  let mockPrismaService = mockDeep<PrismaService>();
-  let keyResult: KeyResultReqDTO = {
+  const mockPrismaService = mockDeep<PrismaService>();
+  const keyResult: KeyResultReqDTO = {
     title: 'Hire frontend developer',
     initialValue: 0,
     currentValue: 0,
@@ -37,7 +38,7 @@ describe('KeyResultService', () => {
   });
 
   describe('fetchUnique()', () => {
-    let keyResultId: string = '1001';
+    const keyResultId: string = '1001';
 
     it('Should be called findUnique() of PrismaService', async () => {
       await keyResultsService.fetchUnique(keyResultId);
@@ -60,14 +61,12 @@ describe('KeyResultService', () => {
   });
 
   describe('create()', () => {
-    let keyResults: KeyResultReqDTO[] = [keyResult];
+    const keyResults: KeyResultReqDTO[] = [keyResult];
 
     it('Should be called create() of PrismaService', async () => {
       await keyResultsService.create(keyResults);
 
-      expect(
-        mockPrismaService.keyResults.createManyAndReturn
-      ).toHaveBeenCalled();
+      expect(mockPrismaService.keyResults.createManyAndReturn).toHaveBeenCalled();
     });
 
     it('Should create key results', async () => {
@@ -84,7 +83,7 @@ describe('KeyResultService', () => {
   });
 
   describe('delete()', () => {
-    let keyResultId: string = '1002';
+    const keyResultId: string = '1002';
 
     it('Should be called delete() of PrismaService', async () => {
       await keyResultsService.delete(keyResultId);
@@ -104,12 +103,12 @@ describe('KeyResultService', () => {
   });
 
   describe('patch()', () => {
-    let oldKeyResult: KeyResultResDTO = {
+    const oldKeyResult: KeyResultResDTO = {
       ...keyResult,
       id: '1001',
     };
 
-    let newKeyResult: KeyResultResDTO = {
+    const newKeyResult: KeyResultResDTO = {
       id: '1001',
       title: 'Hire frontend developer',
       initialValue: 0,
@@ -139,7 +138,7 @@ describe('KeyResultService', () => {
     it('should return progress of the given keyresult with an Id', async () => {
       // arrange
 
-      let krId = 'FAKE_KEYRESULT_ID';
+      const krId = 'FAKE_KEYRESULT_ID';
       mockPrismaService.keyResults.findUnique.mockResolvedValue({
         ...keyResult,
         initialValue: 0,

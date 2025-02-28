@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ObjectivesService } from './objectives.service';
-import { PrismaService } from '../prisma/prisma.service';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+
 import { Objective, Okrs } from '../../test/test-types';
+import { PrismaService } from '../prisma/prisma.service';
+import { ObjectivesService } from './objectives.service';
 
 describe('Objectives Service', () => {
   let service: ObjectivesService;
@@ -35,7 +36,7 @@ describe('Objectives Service', () => {
     });
 
     it('should return all objectives', async () => {
-      let okrs: Okrs[] = [
+      const okrs: Okrs[] = [
         {
           id: 'FAKE_OBJECTIVE_ID',
           objective: 'FAKE OBJECTIVE',
@@ -73,7 +74,7 @@ describe('Objectives Service', () => {
   });
 
   describe('delete()', () => {
-    let objectiveToDelete: Objective = {
+    const objectiveToDelete: Objective = {
       ...objective,
       id: 'FAKE_OBJECTIVE_ID',
     };

@@ -1,5 +1,6 @@
-import { keyResultCompletionService } from './key-results-completion.service';
 import { Test, TestingModule } from '@nestjs/testing';
+
+import { keyResultCompletionService } from './key-results-completion.service';
 
 describe('KeyResultCompletionService', () => {
   let service: keyResultCompletionService;
@@ -8,9 +9,7 @@ describe('KeyResultCompletionService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [keyResultCompletionService],
     }).compile();
-    service = module.get<keyResultCompletionService>(
-      keyResultCompletionService
-    );
+    service = module.get<keyResultCompletionService>(keyResultCompletionService);
   });
 
   describe('isComplete()', () => {

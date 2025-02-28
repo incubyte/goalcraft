@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
+
+import { KeyResultResDTO } from '../key-results/keyResultDTO';
 import { PrismaService } from '../prisma/prisma.service';
-import {ObjectiveReqDTO, ObjectiveResDTO, OkrsDTO} from "./objectives.dto";
-import {KeyResultResDTO} from "../key-results/keyResultDTO";
+import { ObjectiveReqDTO, ObjectiveResDTO, OkrsDTO } from './objectives.dto';
 
 @Injectable()
 export class ObjectivesService {
@@ -21,10 +22,10 @@ export class ObjectivesService {
     });
   }
 
-  async delete(objective: Omit<ObjectiveResDTO, "objective">) {
-      return await this.prismaService.objectives.delete({
-        where: { id: objective.id },
-      });
+  async delete(objective: Omit<ObjectiveResDTO, 'objective'>) {
+    return await this.prismaService.objectives.delete({
+      where: { id: objective.id },
+    });
   }
 
   async patch(objective: ObjectiveResDTO) {

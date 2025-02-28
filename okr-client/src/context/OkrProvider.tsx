@@ -1,18 +1,18 @@
-import { createContext, ReactElement, useState } from "react";
-import { ObjectiveType } from "../types/OKRTypes";
+import { createContext, ReactElement, useState } from 'react';
+import { ObjectiveType } from '../types/OKRTypes';
 
 type OkrContextType = {
   objectives: ObjectiveType[] | null;
   setObjectives: React.Dispatch<React.SetStateAction<ObjectiveType[] | null>>;
-  isWaitingForResponse: boolean,
-  setIsWaitingForResponse:  React.Dispatch<React.SetStateAction<boolean>>
+  isWaitingForResponse: boolean;
+  setIsWaitingForResponse: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const OkrContext = createContext<OkrContextType>({
   objectives: [],
   setObjectives: () => {},
   isWaitingForResponse: false,
-  setIsWaitingForResponse: () => {}
+  setIsWaitingForResponse: () => {},
 });
 
 const OkrProvider = ({ children }: { children: ReactElement }) => {
@@ -20,7 +20,9 @@ const OkrProvider = ({ children }: { children: ReactElement }) => {
   const [isWaitingForResponse, setIsWaitingForResponse] = useState<boolean>(false);
 
   return (
-    <OkrContext.Provider value={{ objectives, setObjectives, isWaitingForResponse, setIsWaitingForResponse }}>
+    <OkrContext.Provider
+      value={{ objectives, setObjectives, isWaitingForResponse, setIsWaitingForResponse }}
+    >
       {children}
     </OkrContext.Provider>
   );

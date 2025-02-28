@@ -1,11 +1,12 @@
 import { INestApplication } from '@nestjs/common';
-import { App } from 'supertest/types';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
 import * as request from 'supertest';
+import { Response } from 'supertest';
+import { App } from 'supertest/types';
+
+import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { Objective } from './test-types';
-import { Response } from 'supertest';
 
 describe('Objective Integration', () => {
   let app: INestApplication<App>;
@@ -52,9 +53,7 @@ describe('Objective Integration', () => {
 
   describe('@Get /Objectives/', () => {
     it('should returns objectives', async () => {
-      const response: Response = await request(app.getHttpServer())
-        .get('/objectives')
-        .expect(200);
+      const response: Response = await request(app.getHttpServer()).get('/objectives').expect(200);
 
       expect(response.body.length).toBe(1);
       expect(response.body).toEqual([{ ...insertedObjective, keyResults: [] }]);

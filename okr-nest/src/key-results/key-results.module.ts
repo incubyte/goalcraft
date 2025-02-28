@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
+
+import { PrismaService } from '../prisma/prisma.service';
 import { KeyResultsController } from './key-results.controller';
 import { KeyResultsService } from './key-results.service';
-import { PrismaService } from '../prisma/prisma.service';
 import { keyResultCompletionService } from './key-results-completion.service';
 
 @Module({
