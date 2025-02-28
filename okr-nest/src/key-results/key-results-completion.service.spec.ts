@@ -1,5 +1,6 @@
-import { keyResultCompletionService } from './key-results-completion.service';
 import { Test, TestingModule } from '@nestjs/testing';
+
+import { keyResultCompletionService } from './key-results-completion.service';
 
 describe('KeyResultCompletionService', () => {
   let service: keyResultCompletionService;

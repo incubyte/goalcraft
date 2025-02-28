@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { AzureChatOpenAI } from '@langchain/openai';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
+import { AzureChatOpenAI } from '@langchain/openai';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class RagService {

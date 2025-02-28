@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
+
+import { KeyResultsModule } from './key-results/key-results.module';
 import { ObjectivesModule } from './objectives/objectives.module';
 import { PrismaService } from './prisma/prisma.service';
-import { KeyResultsModule } from './key-results/key-results.module';
 import { RagModule } from './rag/rag.module';
 
 @Module({

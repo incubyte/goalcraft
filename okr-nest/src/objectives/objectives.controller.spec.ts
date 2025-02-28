@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+
+import { Objective, Okrs } from '../../test/test-types';
 import { ObjectivesController } from './objectives.controller';
 import { ObjectivesService } from './objectives.service';
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
-import { Objective, Okrs } from '../../test/test-types';
 
 describe('Objectives Controller', () => {
   let controller: ObjectivesController;
@@ -35,7 +36,7 @@ describe('Objectives Controller', () => {
     });
 
     it('should return all objectives', async () => {
-      let okrs: Okrs[] = [
+      const okrs: Okrs[] = [
         {
           id: 'FAKE_OKR_ID',
           objective: 'FAKE_OBJECTIVE',
@@ -71,10 +72,10 @@ describe('Objectives Controller', () => {
   });
 
   describe('delete()', () => {
-    let objectiveToDelete: Objective = {...objective, id: 'FAKE_OBJECTIVE_ID'};
+    const objectiveToDelete: Objective = { ...objective, id: 'FAKE_OBJECTIVE_ID' };
 
     it('should be called delete() of service by controller', async () => {
-      await controller.delete({id: objectiveToDelete.id});
+      await controller.delete({ id: objectiveToDelete.id });
 
       expect(service.delete).toHaveBeenCalled();
     });
@@ -82,7 +83,7 @@ describe('Objectives Controller', () => {
     it('should delete objective', async () => {
       service.delete.mockResolvedValue(objectiveToDelete);
 
-      const response: Objective = await controller.delete({id: objectiveToDelete.id});
+      const response: Objective = await controller.delete({ id: objectiveToDelete.id });
 
       expect(response).toEqual(objectiveToDelete);
     });

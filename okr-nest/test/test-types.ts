@@ -15,4 +15,4 @@ type KeyResult = {
 
 type Okrs = Objective & { keyResults: KeyResult[] };
 
-export type { Objective, KeyResult, Okrs };
+export type { KeyResult, Objective, Okrs };

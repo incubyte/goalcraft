@@ -1,11 +1,12 @@
 import { INestApplication } from '@nestjs/common';
-import { App } from 'supertest/types';
-import { PrismaService } from '../src/prisma/prisma.service';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
 import * as request from 'supertest';
-import { KeyResult, Objective } from './test-types';
 import { Response } from 'supertest';
+import { App } from 'supertest/types';
+
+import { AppModule } from '../src/app.module';
+import { PrismaService } from '../src/prisma/prisma.service';
+import { KeyResult, Objective } from './test-types';
 
 describe('KeyResults Integration', () => {
   let app: INestApplication<App>;

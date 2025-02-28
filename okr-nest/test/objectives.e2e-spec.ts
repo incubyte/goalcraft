@@ -1,11 +1,12 @@
 import { INestApplication } from '@nestjs/common';
-import { App } from 'supertest/types';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
 import * as request from 'supertest';
+import { Response } from 'supertest';
+import { App } from 'supertest/types';
+
+import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { Objective } from './test-types';
-import { Response } from 'supertest';
 
 describe('Objective Integration', () => {
   let app: INestApplication<App>;
