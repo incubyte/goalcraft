@@ -1,6 +1,8 @@
-## GoalCraft
+## 🎯 GoalCraft
 
-It is an application designed to empower you in setting, tracking, and achieving your goals.  It's your personal progress tracker, helping you move from where you are today to where you aspire to be.  With GoalCraft, you define your targets, document your current standing, and visualize your journey from initial state to ultimate success. 
+It is an application designed to **empower you in setting, tracking, and achieving your goals**. It's your personal progress tracker, helping you move from where you are today to where you aspire to be. 
+
+With GoalCraft, you define your targets, document your current standing, and visualize your journey from initial state to ultimate success.
 
 ## Getting Started
 
@@ -10,20 +12,31 @@ It is an application designed to empower you in setting, tracking, and achieving
 # Navigate to client directory
 cd okr-client
 
+# Install all the dependencies
+npm install
+
 # Start the development server
-npm run dev
+npm start
 ```
 
 ### To run the server:
+
 ```bash
 # Navigate to server directory
 cd okr-nest
+
+# Install all the dependencies
+pnpm install
+
+# Migrate the prisma
+pnpm prisma:migrate
 
 # Start the development server
 pnpm start:dev
 ```
 
-### To run E2E Tests
+### To run E2E tests:
+
 ```bash
 # Make sure you're in the server directory
 cd okr-nest
@@ -32,7 +45,8 @@ cd okr-nest
 pnpm test:e2e
 ```
 
-### To run all the Tests:
+### To run all the tests:
+
 ```bash
 # Make sure you're in the server directory
 cd okr-nest
