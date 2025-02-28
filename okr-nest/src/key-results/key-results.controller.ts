@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { KeyResultsService } from './key-results.service';
 import { KeyResultReqDTO, KeyResultResDTO } from './keyResultDTO';
 
@@ -36,9 +27,7 @@ export class KeyResultsController {
   }
 
   @Get('/:id/progress')
-  async progress(
-    @Param('id') keyResultId: string
-  ): Promise<{ percentage: number }> {
+  async progress(@Param('id') keyResultId: string): Promise<{ percentage: number }> {
     return await this.keyResultsService.progress(keyResultId);
   }
 }

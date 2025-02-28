@@ -52,9 +52,7 @@ describe('Objective Integration', () => {
 
   describe('@Get /Objectives/', () => {
     it('should returns objectives', async () => {
-      const response: Response = await request(app.getHttpServer())
-        .get('/objectives')
-        .expect(200);
+      const response: Response = await request(app.getHttpServer()).get('/objectives').expect(200);
 
       expect(response.body.length).toBe(1);
       expect(response.body).toEqual([{ ...insertedObjective, keyResults: [] }]);

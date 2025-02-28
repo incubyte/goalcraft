@@ -6,8 +6,7 @@ import { KeyResultReqDTO, KeyResultResDTO } from './keyResultDTO';
 
 describe('KeyResultsController', () => {
   let controller: KeyResultsController;
-  let mockKeyResultsService: DeepMockProxy<KeyResultsService> =
-    mockDeep<KeyResultsService>();
+  let mockKeyResultsService: DeepMockProxy<KeyResultsService> = mockDeep<KeyResultsService>();
 
   let keyResult: KeyResultReqDTO = {
     title: 'Hire frontend developer',
@@ -78,9 +77,7 @@ describe('KeyResultsController', () => {
     });
 
     it('Should create key results', async () => {
-      mockKeyResultsService.create.mockResolvedValue([
-        { ...keyResult, id: 'FAKE_KEYRESULT_ID' },
-      ]);
+      mockKeyResultsService.create.mockResolvedValue([{ ...keyResult, id: 'FAKE_KEYRESULT_ID' }]);
 
       const response = await controller.create(keyResults);
 

@@ -58,9 +58,7 @@ describe('KeyResults Integration', () => {
         .send([keyResultToInsert])
         .expect(201);
 
-      expect(response.body).toEqual([
-        { ...keyResultToInsert, id: response.body[0].id },
-      ]);
+      expect(response.body).toEqual([{ ...keyResultToInsert, id: response.body[0].id }]);
     });
   });
 

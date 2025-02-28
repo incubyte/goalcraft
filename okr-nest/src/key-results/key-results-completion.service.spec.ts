@@ -8,9 +8,7 @@ describe('KeyResultCompletionService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [keyResultCompletionService],
     }).compile();
-    service = module.get<keyResultCompletionService>(
-      keyResultCompletionService
-    );
+    service = module.get<keyResultCompletionService>(keyResultCompletionService);
   });
 
   describe('isComplete()', () => {

@@ -65,9 +65,7 @@ describe('KeyResultService', () => {
     it('Should be called create() of PrismaService', async () => {
       await keyResultsService.create(keyResults);
 
-      expect(
-        mockPrismaService.keyResults.createManyAndReturn
-      ).toHaveBeenCalled();
+      expect(mockPrismaService.keyResults.createManyAndReturn).toHaveBeenCalled();
     });
 
     it('Should create key results', async () => {

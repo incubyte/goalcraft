@@ -36,9 +36,9 @@ export class ObjectivesService {
   }
 
   async delete(objectiveId: string) {
-      return await this.prismaService.objectives.delete({
-        where: { id: objectiveId },
-      });
+    return await this.prismaService.objectives.delete({
+      where: { id: objectiveId },
+    });
   }
 
   async patch(okrs: { objective: string; id: string }) {
@@ -54,7 +54,7 @@ export class ObjectivesService {
       data: {
         objective: okrs.objective,
         keyResults: {
-          updateMany: okrs.keyResults.map((keyResult) => ({
+          updateMany: okrs.keyResults.map(keyResult => ({
             where: { id: keyResult.id },
             data: {
               title: keyResult.title,

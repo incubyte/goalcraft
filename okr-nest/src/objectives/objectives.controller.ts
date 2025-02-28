@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Patch,
-  Post,
-  Put,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Post, Put } from '@nestjs/common';
 import { ObjectivesService } from './objectives.service';
 import { ObjectiveReqDTO, OkrsDTO } from './ObjectiveDTO';
 

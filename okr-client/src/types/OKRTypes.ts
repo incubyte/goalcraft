@@ -1,33 +1,33 @@
-type KeyResultType = {
+interface KeyResultType {
   title: string;
   initialValue: number;
   currentValue: number;
   targetValue: number;
   metric: string;
-};
+}
 
-type InsertKeyResultType = Omit<KeyResultType, "id">;
+type InsertKeyResultType = Omit<KeyResultType, 'id'>;
 
-type KeyResultToBeRead = KeyResultType & {objectiveId: string, id: string};
+type KeyResultToBeRead = KeyResultType & { objectiveId: string; id: string };
 
-type ObjectiveType = {
+interface ObjectiveType {
   id: string;
   objective: string;
   keyResults: KeyResultToBeRead[];
-};
+}
 
-type KeyResultModalType = {
+interface KeyResultModalType {
   isOpen: boolean;
   objectiveIndex: number;
-};
+}
 
-type InsertObjectiveType = Omit<ObjectiveType, "id">
+type InsertObjectiveType = Omit<ObjectiveType, 'id'>;
 
 export type {
+  InsertKeyResultType,
+  InsertObjectiveType,
+  KeyResultModalType,
+  KeyResultToBeRead,
   KeyResultType,
   ObjectiveType,
-  KeyResultModalType,
-  InsertObjectiveType,
-  InsertKeyResultType,
-  KeyResultToBeRead
 };

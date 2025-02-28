@@ -101,7 +101,7 @@ describe('Objectives Service', () => {
       id: 'FAKE_OBJECTIVE_ID',
       objective: 'UPDATED OBJECTIVE',
     };
-    
+
     it('should be called patch() of PrismaService by ObjectiveService', async () => {
       await service.patch(updatedObjective);
 

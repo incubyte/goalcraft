@@ -35,11 +35,13 @@ describe('Objectives Controller', () => {
     });
 
     it('should return all objectives', async () => {
-      let okrs: Okrs[] = [{
-        id: 'FAKE_OKR_ID',
-        objective: 'FAKE_OBJECTIVE',
-        keyResults: [],
-      }];
+      let okrs: Okrs[] = [
+        {
+          id: 'FAKE_OKR_ID',
+          objective: 'FAKE_OBJECTIVE',
+          keyResults: [],
+        },
+      ];
       service.fetchAll.mockResolvedValue(okrs);
 
       const response: Okrs[] = await controller.fetchAll();

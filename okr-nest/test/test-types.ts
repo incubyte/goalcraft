@@ -13,6 +13,6 @@ type KeyResult = {
   objectiveId: string;
 };
 
-type Okrs = Objective & { keyResults: KeyResult[]};
+type Okrs = Objective & { keyResults: KeyResult[] };
 
 export type { Objective, KeyResult, Okrs };
