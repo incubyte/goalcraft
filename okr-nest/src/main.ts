@@ -8,4 +8,4 @@ async function bootstrap() {
   await app.listen(process.env.PORT ?? 3030);
 }
 
-bootstrap();
+bootstrap().catch(e => console.log('Failed to start the application :' + e));
