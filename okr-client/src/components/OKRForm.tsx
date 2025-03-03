@@ -4,15 +4,13 @@ import { KeyResultType, ObjectiveType } from '../types/OKRTypes';
 import {
   addKeyResultsToDB,
   addObjectiveToDB,
-  generateKeyResultFromLLM,
   getOkrsFromDB,
   updateOkrsToDB,
 } from '../database/okr.store.ts';
 import { BetweenHorizonalStart, Goal, LoaderCircle, Sparkles, Trash2 } from 'lucide-react';
-import { OkrContext } from '../context/OkrProvider';
+import { OkrContext } from '../context/okr.provider.tsx';
 import { toast } from 'react-toastify';
 import { ToastContainer } from 'react-toastify';
-import * as React from 'react';
 import NumberOfKeyResultsModal from './NumberOfKeyResultsModal.tsx';
 import { Tooltip } from '@mui/material';
 
@@ -24,14 +22,15 @@ const defaultKeyResult = {
   metric: '',
 };
 
-type OKRFormPropType = {
-  objectiveForUpdate: ObjectiveType;
-  setObjectiveForUpdate: React.Dispatch<React.SetStateAction<ObjectiveType>>;
-};
-
-export default function OKRForm({ objectiveForUpdate, setObjectiveForUpdate }: OKRFormPropType) {
-  const { objectives, setObjectives, isWaitingForResponse, setIsWaitingForResponse } =
-    useContext(OkrContext);
+export default function OKRForm() {
+  const {
+    objectives,
+    setObjectives,
+    isWaitingForResponse,
+    setIsWaitingForResponse,
+    objectiveForUpdate,
+    setObjectiveForUpdate,
+  } = useContext(OkrContext);
 
   const [isUpdateForm, setIsUpdateForm] = useState<boolean>(false);
   const [newObjective, setNewObjective] = useState<string>('');
@@ -288,7 +287,9 @@ export default function OKRForm({ objectiveForUpdate, setObjectiveForUpdate }: O
                   }}
                 />
                 <button
-                  className={`bg-white border border-red-500 text-red-500 hover:bg-red-500 hover:text-white absolute left-1/2 -translate-x-1/2 top-1/2 ${keyResults.length == 1 ? 'hidden' : 'visible'} -translate-y-1/2 shadow-lg hover:shadow-inner rounded-full p-2`}
+                  className={`bg-white border border-red-500 text-red-500 hover:bg-red-500 hover:text-white absolute left-1/2 -translate-x-1/2 top-1/2 ${
+                    keyResults.length == 1 ? 'hidden' : 'visible'
+                  } -translate-y-1/2 shadow-lg hover:shadow-inner rounded-full p-2`}
                   onClick={() => deleteKeyResultInputList(index)}
                 >
                   <Trash2 className="w-4 h-4" />

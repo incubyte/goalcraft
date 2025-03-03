@@ -1,6 +1,6 @@
 import { CircleX, PackagePlus } from 'lucide-react';
 import { useContext, useState } from 'react';
-import { OkrContext } from '../context/OkrProvider';
+import { OkrContext } from '../context/okr.provider.tsx';
 import { addKeyResultsToDB } from '../database/okr.store.ts';
 import { InsertKeyResultType, KeyResultModalType } from '../types/OKRTypes';
 import Input from './Input';
