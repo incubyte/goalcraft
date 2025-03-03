@@ -12,7 +12,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import AddKeyResultModal from './AddKeyResultModal';
-import { OkrContext } from '../context/OkrProvider';
+import { OkrContext } from '../context/okr.provider.tsx';
 import { deleteKeyResultFromDB, deleteOkrsFromDB, getOkrsFromDB } from '../database/okr.store.ts';
 import NoGoalImage from '../assets/NoGoal.svg';
 
@@ -22,14 +22,14 @@ enum PROGRESS_THRESHOLD {
   OPTIMUM = 0.8,
 }
 
-export default function OKRDisplay({
-  objectiveForUpdate,
-  setObjectiveForUpdate,
-}: {
-  objectiveForUpdate: ObjectiveType;
-  setObjectiveForUpdate: React.Dispatch<React.SetStateAction<ObjectiveType>>;
-}) {
-  const { objectives, setObjectives, isWaitingForResponse } = useContext(OkrContext);
+export default function OKRDisplay() {
+  const {
+    objectives,
+    setObjectives,
+    isWaitingForResponse,
+    objectiveForUpdate,
+    setObjectiveForUpdate,
+  } = useContext(OkrContext);
 
   const [keyResultModal, setKeyResultModal] = useState<KeyResultModalType>({
     isOpen: false,
@@ -138,7 +138,21 @@ export default function OKRDisplay({
                 objective.keyResults.map((keyResult, index) => (
                   <div
                     key={index}
-                    className={`relative pt-2 p-3 ${isAlreadyCompleted(keyResult.initialValue, keyResult.currentValue, keyResult.targetValue) && index == 0 ? 'mt-4' : isAlreadyCompleted(keyResult.initialValue, keyResult.currentValue, keyResult.targetValue) ? 'mt-8' : 'mt-3'} bg-gray-100 rounded-md shadow`}
+                    className={`relative pt-2 p-3 ${
+                      isAlreadyCompleted(
+                        keyResult.initialValue,
+                        keyResult.currentValue,
+                        keyResult.targetValue
+                      ) && index == 0
+                        ? 'mt-4'
+                        : isAlreadyCompleted(
+                            keyResult.initialValue,
+                            keyResult.currentValue,
+                            keyResult.targetValue
+                          )
+                        ? 'mt-8'
+                        : 'mt-3'
+                    } bg-gray-100 rounded-md shadow`}
                   >
                     {isAlreadyCompleted(
                       keyResult.initialValue,
@@ -156,7 +170,15 @@ export default function OKRDisplay({
                       <Trash2 className="w-4 h-4" />
                     </button>
                     <div
-                      className={`mb-3 bg-white ${isAlreadyCompleted(keyResult.initialValue, keyResult.currentValue, keyResult.targetValue) ? 'mt-3' : 'mt-1'} rounded-md flex items-center justify-between shadow-sm`}
+                      className={`mb-3 bg-white ${
+                        isAlreadyCompleted(
+                          keyResult.initialValue,
+                          keyResult.currentValue,
+                          keyResult.targetValue
+                        )
+                          ? 'mt-3'
+                          : 'mt-1'
+                      } rounded-md flex items-center justify-between shadow-sm`}
                     >
                       <Goal className="w-4 h-4 text-gray-700 ml-3 " />
                       <p className={`text-primary text-xs w-full p-2 font-medium rounded-md`}>
