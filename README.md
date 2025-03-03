@@ -1,6 +1,6 @@
 ## 🎯 GoalCraft
 
-It is an application designed to **empower you in setting, tracking, and achieving your goals**. It's your personal progress tracker, helping you move from where you are today to where you aspire to be. 
+It is an application designed to **empower you in setting, tracking, and achieving your goals**. It's your personal progress tracker, helping you move from where you are today to where you aspire to be.
 
 With GoalCraft, you define your targets, document your current standing, and visualize your journey from initial state to ultimate success.
 
@@ -13,10 +13,10 @@ With GoalCraft, you define your targets, document your current standing, and vis
 cd okr-client
 
 # Install all the dependencies
-npm install
+pnpm install
 
 # Start the development server
-npm start
+pnpm start
 ```
 
 ### To run the server:
