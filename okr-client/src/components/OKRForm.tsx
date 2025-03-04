@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import Input from './Input';
-import { KeyResultType, ObjectiveType } from '../types/OKRTypes';
+import {KeyResultToBeInsertedType, OkrType} from '../types/okr.types.ts';
 import {
   addKeyResultsToDB,
   addObjectiveToDB,
@@ -14,14 +14,6 @@ import { ToastContainer } from 'react-toastify';
 import NumberOfKeyResultsModal from './NumberOfKeyResultsModal.tsx';
 import { Tooltip } from '@mui/material';
 
-const defaultKeyResult = {
-  title: '',
-  initialValue: 0,
-  currentValue: 0,
-  targetValue: 0,
-  metric: '',
-};
-
 export default function OKRForm() {
   const {
     objectives,
@@ -30,31 +22,19 @@ export default function OKRForm() {
     setIsWaitingForResponse,
     objectiveForUpdate,
     setObjectiveForUpdate,
+    defaultKeyResult,
+    defaultOKR,
   } = useContext(OkrContext);
 
   const [isUpdateForm, setIsUpdateForm] = useState<boolean>(false);
   const [newObjective, setNewObjective] = useState<string>('');
-  const [keyResults, setKeyResults] = useState<KeyResultType[]>([defaultKeyResult]);
+  const [keyResults, setKeyResults] = useState<KeyResultToBeInsertedType[]>([defaultKeyResult]);
   const [isNumberOfKeyResultModalOpen, setIsNumberOfKeyResultModalOpen] = useState<boolean>(false);
 
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
 
   function handleCancelUpdateORKs() {
-    setObjectiveForUpdate({
-      id: '',
-      objective: '',
-      keyResults: [
-        {
-          id: '',
-          title: '',
-          initialValue: 0,
-          currentValue: 0,
-          targetValue: 0,
-          metric: '',
-          objectiveId: '',
-        },
-      ],
-    });
+    setObjectiveForUpdate(defaultOKR);
     setKeyResults([defaultKeyResult]);
     setNewObjective('');
     setIsUpdateForm(false);
@@ -95,7 +75,7 @@ export default function OKRForm() {
 
     // inserting objective into db.
     addObjectiveToDB(objectiveToBeAdded)
-      .then((objectiveResponse: ObjectiveType) => {
+      .then((objectiveResponse: OkrType) => {
         if (objectives === null) return;
         if (keyResults[0].title != '') {
           addKeyResultsToDB(keyResults, objectiveResponse.id).then(keyResultsResponse => {

@@ -1,6 +1,5 @@
-import * as React from 'react';
 import { useContext, useEffect, useState } from 'react';
-import { KeyResultModalType, ObjectiveType } from '../types/OKRTypes';
+import { KeyResultModalType } from '../types/okr.types.ts';
 import MetricsLabel from './MetricLabel';
 import {
   CircleCheck,

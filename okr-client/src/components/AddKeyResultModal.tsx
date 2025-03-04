@@ -2,16 +2,9 @@ import { CircleX, PackagePlus } from 'lucide-react';
 import { useContext, useState } from 'react';
 import { OkrContext } from '../context/okr.provider.tsx';
 import { addKeyResultsToDB } from '../database/okr.store.ts';
-import { InsertKeyResultType, KeyResultModalType } from '../types/OKRTypes';
+import { KeyResultToBeInsertedType, KeyResultModalType } from '../types/okr.types.ts';
 import Input from './Input';
 
-const defaultKeyResults: InsertKeyResultType = {
-  title: '',
-  initialValue: 0,
-  currentValue: 0,
-  targetValue: 0,
-  metric: '',
-};
 
 export default function AddKeyResultModal({
   closeModal,
@@ -20,9 +13,9 @@ export default function AddKeyResultModal({
   closeModal: () => void;
   keyResultModal: KeyResultModalType;
 }) {
-  const { objectives, setObjectives } = useContext(OkrContext);
+  const { objectives, setObjectives, defaultKeyResult } = useContext(OkrContext);
 
-  const [keyResult, setKeyResult] = useState<InsertKeyResultType>(defaultKeyResults);
+  const [keyResult, setKeyResult] = useState<KeyResultToBeInsertedType>(defaultKeyResult);
 
   function handleAddKeyResult() {
     if (objectives === null) return;
@@ -56,7 +49,7 @@ export default function AddKeyResultModal({
   }
 
   function handleChange(key: string, value: number | string) {
-    const updatedKeyResult: InsertKeyResultType = { ...keyResult, [key]: value };
+    const updatedKeyResult: KeyResultToBeInsertedType = { ...keyResult, [key]: value };
     setKeyResult(updatedKeyResult);
   }
 

@@ -3,13 +3,13 @@ import Input from './Input';
 import { CircleX, Sparkles } from 'lucide-react';
 import * as React from 'react';
 import { generateKeyResultFromLLM } from '../database/okr.store.ts';
-import { KeyResultType } from '../types/OKRTypes.ts';
+import {KeyResultToBeInsertedType} from '../types/okr.types.ts';
 import { toast, ToastContainer } from 'react-toastify';
 
 type NumberOfKeyResultsModalPropType = {
   setIsGenerating: React.Dispatch<React.SetStateAction<boolean>>;
   newObjective: string;
-  setKeyResults: React.Dispatch<React.SetStateAction<KeyResultType[]>>;
+  setKeyResults: React.Dispatch<React.SetStateAction<KeyResultToBeInsertedType[]>>;
   isGenerating: boolean;
   setIsGenerate: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -35,7 +35,7 @@ export default function NumberOfKeyResultsModal({
       setIsGenerating(true);
 
       generateKeyResultFromLLM(newObjective, numberOfKeyResults)
-        .then((generatedKeyResults: KeyResultType[]) => {
+        .then((generatedKeyResults: KeyResultToBeInsertedType[]) => {
           setKeyResults(generatedKeyResults);
           setIsGenerating(false);
         })

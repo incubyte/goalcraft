@@ -1,5 +1,5 @@
 import { createContext, ReactElement, useState } from 'react';
-import { ObjectiveType } from '../types/OKRTypes';
+import {KeyResultToBeInsertedType, OkrType} from '../types/okr.types.ts';
 
 const defaultOKR = {
   id: '',
@@ -17,13 +17,23 @@ const defaultOKR = {
   ],
 };
 
+const defaultKeyResult = {
+  title: '',
+  initialValue: 0,
+  currentValue: 0,
+  targetValue: 0,
+  metric: '',
+};
+
 type OkrContextType = {
-  objectives: ObjectiveType[] | null;
-  setObjectives: React.Dispatch<React.SetStateAction<ObjectiveType[] | null>>;
+  objectives: OkrType[] | null;
+  setObjectives: React.Dispatch<React.SetStateAction<OkrType[] | null>>;
   isWaitingForResponse: boolean;
   setIsWaitingForResponse: React.Dispatch<React.SetStateAction<boolean>>;
-  objectiveForUpdate: ObjectiveType;
-  setObjectiveForUpdate: React.Dispatch<React.SetStateAction<ObjectiveType>>;
+  objectiveForUpdate: OkrType;
+  setObjectiveForUpdate: React.Dispatch<React.SetStateAction<OkrType>>;
+  defaultKeyResult: KeyResultToBeInsertedType;
+  defaultOKR: OkrType;
 };
 
 export const OkrContext = createContext<OkrContextType>({
@@ -33,12 +43,14 @@ export const OkrContext = createContext<OkrContextType>({
   setIsWaitingForResponse: () => {},
   objectiveForUpdate: defaultOKR,
   setObjectiveForUpdate: () => {},
+  defaultKeyResult: defaultKeyResult,
+  defaultOKR: defaultOKR,
 });
 
 const OkrProvider = ({ children }: { children: ReactElement }) => {
-  const [objectives, setObjectives] = useState<ObjectiveType[] | null>([]);
+  const [objectives, setObjectives] = useState<OkrType[] | null>([]);
   const [isWaitingForResponse, setIsWaitingForResponse] = useState<boolean>(false);
-  const [objectiveForUpdate, setObjectiveForUpdate] = useState<ObjectiveType>(defaultOKR);
+  const [objectiveForUpdate, setObjectiveForUpdate] = useState<OkrType>(defaultOKR);
 
   return (
     <OkrContext.Provider
@@ -49,6 +61,8 @@ const OkrProvider = ({ children }: { children: ReactElement }) => {
         setIsWaitingForResponse,
         objectiveForUpdate,
         setObjectiveForUpdate,
+        defaultKeyResult,
+        defaultOKR,
       }}
     >
       {children}

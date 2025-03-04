@@ -1,11 +1,10 @@
 import { useContext, useEffect, useState } from 'react';
-
 import InitialLoader from './components/InitialLoader.tsx';
 import OKRDisplay from './components/OKRDisplay';
 import OKRForm from './components/OKRForm';
 import { OkrContext } from './context/okr.provider.tsx';
 import { getOkrsFromDB } from './database/okr.store.ts';
-import { ObjectiveType } from './types/OKRTypes';
+import { OkrType } from './types/okr.types.ts';
 
 function App() {
   const { setObjectives } = useContext(OkrContext);
@@ -13,7 +12,7 @@ function App() {
     
   useEffect(() => {
     void (async () => {
-      const objectivesResponse: ObjectiveType[] = await getOkrsFromDB();
+      const objectivesResponse: OkrType[] = await getOkrsFromDB();
       setTimeout(() => {
         setObjectives(objectivesResponse);
         setIsLoadingInitData(false);
