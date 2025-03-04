@@ -96,15 +96,15 @@ async function addKeyResultsToDB(
       'Content-Type': 'application/json',
     },
   });
-  const keyResultsData = await response.json();
-  return [...keyResultsData];
+
+  return await response.json();
 }
 
 async function generateKeyResultFromLLM(
   objective: string,
   noOfKeyResultsWant: number
 ): Promise<KeyResultType[]> {
-  const response = await fetch(
+  const response: Response = await fetch(
     `${import.meta.env.VITE_LOCAL_URL}/rag?objective=${objective}&noOfKeyResultsWant=${noOfKeyResultsWant}`
   );
   return await response.json();

@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import Input from './Input';
-import {KeyResultToBeInsertedType, OkrType} from '../types/okr.types.ts';
+import {KeyResultToBeInsertedType, KeyResultType, OkrType} from '../types/okr.types.ts';
 import {
   addKeyResultsToDB,
   addObjectiveToDB,
@@ -39,7 +39,7 @@ export default function OKRForm() {
     setNewObjective('');
     setIsUpdateForm(false);
     (async () => {
-      const objectivesResponse = await getOkrsFromDB();
+      const objectivesResponse: OkrType[] = await getOkrsFromDB();
       setObjectives(objectivesResponse);
     })();
   }
@@ -53,7 +53,7 @@ export default function OKRForm() {
   }, [objectiveForUpdate]);
 
   function handleKeyResultChange(key: string, value: string | number, index: number) {
-    setKeyResults(prev => {
+    setKeyResults((prev: KeyResultToBeInsertedType[]) => {
       const keyResultToBeUpdated = { ...prev[index] };
       prev[index] = { ...keyResultToBeUpdated, [key]: value };
       return [...prev];
@@ -78,7 +78,7 @@ export default function OKRForm() {
       .then((objectiveResponse: OkrType) => {
         if (objectives === null) return;
         if (keyResults[0].title != '') {
-          addKeyResultsToDB(keyResults, objectiveResponse.id).then(keyResultsResponse => {
+          addKeyResultsToDB(keyResults, objectiveResponse.id).then((keyResultsResponse: KeyResultType[]) => {
             const objectiveToBeAddedToState = {
               ...objectiveResponse,
               keyResults: keyResultsResponse,
@@ -116,7 +116,7 @@ export default function OKRForm() {
     const okrsToBeUpdated = {
       id: objectiveForUpdate.id,
       objective: newObjective,
-      keyResults: keyResults.map(keyResult => {
+      keyResults: keyResults.map((keyResult: KeyResultToBeInsertedType) => {
         return {
           ...keyResult,
           id: objectiveForUpdate.keyResults[0].id,
@@ -125,10 +125,10 @@ export default function OKRForm() {
       }),
     };
 
-    updateOkrsToDB(okrsToBeUpdated).then(data => {
+    updateOkrsToDB(okrsToBeUpdated).then((data: OkrType) => {
       if (objectives === null) return;
 
-      const updatedObjectives = objectives.map(objective => {
+      const updatedObjectives: OkrType[] = objectives.map((objective: OkrType) => {
         return objective.id === data.id ? okrsToBeUpdated : objective;
       });
 
@@ -145,11 +145,11 @@ export default function OKRForm() {
   }
 
   function addNewKeyResults() {
-    setKeyResults(prev => [...prev, defaultKeyResult]);
+    setKeyResults((prev: KeyResultToBeInsertedType[]) => [...prev, defaultKeyResult]);
   }
 
   function deleteKeyResultInputList(selectedInputListMapIndex: number) {
-    const updatedKeyResultInputList = keyResults.filter((_m, index) => {
+    const updatedKeyResultInputList: KeyResultToBeInsertedType[] = keyResults.filter((_, index: number) => {
       return index !== selectedInputListMapIndex;
     });
 

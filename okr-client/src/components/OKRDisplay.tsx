@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { KeyResultModalType } from '../types/okr.types.ts';
+import {KeyResultModalType, KeyResultType, OkrType} from '../types/okr.types.ts';
 import MetricsLabel from './MetricLabel';
 import {
   CircleCheck,
@@ -39,7 +39,7 @@ export default function OKRDisplay() {
     if (!keyResultModal.isOpen) {
       console.log('keyResultModal is opened');
       (async () => {
-        const objectivesResponse = await getOkrsFromDB();
+        const objectivesResponse: OkrType[] = await getOkrsFromDB();
         setObjectives(objectivesResponse);
       })();
     }
@@ -49,12 +49,12 @@ export default function OKRDisplay() {
     if (objectives === null) return;
     deleteKeyResultFromDB(keyResultDBId)
       .then(() => {
-        const foundObj = objectives.find((_, idx) => objectiveIdx === idx);
+        const foundObj: OkrType | undefined = objectives.find((_, idx: number) => objectiveIdx === idx);
 
         if (foundObj === undefined) return;
-        foundObj.keyResults = foundObj?.keyResults.filter((_, krIdx) => krIdx !== keyResultIdx);
+        foundObj.keyResults = foundObj?.keyResults.filter((_, krIdx: number) => krIdx !== keyResultIdx);
 
-        const updatedObjectives = objectives.map((objective, idx) => {
+        const updatedObjectives: OkrType[] = objectives.map((objective: OkrType, idx: number) => {
           return idx === objectiveIdx ? foundObj : objective;
         });
 
@@ -73,7 +73,7 @@ export default function OKRDisplay() {
     } catch (error) {
       alert(error);
     }
-    const updatedObjectives = objectives.filter((_, idx) => index !== idx);
+    const updatedObjectives: OkrType[] = objectives.filter((_, idx: number) => index !== idx);
     setObjectives(updatedObjectives);
   }
 
@@ -99,7 +99,7 @@ export default function OKRDisplay() {
       className="w-1/2 h-[90%] rounded-md p-10 bg-white border-1 shadow overflow-y-scroll flex flex-wrap justify-between gap-14"
     >
       {objectives != null && objectives.length > 0 ? (
-        objectives.map((objective, objectiveIdx) => {
+        objectives.map((objective: OkrType, objectiveIdx: number) => {
           return (
             <div
               key={objectiveIdx}
@@ -134,7 +134,7 @@ export default function OKRDisplay() {
               </div>
 
               {objective.keyResults && objective.keyResults.length > 0 ? (
-                objective.keyResults.map((keyResult, index) => (
+                objective.keyResults.map((keyResult: KeyResultType, index: number) => (
                   <div
                     key={index}
                     className={`relative pt-2 p-3 ${

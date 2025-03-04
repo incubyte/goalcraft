@@ -1,4 +1,4 @@
-import { createContext, ReactElement, useState } from 'react';
+import {Context, createContext, ReactElement, useState} from 'react';
 import {KeyResultToBeInsertedType, OkrType} from '../types/okr.types.ts';
 
 const defaultOKR = {
@@ -36,7 +36,7 @@ type OkrContextType = {
   defaultOKR: OkrType;
 };
 
-export const OkrContext = createContext<OkrContextType>({
+export const OkrContext: Context<OkrContextType> = createContext<OkrContextType>({
   objectives: [],
   setObjectives: () => {},
   isWaitingForResponse: false,
