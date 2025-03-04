@@ -9,7 +9,7 @@ import { OkrType } from './types/okr.types.ts';
 function App() {
   const { setObjectives } = useContext(OkrContext);
   const [isLoadingInitData, setIsLoadingInitData] = useState<boolean>(true);
-    
+
   useEffect(() => {
     void (async () => {
       const objectivesResponse: OkrType[] = await getOkrsFromDB();

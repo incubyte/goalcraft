@@ -1,5 +1,5 @@
-import {Context, createContext, ReactElement, useState} from 'react';
-import {KeyResultToBeInsertedType, OkrType} from '../types/okr.types.ts';
+import { Context, createContext, ReactElement, useState } from 'react';
+import { KeyResultToBeInsertedType, OkrType } from '../types/okr.types.ts';
 
 const defaultOKR = {
   id: '',

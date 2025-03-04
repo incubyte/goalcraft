@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import {KeyResultModalType, KeyResultType, OkrType} from '../types/okr.types.ts';
+import { KeyResultModalType, KeyResultType, OkrType } from '../types/okr.types.ts';
 import MetricsLabel from './MetricLabel';
 import {
   CircleCheck,
@@ -49,10 +49,14 @@ export default function OKRDisplay() {
     if (objectives === null) return;
     deleteKeyResultFromDB(keyResultDBId)
       .then(() => {
-        const foundObj: OkrType | undefined = objectives.find((_, idx: number) => objectiveIdx === idx);
+        const foundObj: OkrType | undefined = objectives.find(
+          (_, idx: number) => objectiveIdx === idx
+        );
 
         if (foundObj === undefined) return;
-        foundObj.keyResults = foundObj?.keyResults.filter((_, krIdx: number) => krIdx !== keyResultIdx);
+        foundObj.keyResults = foundObj?.keyResults.filter(
+          (_, krIdx: number) => krIdx !== keyResultIdx
+        );
 
         const updatedObjectives: OkrType[] = objectives.map((objective: OkrType, idx: number) => {
           return idx === objectiveIdx ? foundObj : objective;
@@ -145,12 +149,12 @@ export default function OKRDisplay() {
                       ) && index == 0
                         ? 'mt-4'
                         : isAlreadyCompleted(
-                            keyResult.initialValue,
-                            keyResult.currentValue,
-                            keyResult.targetValue
-                          )
-                        ? 'mt-8'
-                        : 'mt-3'
+                              keyResult.initialValue,
+                              keyResult.currentValue,
+                              keyResult.targetValue
+                            )
+                          ? 'mt-8'
+                          : 'mt-3'
                     } bg-gray-100 rounded-md shadow`}
                   >
                     {isAlreadyCompleted(

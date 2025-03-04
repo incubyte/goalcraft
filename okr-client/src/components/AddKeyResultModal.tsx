@@ -2,7 +2,12 @@ import { CircleX, PackagePlus } from 'lucide-react';
 import { useContext, useState } from 'react';
 import { OkrContext } from '../context/okr.provider.tsx';
 import { addKeyResultsToDB } from '../database/okr.store.ts';
-import {KeyResultToBeInsertedType, KeyResultModalType, OkrType, KeyResultType} from '../types/okr.types.ts';
+import {
+  KeyResultToBeInsertedType,
+  KeyResultModalType,
+  OkrType,
+  KeyResultType,
+} from '../types/okr.types.ts';
 import Input from './Input';
 
 export default function AddKeyResultModal({
@@ -25,7 +30,9 @@ export default function AddKeyResultModal({
 
     console.log(keyResult);
 
-    const foundObj: OkrType | undefined = objectives.find((_, idx: number) => keyResultModal.objectiveIndex === idx);
+    const foundObj: OkrType | undefined = objectives.find(
+      (_, idx: number) => keyResultModal.objectiveIndex === idx
+    );
 
     if (foundObj === undefined) return;
     addKeyResultsToDB([keyResult], foundObj.id)
@@ -36,7 +43,7 @@ export default function AddKeyResultModal({
           objectiveId: data[0].objectiveId,
         });
 
-        const updatedObjectives:OkrType[] = objectives.map((objective, idx) => {
+        const updatedObjectives: OkrType[] = objectives.map((objective, idx) => {
           return idx === keyResultModal.objectiveIndex ? foundObj : objective;
         });
         setObjectives(updatedObjectives);

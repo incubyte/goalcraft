@@ -3,7 +3,7 @@ import Input from './Input';
 import { CircleX, Sparkles } from 'lucide-react';
 import * as React from 'react';
 import { generateKeyResultFromLLM } from '../database/okr.store.ts';
-import {KeyResultToBeInsertedType} from '../types/okr.types.ts';
+import { KeyResultToBeInsertedType } from '../types/okr.types.ts';
 import { toast, ToastContainer } from 'react-toastify';
 
 type NumberOfKeyResultsModalPropType = {

@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import Input from './Input';
-import {KeyResultToBeInsertedType, KeyResultType, OkrType} from '../types/okr.types.ts';
+import { KeyResultToBeInsertedType, KeyResultType, OkrType } from '../types/okr.types.ts';
 import {
   addKeyResultsToDB,
   addObjectiveToDB,
@@ -78,13 +78,15 @@ export default function OKRForm() {
       .then((objectiveResponse: OkrType) => {
         if (objectives === null) return;
         if (keyResults[0].title != '') {
-          addKeyResultsToDB(keyResults, objectiveResponse.id).then((keyResultsResponse: KeyResultType[]) => {
-            const objectiveToBeAddedToState = {
-              ...objectiveResponse,
-              keyResults: keyResultsResponse,
-            };
-            setObjectives([...objectives, objectiveToBeAddedToState]);
-          });
+          addKeyResultsToDB(keyResults, objectiveResponse.id).then(
+            (keyResultsResponse: KeyResultType[]) => {
+              const objectiveToBeAddedToState = {
+                ...objectiveResponse,
+                keyResults: keyResultsResponse,
+              };
+              setObjectives([...objectives, objectiveToBeAddedToState]);
+            }
+          );
         } else {
           setObjectives([...objectives, objectiveResponse]);
         }
@@ -149,9 +151,11 @@ export default function OKRForm() {
   }
 
   function deleteKeyResultInputList(selectedInputListMapIndex: number) {
-    const updatedKeyResultInputList: KeyResultToBeInsertedType[] = keyResults.filter((_, index: number) => {
-      return index !== selectedInputListMapIndex;
-    });
+    const updatedKeyResultInputList: KeyResultToBeInsertedType[] = keyResults.filter(
+      (_, index: number) => {
+        return index !== selectedInputListMapIndex;
+      }
+    );
 
     setKeyResults(updatedKeyResultInputList);
   }
