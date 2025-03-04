@@ -25,7 +25,9 @@
         ✅ fix/login-bug
         ❌ fixing-login-issue-that-happens-when-user-clicks-button
 
-3. **Make your changes and commit them**
+3. **Make sure to run `pnpm format` before committing**.
+
+4. **Make your changes and commit them**
     - Use **Present Tense**.
     - Format: `Action(File): Short message`
 
@@ -33,9 +35,9 @@
         git commit -m "Fix(auth): token expiration logic"
         ```
 
-4. **Push the branch and raise a Pull Request (PR) against `master`**
+5. **Push the branch and raise a Pull Request (PR) against `master`**
 
-5. **Avoid including already merged commits in the PR!**  
+6. **Avoid including already merged commits in the PR!**  
 
 
 ### (After PR Merge)
