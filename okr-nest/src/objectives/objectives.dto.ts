@@ -1,4 +1,4 @@
-import { KeyResultResDTO } from '../key-results/keyResultDTO';
+import { KeyResultResDTO } from '../key-results/keyResult.dto';
 
 export class ObjectiveReqDTO {
   objective: string;
@@ -9,7 +9,7 @@ export class ObjectiveResDTO {
   objective: string;
 }
 
-export class OkrsDTO {
+export class OkrDTO {
   id: string;
   objective: string;
   keyResults: KeyResultResDTO[];
