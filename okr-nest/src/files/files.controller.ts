@@ -1,12 +1,15 @@
 import { Controller, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 
+import { FilesService } from './files.service';
+
 @Controller('files')
 export class FilesController {
-  @Post('/')
+  constructor(private readonly filesService: FilesService) {}
+
+  @Post('/parse')
   @UseInterceptors(FilesInterceptor('files'))
-  saveFile(@UploadedFiles() files: Array<Express.Multer.File>) {
-    const fileNames = files.map(file => file.originalname);
-    return { message: 'File saved successfully', filesSaved: fileNames };
+  uploadFile(@UploadedFiles() files: Array<Express.Multer.File>) {
+    return this.filesService.uploadFile(files);
   }
 }
