@@ -11,9 +11,7 @@ import { AppModule } from '../src/app.module';
 describe('Filehandler', () => {
   let app: INestApplication<App>;
   let fileBuffer1: Buffer;
-  let fileBuffer2: Buffer;
-  let file1: string;
-  let file2: string;
+  let testFile1: string;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -21,43 +19,47 @@ describe('Filehandler', () => {
     }).compile();
 
     app = module.createNestApplication();
-    app.useLogger(['log', 'error', 'warn', 'debug', 'verbose']);
     await app.init();
 
-    file1 = 'testFile1.csv';
-    file2 = 'testFile2.csv';
-    const filePath1: string = path.join(__dirname, file1);
-    const filePath2: string = path.join(__dirname, file2);
-    if (!fs.existsSync(filePath1) || !fs.existsSync(filePath2)) {
+    testFile1 = 'testFile1.csv';
+    const filePath1: string = path.join(__dirname, 'files', testFile1);
+    if (!fs.existsSync(filePath1)) {
       throw new Error(`File not found: ${filePath1}`);
     }
     fileBuffer1 = fs.readFileSync(filePath1); //brings the file to memory and solves the single '\' issue
-    fileBuffer2 = fs.readFileSync(filePath2);
   });
 
-  test('@POST /files/ should save files', async () => {
+  it('@POST /files/parse should parse csv & return okrs in JSON format', async () => {
+    const expectedParsedContentOfTestFile1 = [
+      {
+        id: expect.any(String),
+        objective: 'objective-1',
+        keyResults: [
+          {
+            id: expect.any(String),
+            title: 'Kr-1',
+            initialValue: 10,
+            currentValue: 12,
+            targetValue: 20,
+            metric: 'count',
+            objectiveId: expect.any(String),
+          },
+        ],
+      },
+    ];
+
     const response: Response = await request(app.getHttpServer())
-      .post('/files')
+      .post('/files/parse')
       .set('Content-Type', 'multipart/form-data')
-      .attach('files', fileBuffer1, file1)
-      .expect(201);
-    const formattedResponse = JSON.stringify(response.body);
-    expect(formattedResponse).toContain(
-      JSON.stringify({ message: 'File saved successfully', filesSaved: [file1] })
-    );
-  });
-
-  test('@POST /files/ should accept multiple files', async () => {
-    const response: Response = await request(app.getHttpServer())
-      .post('/files')
-      .attach('files', fileBuffer1, file1)
-      .attach('files', fileBuffer2, file2)
+      .attach('files', fileBuffer1, testFile1)
       .expect(201);
 
-    const formattedResponse = JSON.stringify(response.body);
-    expect(formattedResponse).toContain(
-      JSON.stringify({ message: 'File saved successfully', filesSaved: [file1, file2] })
-    );
+    expect(response.body).toEqual([
+      {
+        parsedFile: testFile1,
+        parsedContent: expectedParsedContentOfTestFile1,
+      },
+    ]);
   });
 
   afterAll(async () => {

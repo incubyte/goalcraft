@@ -1,0 +1,8 @@
+"objective","keyresultTitle","initialValue","currentValue","targetValue","metrics"
+"objective-11","Kr-1","10","12","20","count"
+"","Kr-2","30","40","80","percentage"
+"objective-22","Kr-3","100","120","200","count"
+"","Kr-4","30","40","80","count"
+"objective-33","Kr-5","10","10","100","percentage"
+"","kr-6","11","22","33","percentage"
+"","kr-7","12","111","340","count"
