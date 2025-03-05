@@ -1,4 +1,5 @@
 import { Context, createContext, ReactElement, useState } from 'react';
+
 import { KeyResultToBeInsertedType, OkrType } from '../types/okr.types.ts';
 
 const defaultOKR = {
@@ -25,7 +26,7 @@ const defaultKeyResult = {
   metric: '',
 };
 
-type OkrContextType = {
+interface OkrContextType {
   objectives: OkrType[] | null;
   setObjectives: React.Dispatch<React.SetStateAction<OkrType[] | null>>;
   isWaitingForResponse: boolean;
@@ -34,7 +35,7 @@ type OkrContextType = {
   setObjectiveForUpdate: React.Dispatch<React.SetStateAction<OkrType>>;
   defaultKeyResult: KeyResultToBeInsertedType;
   defaultOKR: OkrType;
-};
+}
 
 export const OkrContext: Context<OkrContextType> = createContext<OkrContextType>({
   objectives: [],

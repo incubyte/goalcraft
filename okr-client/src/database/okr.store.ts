@@ -1,7 +1,7 @@
 import {
   KeyResultToBeInsertedType,
-  OkrToBeInsertedType,
   KeyResultType,
+  OkrToBeInsertedType,
   OkrType,
 } from '../types/okr.types.ts';
 

@@ -1,18 +1,19 @@
-import { useState } from 'react';
-import Input from './Input';
 import { CircleX, Sparkles } from 'lucide-react';
 import * as React from 'react';
-import { generateKeyResultFromLLM } from '../database/okr.store.ts';
-import { KeyResultToBeInsertedType } from '../types/okr.types.ts';
+import { useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 
-type NumberOfKeyResultsModalPropType = {
+import { generateKeyResultFromLLM } from '../database/okr.store.ts';
+import { KeyResultToBeInsertedType } from '../types/okr.types.ts';
+import Input from './Input';
+
+interface NumberOfKeyResultsModalPropType {
   setIsGenerating: React.Dispatch<React.SetStateAction<boolean>>;
   newObjective: string;
   setKeyResults: React.Dispatch<React.SetStateAction<KeyResultToBeInsertedType[]>>;
   isGenerating: boolean;
   setIsGenerate: React.Dispatch<React.SetStateAction<boolean>>;
-};
+}
 
 export default function NumberOfKeyResultsModal({
   setIsGenerating,

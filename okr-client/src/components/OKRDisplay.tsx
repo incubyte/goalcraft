@@ -1,6 +1,3 @@
-import { useContext, useEffect, useState } from 'react';
-import { KeyResultModalType, KeyResultType, OkrType } from '../types/okr.types.ts';
-import MetricsLabel from './MetricLabel';
 import {
   CircleCheck,
   FilePenLine,
@@ -10,10 +7,14 @@ import {
   SquarePlus,
   Trash2,
 } from 'lucide-react';
-import AddKeyResultModal from './AddKeyResultModal';
+import { useContext, useEffect, useState } from 'react';
+
+import NoGoalImage from '../assets/NoGoal.svg';
 import { OkrContext } from '../context/okr.provider.tsx';
 import { deleteKeyResultFromDB, deleteOkrsFromDB, getOkrsFromDB } from '../database/okr.store.ts';
-import NoGoalImage from '../assets/NoGoal.svg';
+import { KeyResultModalType, KeyResultType, OkrType } from '../types/okr.types.ts';
+import AddKeyResultModal from './AddKeyResultModal';
+import MetricsLabel from './MetricLabel';
 
 enum PROGRESS_THRESHOLD {
   LOW = 0.33,

@@ -1,18 +1,19 @@
+import { Tooltip } from '@mui/material';
+import { BetweenHorizonalStart, Goal, LoaderCircle, Sparkles, Trash2 } from 'lucide-react';
 import { useContext, useEffect, useState } from 'react';
-import Input from './Input';
-import { KeyResultToBeInsertedType, KeyResultType, OkrType } from '../types/okr.types.ts';
+import { toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
+
+import { OkrContext } from '../context/okr.provider.tsx';
 import {
   addKeyResultsToDB,
   addObjectiveToDB,
   getOkrsFromDB,
   updateOkrsToDB,
 } from '../database/okr.store.ts';
-import { BetweenHorizonalStart, Goal, LoaderCircle, Sparkles, Trash2 } from 'lucide-react';
-import { OkrContext } from '../context/okr.provider.tsx';
-import { toast } from 'react-toastify';
-import { ToastContainer } from 'react-toastify';
+import { KeyResultToBeInsertedType, KeyResultType, OkrType } from '../types/okr.types.ts';
+import Input from './Input';
 import NumberOfKeyResultsModal from './NumberOfKeyResultsModal.tsx';
-import { Tooltip } from '@mui/material';
 
 export default function OKRForm() {
   const {

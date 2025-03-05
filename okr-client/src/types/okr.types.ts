@@ -1,4 +1,4 @@
-type KeyResultType = {
+interface KeyResultType {
   id: string;
   objectiveId: string;
   title: string;
@@ -6,27 +6,27 @@ type KeyResultType = {
   currentValue: number;
   targetValue: number;
   metric: string;
-};
+}
 
 type KeyResultToBeInsertedType = Omit<KeyResultType, 'id' | 'objectiveId'>;
 
-type OkrType = {
+interface OkrType {
   id: string;
   objective: string;
   keyResults: KeyResultType[];
-};
+}
 
 type OkrToBeInsertedType = Omit<OkrType, 'id'>;
 
-type KeyResultModalType = {
+interface KeyResultModalType {
   isOpen: boolean;
   objectiveIndex: number;
-};
+}
 
 export type {
-  KeyResultToBeInsertedType,
-  OkrToBeInsertedType,
   KeyResultModalType,
+  KeyResultToBeInsertedType,
   KeyResultType,
+  OkrToBeInsertedType,
   OkrType,
 };
