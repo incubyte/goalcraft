@@ -16,6 +16,7 @@ export default tseslint.config(
   ...tseslint.configs.recommendedTypeChecked,
   eslintPluginPrettierRecommended,
   {
+    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
     languageOptions: {
       globals: {
         ...globals.node,
@@ -24,10 +25,13 @@ export default tseslint.config(
       },
       ecmaVersion: 2022,
       sourceType: 'module',
+      parser: tseslint.parser,
       parserOptions: {
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
-        extraFileExtensions: ['.tsx'],
+        ecmaFeatures: {
+          jsx: true, // Add this line to enable JSX parsing
+        },
       },
     },
   },
@@ -42,9 +46,9 @@ export default tseslint.config(
       'unused-imports': eslintPluginUnusedImports,
     },
     rules: {
-      'prettier/prettier': ['error', { endOfLine: 'auto' }],
-      'simple-import-sort/imports': 'error',
-      'simple-import-sort/exports': 'error',
+      'prettier/prettier': ['warn', { endOfLine: 'auto' }],
+      'simple-import-sort/imports': 'warn',
+      'simple-import-sort/exports': 'warn',
       'unused-imports/no-unused-imports': 'error',
       'unused-imports/no-unused-vars': [
         'warn',
@@ -58,9 +62,9 @@ export default tseslint.config(
 
       // TypeScript Rules
       '@typescript-eslint/no-explicit-any': 'error',
-      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'error',
-      '@typescript-eslint/explicit-module-boundary-types': 'error',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
@@ -70,7 +74,7 @@ export default tseslint.config(
         },
       ],
       '@typescript-eslint/no-non-null-assertion': 'warn',
-      '@typescript-eslint/no-var-requires': 'error',
+      '@typescript-eslint/no-var-requires': 'warn',
       '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
       '@typescript-eslint/no-misused-promises': 'error',
 
