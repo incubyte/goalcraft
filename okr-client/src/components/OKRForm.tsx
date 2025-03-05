@@ -1,66 +1,46 @@
+import { Tooltip } from '@mui/material';
+import { BetweenHorizonalStart, Goal, LoaderCircle, Sparkles, Trash2 } from 'lucide-react';
 import { useContext, useEffect, useState } from 'react';
-import Input from './Input';
-import { KeyResultType, ObjectiveType } from '../types/OKRTypes';
+import { toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
+
+import { OkrContext } from '../context/okr.provider.tsx';
 import {
   addKeyResultsToDB,
   addObjectiveToDB,
-  generateKeyResultFromLLM,
   getOkrsFromDB,
   updateOkrsToDB,
 } from '../database/okr.store.ts';
-import { BetweenHorizonalStart, Goal, LoaderCircle, Sparkles, Trash2 } from 'lucide-react';
-import { OkrContext } from '../context/OkrProvider';
-import { toast } from 'react-toastify';
-import { ToastContainer } from 'react-toastify';
-import * as React from 'react';
+import { KeyResultToBeInsertedType, KeyResultType, OkrType } from '../types/okr.types.ts';
+import Input from './Input';
 import NumberOfKeyResultsModal from './NumberOfKeyResultsModal.tsx';
-import { Tooltip } from '@mui/material';
 
-const defaultKeyResult = {
-  title: '',
-  initialValue: 0,
-  currentValue: 0,
-  targetValue: 0,
-  metric: '',
-};
-
-type OKRFormPropType = {
-  objectiveForUpdate: ObjectiveType;
-  setObjectiveForUpdate: React.Dispatch<React.SetStateAction<ObjectiveType>>;
-};
-
-export default function OKRForm({ objectiveForUpdate, setObjectiveForUpdate }: OKRFormPropType) {
-  const { objectives, setObjectives, isWaitingForResponse, setIsWaitingForResponse } =
-    useContext(OkrContext);
+export default function OKRForm() {
+  const {
+    objectives,
+    setObjectives,
+    isWaitingForResponse,
+    setIsWaitingForResponse,
+    objectiveForUpdate,
+    setObjectiveForUpdate,
+    defaultKeyResult,
+    defaultOKR,
+  } = useContext(OkrContext);
 
   const [isUpdateForm, setIsUpdateForm] = useState<boolean>(false);
   const [newObjective, setNewObjective] = useState<string>('');
-  const [keyResults, setKeyResults] = useState<KeyResultType[]>([defaultKeyResult]);
+  const [keyResults, setKeyResults] = useState<KeyResultToBeInsertedType[]>([defaultKeyResult]);
   const [isNumberOfKeyResultModalOpen, setIsNumberOfKeyResultModalOpen] = useState<boolean>(false);
 
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
 
   function handleCancelUpdateORKs() {
-    setObjectiveForUpdate({
-      id: '',
-      objective: '',
-      keyResults: [
-        {
-          id: '',
-          title: '',
-          initialValue: 0,
-          currentValue: 0,
-          targetValue: 0,
-          metric: '',
-          objectiveId: '',
-        },
-      ],
-    });
+    setObjectiveForUpdate(defaultOKR);
     setKeyResults([defaultKeyResult]);
     setNewObjective('');
     setIsUpdateForm(false);
     (async () => {
-      const objectivesResponse = await getOkrsFromDB();
+      const objectivesResponse: OkrType[] = await getOkrsFromDB();
       setObjectives(objectivesResponse);
     })();
   }
@@ -74,7 +54,7 @@ export default function OKRForm({ objectiveForUpdate, setObjectiveForUpdate }: O
   }, [objectiveForUpdate]);
 
   function handleKeyResultChange(key: string, value: string | number, index: number) {
-    setKeyResults(prev => {
+    setKeyResults((prev: KeyResultToBeInsertedType[]) => {
       const keyResultToBeUpdated = { ...prev[index] };
       prev[index] = { ...keyResultToBeUpdated, [key]: value };
       return [...prev];
@@ -96,16 +76,18 @@ export default function OKRForm({ objectiveForUpdate, setObjectiveForUpdate }: O
 
     // inserting objective into db.
     addObjectiveToDB(objectiveToBeAdded)
-      .then((objectiveResponse: ObjectiveType) => {
+      .then((objectiveResponse: OkrType) => {
         if (objectives === null) return;
         if (keyResults[0].title != '') {
-          addKeyResultsToDB(keyResults, objectiveResponse.id).then(keyResultsResponse => {
-            const objectiveToBeAddedToState = {
-              ...objectiveResponse,
-              keyResults: keyResultsResponse,
-            };
-            setObjectives([...objectives, objectiveToBeAddedToState]);
-          });
+          addKeyResultsToDB(keyResults, objectiveResponse.id).then(
+            (keyResultsResponse: KeyResultType[]) => {
+              const objectiveToBeAddedToState = {
+                ...objectiveResponse,
+                keyResults: keyResultsResponse,
+              };
+              setObjectives([...objectives, objectiveToBeAddedToState]);
+            }
+          );
         } else {
           setObjectives([...objectives, objectiveResponse]);
         }
@@ -137,7 +119,7 @@ export default function OKRForm({ objectiveForUpdate, setObjectiveForUpdate }: O
     const okrsToBeUpdated = {
       id: objectiveForUpdate.id,
       objective: newObjective,
-      keyResults: keyResults.map(keyResult => {
+      keyResults: keyResults.map((keyResult: KeyResultToBeInsertedType) => {
         return {
           ...keyResult,
           id: objectiveForUpdate.keyResults[0].id,
@@ -146,10 +128,10 @@ export default function OKRForm({ objectiveForUpdate, setObjectiveForUpdate }: O
       }),
     };
 
-    updateOkrsToDB(okrsToBeUpdated).then(data => {
+    updateOkrsToDB(okrsToBeUpdated).then((data: OkrType) => {
       if (objectives === null) return;
 
-      const updatedObjectives = objectives.map(objective => {
+      const updatedObjectives: OkrType[] = objectives.map((objective: OkrType) => {
         return objective.id === data.id ? okrsToBeUpdated : objective;
       });
 
@@ -166,13 +148,15 @@ export default function OKRForm({ objectiveForUpdate, setObjectiveForUpdate }: O
   }
 
   function addNewKeyResults() {
-    setKeyResults(prev => [...prev, defaultKeyResult]);
+    setKeyResults((prev: KeyResultToBeInsertedType[]) => [...prev, defaultKeyResult]);
   }
 
   function deleteKeyResultInputList(selectedInputListMapIndex: number) {
-    const updatedKeyResultInputList = keyResults.filter((_m, index) => {
-      return index !== selectedInputListMapIndex;
-    });
+    const updatedKeyResultInputList: KeyResultToBeInsertedType[] = keyResults.filter(
+      (_, index: number) => {
+        return index !== selectedInputListMapIndex;
+      }
+    );
 
     setKeyResults(updatedKeyResultInputList);
   }
@@ -288,7 +272,9 @@ export default function OKRForm({ objectiveForUpdate, setObjectiveForUpdate }: O
                   }}
                 />
                 <button
-                  className={`bg-white border border-red-500 text-red-500 hover:bg-red-500 hover:text-white absolute left-1/2 -translate-x-1/2 top-1/2 ${keyResults.length == 1 ? 'hidden' : 'visible'} -translate-y-1/2 shadow-lg hover:shadow-inner rounded-full p-2`}
+                  className={`bg-white border border-red-500 text-red-500 hover:bg-red-500 hover:text-white absolute left-1/2 -translate-x-1/2 top-1/2 ${
+                    keyResults.length == 1 ? 'hidden' : 'visible'
+                  } -translate-y-1/2 shadow-lg hover:shadow-inner rounded-full p-2`}
                   onClick={() => deleteKeyResultInputList(index)}
                 >
                   <Trash2 className="w-4 h-4" />

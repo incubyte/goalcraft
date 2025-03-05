@@ -1,7 +1,3 @@
-import * as React from 'react';
-import { useContext, useEffect, useState } from 'react';
-import { KeyResultModalType, ObjectiveType } from '../types/OKRTypes';
-import MetricsLabel from './MetricLabel';
 import {
   CircleCheck,
   FilePenLine,
@@ -11,10 +7,14 @@ import {
   SquarePlus,
   Trash2,
 } from 'lucide-react';
-import AddKeyResultModal from './AddKeyResultModal';
-import { OkrContext } from '../context/OkrProvider';
-import { deleteKeyResultFromDB, deleteOkrsFromDB, getOkrsFromDB } from '../database/okr.store.ts';
+import { useContext, useEffect, useState } from 'react';
+
 import NoGoalImage from '../assets/NoGoal.svg';
+import { OkrContext } from '../context/okr.provider.tsx';
+import { deleteKeyResultFromDB, deleteOkrsFromDB, getOkrsFromDB } from '../database/okr.store.ts';
+import { KeyResultModalType, KeyResultType, OkrType } from '../types/okr.types.ts';
+import AddKeyResultModal from './AddKeyResultModal';
+import MetricsLabel from './MetricLabel';
 
 enum PROGRESS_THRESHOLD {
   LOW = 0.33,
@@ -22,14 +22,14 @@ enum PROGRESS_THRESHOLD {
   OPTIMUM = 0.8,
 }
 
-export default function OKRDisplay({
-  objectiveForUpdate,
-  setObjectiveForUpdate,
-}: {
-  objectiveForUpdate: ObjectiveType;
-  setObjectiveForUpdate: React.Dispatch<React.SetStateAction<ObjectiveType>>;
-}) {
-  const { objectives, setObjectives, isWaitingForResponse } = useContext(OkrContext);
+export default function OKRDisplay() {
+  const {
+    objectives,
+    setObjectives,
+    isWaitingForResponse,
+    objectiveForUpdate,
+    setObjectiveForUpdate,
+  } = useContext(OkrContext);
 
   const [keyResultModal, setKeyResultModal] = useState<KeyResultModalType>({
     isOpen: false,
@@ -40,7 +40,7 @@ export default function OKRDisplay({
     if (!keyResultModal.isOpen) {
       console.log('keyResultModal is opened');
       (async () => {
-        const objectivesResponse = await getOkrsFromDB();
+        const objectivesResponse: OkrType[] = await getOkrsFromDB();
         setObjectives(objectivesResponse);
       })();
     }
@@ -50,12 +50,16 @@ export default function OKRDisplay({
     if (objectives === null) return;
     deleteKeyResultFromDB(keyResultDBId)
       .then(() => {
-        const foundObj = objectives.find((_, idx) => objectiveIdx === idx);
+        const foundObj: OkrType | undefined = objectives.find(
+          (_, idx: number) => objectiveIdx === idx
+        );
 
         if (foundObj === undefined) return;
-        foundObj.keyResults = foundObj?.keyResults.filter((_, krIdx) => krIdx !== keyResultIdx);
+        foundObj.keyResults = foundObj?.keyResults.filter(
+          (_, krIdx: number) => krIdx !== keyResultIdx
+        );
 
-        const updatedObjectives = objectives.map((objective, idx) => {
+        const updatedObjectives: OkrType[] = objectives.map((objective: OkrType, idx: number) => {
           return idx === objectiveIdx ? foundObj : objective;
         });
 
@@ -74,7 +78,7 @@ export default function OKRDisplay({
     } catch (error) {
       alert(error);
     }
-    const updatedObjectives = objectives.filter((_, idx) => index !== idx);
+    const updatedObjectives: OkrType[] = objectives.filter((_, idx: number) => index !== idx);
     setObjectives(updatedObjectives);
   }
 
@@ -100,7 +104,7 @@ export default function OKRDisplay({
       className="w-1/2 h-[90%] rounded-md p-10 bg-white border-1 shadow overflow-y-scroll flex flex-wrap justify-between gap-14"
     >
       {objectives != null && objectives.length > 0 ? (
-        objectives.map((objective, objectiveIdx) => {
+        objectives.map((objective: OkrType, objectiveIdx: number) => {
           return (
             <div
               key={objectiveIdx}
@@ -135,10 +139,24 @@ export default function OKRDisplay({
               </div>
 
               {objective.keyResults && objective.keyResults.length > 0 ? (
-                objective.keyResults.map((keyResult, index) => (
+                objective.keyResults.map((keyResult: KeyResultType, index: number) => (
                   <div
                     key={index}
-                    className={`relative pt-2 p-3 ${isAlreadyCompleted(keyResult.initialValue, keyResult.currentValue, keyResult.targetValue) && index == 0 ? 'mt-4' : isAlreadyCompleted(keyResult.initialValue, keyResult.currentValue, keyResult.targetValue) ? 'mt-8' : 'mt-3'} bg-gray-100 rounded-md shadow`}
+                    className={`relative pt-2 p-3 ${
+                      isAlreadyCompleted(
+                        keyResult.initialValue,
+                        keyResult.currentValue,
+                        keyResult.targetValue
+                      ) && index == 0
+                        ? 'mt-4'
+                        : isAlreadyCompleted(
+                              keyResult.initialValue,
+                              keyResult.currentValue,
+                              keyResult.targetValue
+                            )
+                          ? 'mt-8'
+                          : 'mt-3'
+                    } bg-gray-100 rounded-md shadow`}
                   >
                     {isAlreadyCompleted(
                       keyResult.initialValue,
@@ -156,7 +174,15 @@ export default function OKRDisplay({
                       <Trash2 className="w-4 h-4" />
                     </button>
                     <div
-                      className={`mb-3 bg-white ${isAlreadyCompleted(keyResult.initialValue, keyResult.currentValue, keyResult.targetValue) ? 'mt-3' : 'mt-1'} rounded-md flex items-center justify-between shadow-sm`}
+                      className={`mb-3 bg-white ${
+                        isAlreadyCompleted(
+                          keyResult.initialValue,
+                          keyResult.currentValue,
+                          keyResult.targetValue
+                        )
+                          ? 'mt-3'
+                          : 'mt-1'
+                      } rounded-md flex items-center justify-between shadow-sm`}
                     >
                       <Goal className="w-4 h-4 text-gray-700 ml-3 " />
                       <p className={`text-primary text-xs w-full p-2 font-medium rounded-md`}>
