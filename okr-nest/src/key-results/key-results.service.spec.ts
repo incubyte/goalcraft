@@ -3,7 +3,7 @@ import { mockDeep } from 'jest-mock-extended';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { KeyResultsService } from './key-results.service';
-import { KeyResultReqDTO, KeyResultResDTO } from './keyResultDTO';
+import { KeyResultReqDTO, KeyResultResDTO } from './keyResult.dto';
 
 describe('KeyResultService', () => {
   let keyResultsService: KeyResultsService;

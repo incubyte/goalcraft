@@ -13,6 +13,7 @@ type KeyResult = {
   objectiveId: string;
 };
 
-type Okrs = Objective & { keyResults: KeyResult[] };
+type Okr = Objective & { keyResults: KeyResult[] };
+type parsedOkrs = { parsedFile: string; parsedContent: Okr[] };
 
-export type { KeyResult, Objective, Okrs };
+export type { KeyResult, Objective, Okr, parsedOkrs };

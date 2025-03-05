@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Patch, Post, Put } from '@nestjs/common';
 
-import { ObjectiveReqDTO, ObjectiveResDTO, OkrsDTO } from './objectives.dto';
+import { ObjectiveReqDTO, ObjectiveResDTO, OkrDTO } from './objectives.dto';
 import { ObjectivesService } from './objectives.service';
 
 @Controller('objectives')
@@ -28,7 +28,7 @@ export class ObjectivesController {
   }
 
   @Put('/')
-  put(@Body() objective: OkrsDTO) {
+  put(@Body() objective: OkrDTO) {
     return this.objectivesService.put(objective);
   }
 }

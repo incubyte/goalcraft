@@ -3,7 +3,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 
 import { KeyResultsController } from './key-results.controller';
 import { KeyResultsService } from './key-results.service';
-import { KeyResultReqDTO, KeyResultResDTO } from './keyResultDTO';
+import { KeyResultReqDTO, KeyResultResDTO } from './keyResult.dto';
 
 describe('KeyResultsController', () => {
   let controller: KeyResultsController;

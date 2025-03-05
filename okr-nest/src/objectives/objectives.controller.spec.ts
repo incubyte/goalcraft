@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 
-import { Objective, Okrs } from '../../test/test-types';
+import { Objective, Okr } from '../../test/test-types';
 import { ObjectivesController } from './objectives.controller';
 import { ObjectivesService } from './objectives.service';
 
@@ -36,7 +36,7 @@ describe('Objectives Controller', () => {
     });
 
     it('should return all objectives', async () => {
-      const okrs: Okrs[] = [
+      const okrs: Okr[] = [
         {
           id: 'FAKE_OKR_ID',
           objective: 'FAKE_OBJECTIVE',
@@ -45,7 +45,7 @@ describe('Objectives Controller', () => {
       ];
       service.fetchAll.mockResolvedValue(okrs);
 
-      const response: Okrs[] = await controller.fetchAll();
+      const response: Okr[] = await controller.fetchAll();
 
       expect(response).toEqual(okrs);
     });
