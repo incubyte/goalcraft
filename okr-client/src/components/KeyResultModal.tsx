@@ -1,5 +1,6 @@
 import { CircleX, PackagePlus } from 'lucide-react';
-import { useContext, useState } from 'react';
+import { ChangeEvent, useContext, useState } from 'react';
+import { toast } from 'react-toastify';
 
 import { OkrContext } from '../context/okr.provider.tsx';
 import { addKeyResultsToDB } from '../database/okr.store.ts';
@@ -11,51 +12,58 @@ import {
 } from '../types/okr.types.ts';
 import Input from './Input';
 
-export default function AddKeyResultModal({
+export default function KeyResultModal({
   closeModal,
   keyResultModal,
 }: {
   closeModal: () => void;
   keyResultModal: KeyResultModalType;
 }) {
-  const { objectives, setObjectives, defaultKeyResult } = useContext(OkrContext);
+  const { okrs, setOkrs, defaultKeyResult } = useContext(OkrContext);
 
   const [keyResult, setKeyResult] = useState<KeyResultToBeInsertedType>(defaultKeyResult);
 
   function handleAddKeyResult() {
-    if (objectives === null) return;
     if (keyResult.title === '') {
-      alert('Title cannot be empty!');
+      toast("Title can't be empty!", {
+        position: 'top-center',
+        type: 'error',
+        autoClose: 3000,
+      });
       return;
     }
 
-    console.log(keyResult);
-
-    const foundObj: OkrType | undefined = objectives.find(
-      (_, idx: number) => keyResultModal.objectiveIndex === idx
+    if (okrs === null) return;
+    const currentOkr: OkrType | undefined = okrs.find(
+      (_, idx: number) => idx === keyResultModal.objectiveIndex
     );
 
-    if (foundObj === undefined) return;
-    addKeyResultsToDB([keyResult], foundObj.id)
-      .then((data: KeyResultType[]) => {
-        foundObj.keyResults.push({
+    if (currentOkr === undefined) return;
+    addKeyResultsToDB([keyResult], currentOkr.id)
+      .then((insertedKeyResult: KeyResultType[]) => {
+        currentOkr.keyResults.push({
           ...keyResult,
-          id: data[0].id,
-          objectiveId: data[0].objectiveId,
+          id: insertedKeyResult[0].id,
+          objectiveId: insertedKeyResult[0].objectiveId,
         });
 
-        const updatedObjectives: OkrType[] = objectives.map((objective, idx) => {
-          return idx === keyResultModal.objectiveIndex ? foundObj : objective;
+        const okrsToBeUpdated: OkrType[] = okrs.map((objective: OkrType, idx: number) => {
+          return idx === keyResultModal.objectiveIndex ? currentOkr : objective;
         });
-        setObjectives(updatedObjectives);
+        setOkrs(okrsToBeUpdated);
       })
-      .catch(error => {
-        alert(error);
+      .catch((error: Error) => {
+        toast(`Something went wrong! ${error.message}`, {
+          position: 'top-center',
+          type: 'error',
+          autoClose: 3000,
+        });
       });
+
     closeModal();
   }
 
-  function handleChange(key: string, value: number | string) {
+  function handleInputOnChange(key: string, value: number | string) {
     const updatedKeyResult: KeyResultToBeInsertedType = { ...keyResult, [key]: value };
     setKeyResult(updatedKeyResult);
   }
@@ -68,7 +76,7 @@ export default function AddKeyResultModal({
       >
         <div className="w-full flex justify-between mb-3">
           <h1 className="text-secondary font-medium mb-2">
-            {objectives != null && objectives[keyResultModal.objectiveIndex].objective}
+            {okrs && okrs[keyResultModal.objectiveIndex].objective}
           </h1>
           <button onClick={closeModal} className="text-red-500">
             <CircleX className="w-5 h-5" />
@@ -80,8 +88,8 @@ export default function AddKeyResultModal({
           className="flex-grow"
           type="text"
           placeholder="Increase brand awarness"
-          onChange={e => {
-            handleChange('title', e.target.value);
+          onChange={(e: ChangeEvent<HTMLInputElement>) => {
+            handleInputOnChange('title', e.target.value);
           }}
         />
         <div id="firstKeyResultMetrics" className="flex justify-between flex-wrap gap-2">
@@ -90,8 +98,8 @@ export default function AddKeyResultModal({
             value={keyResult.initialValue}
             type="number"
             placeholder="Initial Value"
-            onChange={e => {
-              handleChange('initialValue', parseInt(e.target.value));
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              handleInputOnChange('initialValue', parseInt(e.target.value));
             }}
           />
           <Input
@@ -99,8 +107,8 @@ export default function AddKeyResultModal({
             value={keyResult.currentValue}
             type="number"
             placeholder="Current Value"
-            onChange={e => {
-              handleChange('currentValue', parseInt(e.target.value));
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              handleInputOnChange('currentValue', parseInt(e.target.value));
             }}
           />
           <Input
@@ -108,8 +116,8 @@ export default function AddKeyResultModal({
             value={keyResult.targetValue}
             type="number"
             placeholder="Target Value"
-            onChange={e => {
-              handleChange('targetValue', parseInt(e.target.value));
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              handleInputOnChange('targetValue', parseInt(e.target.value));
             }}
           />
           <Input
@@ -117,8 +125,8 @@ export default function AddKeyResultModal({
             value={keyResult.metric}
             type="text"
             placeholder="%"
-            onChange={e => {
-              handleChange('metric', e.target.value);
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              handleInputOnChange('metric', e.target.value);
             }}
           />
           <div className="flex h-full gap-x-5">

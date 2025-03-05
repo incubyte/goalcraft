@@ -1,4 +1,4 @@
-import { Context, createContext, ReactElement, useState } from 'react';
+import { Context, createContext, Dispatch, ReactElement, SetStateAction, useState } from 'react';
 
 import { KeyResultToBeInsertedType, OkrType } from '../types/okr.types.ts';
 
@@ -27,19 +27,19 @@ const defaultKeyResult = {
 };
 
 interface OkrContextType {
-  objectives: OkrType[] | null;
-  setObjectives: React.Dispatch<React.SetStateAction<OkrType[] | null>>;
+  okrs: OkrType[] | null;
+  setOkrs: Dispatch<SetStateAction<OkrType[] | null>>;
   isWaitingForResponse: boolean;
-  setIsWaitingForResponse: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsWaitingForResponse: Dispatch<SetStateAction<boolean>>;
   objectiveForUpdate: OkrType;
-  setObjectiveForUpdate: React.Dispatch<React.SetStateAction<OkrType>>;
+  setObjectiveForUpdate: Dispatch<SetStateAction<OkrType>>;
   defaultKeyResult: KeyResultToBeInsertedType;
   defaultOKR: OkrType;
 }
 
 export const OkrContext: Context<OkrContextType> = createContext<OkrContextType>({
-  objectives: [],
-  setObjectives: () => {},
+  okrs: [],
+  setOkrs: () => {},
   isWaitingForResponse: false,
   setIsWaitingForResponse: () => {},
   objectiveForUpdate: defaultOKR,
@@ -49,15 +49,15 @@ export const OkrContext: Context<OkrContextType> = createContext<OkrContextType>
 });
 
 const OkrProvider = ({ children }: { children: ReactElement }) => {
-  const [objectives, setObjectives] = useState<OkrType[] | null>([]);
+  const [okrs, setOkrs] = useState<OkrType[] | null>([]);
   const [isWaitingForResponse, setIsWaitingForResponse] = useState<boolean>(false);
   const [objectiveForUpdate, setObjectiveForUpdate] = useState<OkrType>(defaultOKR);
 
   return (
     <OkrContext.Provider
       value={{
-        objectives,
-        setObjectives,
+        okrs,
+        setOkrs,
         isWaitingForResponse,
         setIsWaitingForResponse,
         objectiveForUpdate,
