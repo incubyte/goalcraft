@@ -1,3 +1,5 @@
+import { ChangeEvent } from 'react';
+
 export default function Input({
   label,
   type,
@@ -9,7 +11,7 @@ export default function Input({
   label: string;
   type: 'text' | 'number';
   placeholder: string;
-  onChange: (e: any) => any;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   className?: string;
   value: string | number;
 }) {
