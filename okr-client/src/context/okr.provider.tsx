@@ -31,8 +31,8 @@ interface OkrContextType {
   setOkrs: Dispatch<SetStateAction<OkrType[] | null>>;
   isWaitingForResponse: boolean;
   setIsWaitingForResponse: Dispatch<SetStateAction<boolean>>;
-  objectiveForUpdate: OkrType;
-  setObjectiveForUpdate: Dispatch<SetStateAction<OkrType>>;
+  selectedOkrsToBeUpdated: OkrType;
+  setSelectedOkrsToBeUpdated: Dispatch<SetStateAction<OkrType>>;
   defaultKeyResult: KeyResultToBeInsertedType;
   defaultOKR: OkrType;
 }
@@ -42,8 +42,8 @@ export const OkrContext: Context<OkrContextType> = createContext<OkrContextType>
   setOkrs: () => {},
   isWaitingForResponse: false,
   setIsWaitingForResponse: () => {},
-  objectiveForUpdate: defaultOKR,
-  setObjectiveForUpdate: () => {},
+  selectedOkrsToBeUpdated: defaultOKR,
+  setSelectedOkrsToBeUpdated: () => {},
   defaultKeyResult: defaultKeyResult,
   defaultOKR: defaultOKR,
 });
@@ -51,7 +51,7 @@ export const OkrContext: Context<OkrContextType> = createContext<OkrContextType>
 const OkrProvider = ({ children }: { children: ReactElement }) => {
   const [okrs, setOkrs] = useState<OkrType[] | null>([]);
   const [isWaitingForResponse, setIsWaitingForResponse] = useState<boolean>(false);
-  const [objectiveForUpdate, setObjectiveForUpdate] = useState<OkrType>(defaultOKR);
+  const [selectedOkrsToBeUpdated, setSelectedOkrsToBeUpdated] = useState<OkrType>(defaultOKR);
 
   return (
     <OkrContext.Provider
@@ -60,8 +60,8 @@ const OkrProvider = ({ children }: { children: ReactElement }) => {
         setOkrs,
         isWaitingForResponse,
         setIsWaitingForResponse,
-        objectiveForUpdate,
-        setObjectiveForUpdate,
+        selectedOkrsToBeUpdated,
+        setSelectedOkrsToBeUpdated,
         defaultKeyResult,
         defaultOKR,
       }}

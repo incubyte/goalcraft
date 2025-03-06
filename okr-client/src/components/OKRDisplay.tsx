@@ -8,12 +8,13 @@ import {
   Trash2,
 } from 'lucide-react';
 import { useContext, useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
 import NoGoalImage from '../assets/NoGoal.svg';
 import { OkrContext } from '../context/okr.provider.tsx';
 import { deleteKeyResultFromDB, deleteOkrsFromDB, getOkrsFromDB } from '../database/okr.store.ts';
 import { KeyResultModalType, KeyResultType, OkrType } from '../types/okr.types.ts';
-import AddKeyResultModal from './AddKeyResultModal';
+import KeyResultModal from './KeyResultModal.tsx';
 import MetricsLabel from './MetricLabel';
 
 enum PROGRESS_THRESHOLD {
@@ -24,11 +25,11 @@ enum PROGRESS_THRESHOLD {
 
 export default function OKRDisplay() {
   const {
-    objectives,
-    setObjectives,
+    okrs,
+    setOkrs,
     isWaitingForResponse,
-    objectiveForUpdate,
-    setObjectiveForUpdate,
+    selectedOkrsToBeUpdated,
+    setSelectedOkrsToBeUpdated,
   } = useContext(OkrContext);
 
   const [keyResultModal, setKeyResultModal] = useState<KeyResultModalType>({
@@ -38,48 +39,57 @@ export default function OKRDisplay() {
 
   useEffect(() => {
     if (!keyResultModal.isOpen) {
-      console.log('keyResultModal is opened');
       (async () => {
         const objectivesResponse: OkrType[] = await getOkrsFromDB();
-        setObjectives(objectivesResponse);
+        setOkrs(objectivesResponse);
       })();
     }
   }, [keyResultModal.isOpen]);
 
-  function deleteKeyResult(objectiveIdx: number, keyResultIdx: number, keyResultDBId: string) {
-    if (objectives === null) return;
+  function handleDeleteKeyResult(
+    objectiveIdx: number,
+    keyResultIdx: number,
+    keyResultDBId: string
+  ) {
+    if (okrs === null) return;
     deleteKeyResultFromDB(keyResultDBId)
       .then(() => {
-        const foundObj: OkrType | undefined = objectives.find(
-          (_, idx: number) => objectiveIdx === idx
-        );
+        const foundObj: OkrType | undefined = okrs.find((_, idx: number) => objectiveIdx === idx);
 
         if (foundObj === undefined) return;
         foundObj.keyResults = foundObj?.keyResults.filter(
           (_, krIdx: number) => krIdx !== keyResultIdx
         );
 
-        const updatedObjectives: OkrType[] = objectives.map((objective: OkrType, idx: number) => {
+        const updatedObjectives: OkrType[] = okrs.map((objective: OkrType, idx: number) => {
           return idx === objectiveIdx ? foundObj : objective;
         });
 
-        setObjectives(updatedObjectives);
+        setOkrs(updatedObjectives);
       })
-      .catch(error => {
-        console.log(error);
+      .catch((error: Error) => {
+        toast(`Something went wrong! ${error.message}`, {
+          position: 'top-center',
+          type: 'error',
+          autoClose: 3000,
+        });
       });
   }
 
-  async function deleteObjective(objectiveIdx: string, index: number) {
-    if (objectives === null) return;
+  async function handleDeleteOkrs(objectiveIdx: string, index: number) {
+    if (okrs === null) return;
 
     try {
       await deleteOkrsFromDB(objectiveIdx);
     } catch (error) {
-      alert(error);
+      toast(`Something went wrong! ${error.toString()}`, {
+        position: 'top-center',
+        type: 'error',
+        autoClose: 3000,
+      });
     }
-    const updatedObjectives: OkrType[] = objectives.filter((_, idx: number) => index !== idx);
-    setObjectives(updatedObjectives);
+    const updatedObjectives: OkrType[] = okrs.filter((_, idx: number) => index !== idx);
+    setOkrs(updatedObjectives);
   }
 
   function isAlreadyCompleted(init: number, current: number, target: number): boolean {
@@ -103,43 +113,34 @@ export default function OKRDisplay() {
       id="showObjectives"
       className="w-1/2 h-[90%] rounded-md p-10 bg-white border-1 shadow overflow-y-scroll flex flex-wrap justify-between gap-14"
     >
-      {objectives != null && objectives.length > 0 ? (
-        objectives.map((objective: OkrType, objectiveIdx: number) => {
+      {okrs != null && okrs.length > 0 ? (
+        okrs.map((okr: OkrType, index: number) => {
           return (
             <div
-              key={objectiveIdx}
+              key={index}
               className="relative w-72 h-max border border-gray-200 rounded-md p-5 shadow group"
             >
-              {objective.id === objectiveForUpdate.id && isWaitingForResponse ? (
+              {okr.id === selectedOkrsToBeUpdated.id && isWaitingForResponse && (
                 <div className="w-full h-full absolute top-0 left-0 flex items-center justify-center bg-white z-10 bg-opacity-80 border-gray-200">
                   <LoaderCircle className="w-10 h-10 mr-1 animate-spin" />
                 </div>
-              ) : (
-                ''
               )}
               <div className="flex items-center justify-between mb-3">
                 <h1 className="font-bold text-center text-base w-full truncate mb-2">
-                  {objective.objective}
+                  {okr.objective}
                 </h1>
                 <div className="items-center gap-x-3 z-10 -mt-2 hidden group-hover:flex absolute -top-3 bg-white p-2 shadow px-5 border rounded-full left-1/2 -translate-x-1/2">
-                  <button
-                    onClick={() => deleteObjective(objective.id, objectiveIdx)}
-                    className="text-red-500"
-                  >
+                  <button onClick={() => handleDeleteOkrs(okr.id, index)} className="text-red-500">
                     <Trash2 className="w-4 h-4" />
                   </button>
-                  <button
-                    onClick={() => {
-                      setObjectiveForUpdate({ ...objective });
-                    }}
-                  >
+                  <button onClick={() => setSelectedOkrsToBeUpdated({ ...okr })}>
                     <FilePenLine className="w-4 h-4 text-primary" />
                   </button>
                 </div>
               </div>
 
-              {objective.keyResults && objective.keyResults.length > 0 ? (
-                objective.keyResults.map((keyResult: KeyResultType, index: number) => (
+              {okr.keyResults && okr.keyResults.length > 0 ? (
+                okr.keyResults.map((keyResult: KeyResultType, index: number) => (
                   <div
                     key={index}
                     className={`relative pt-2 p-3 ${
@@ -168,7 +169,7 @@ export default function OKRDisplay() {
                       </p>
                     )}
                     <button
-                      onClick={() => deleteKeyResult(objectiveIdx, index, keyResult.id)}
+                      onClick={() => handleDeleteKeyResult(index, index, keyResult.id)}
                       className="border bg-red-500 text-white hover:text-red-500 hover:bg-white hover:border-red-500 absolute top-1/2 -translate-y-1/2 -right-10 shadow-lg hover:shadow-inner rounded-full p-2"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -239,7 +240,7 @@ export default function OKRDisplay() {
                 onClick={() =>
                   setKeyResultModal({
                     isOpen: true,
-                    objectiveIndex: objectiveIdx,
+                    objectiveIndex: index,
                   })
                 }
                 className="absolute -bottom-5 left-1/2 -translate-x-1/2 p-2 rounded-full border border-secondary hover:bg-white bg-secondary hover:text-[#91b30f] text-white shadow-md"
@@ -258,7 +259,7 @@ export default function OKRDisplay() {
         </div>
       )}
       {keyResultModal.isOpen && (
-        <AddKeyResultModal
+        <KeyResultModal
           keyResultModal={keyResultModal}
           closeModal={() => setKeyResultModal({ isOpen: false, objectiveIndex: -1 })}
         />
