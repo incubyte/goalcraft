@@ -1,6 +1,5 @@
 import { CircleX, PackagePlus } from 'lucide-react';
 import { ChangeEvent, useContext, useState } from 'react';
-import { toast } from 'react-toastify';
 
 import { OkrContext } from '../context/okr.provider.tsx';
 import { addKeyResultsToDB } from '../database/okr.store.ts';
@@ -11,6 +10,7 @@ import {
   OkrType,
 } from '../types/okr.types.ts';
 import Input from './Input';
+import Toast from './Toast.tsx';
 
 export default function KeyResultModal({
   closeModal,
@@ -20,52 +20,58 @@ export default function KeyResultModal({
   keyResultModal: KeyResultModalType;
 }) {
   const { okrs, setOkrs, defaultKeyResult } = useContext(OkrContext);
+  const { successToast, failureToast } = Toast();
 
   const [keyResult, setKeyResult] = useState<KeyResultToBeInsertedType>(defaultKeyResult);
 
+  function isKeyResultEmpty(): boolean {
+    return keyResult.title.trim().length === 0;
+  }
+
+  function getCurrentOkr(): OkrType | undefined {
+    return okrs.find((_, idx: number) => idx === keyResultModal.objectiveIndex);
+  }
+
+  function addKeyResultsToOkrState(currentOkr: OkrType, insertedKeyResult: KeyResultType[]) {
+    currentOkr.keyResults.push({
+      ...keyResult,
+      id: insertedKeyResult[0].id,
+      objectiveId: insertedKeyResult[0].objectiveId,
+    });
+
+    const okrsToBeUpdated: OkrType[] = okrs.map((objective: OkrType, idx: number) => {
+      return idx === keyResultModal.objectiveIndex ? currentOkr : objective;
+    });
+    setOkrs(okrsToBeUpdated);
+  }
+
   function handleAddKeyResult() {
-    if (keyResult.title === '') {
-      toast("Title can't be empty!", {
-        position: 'top-center',
-        type: 'error',
-        autoClose: 3000,
-      });
+    if (isKeyResultEmpty()) {
+      failureToast("Title can't be empty!");
       return;
     }
 
-    if (okrs === null) return;
-    const currentOkr: OkrType | undefined = okrs.find(
-      (_, idx: number) => idx === keyResultModal.objectiveIndex
-    );
+    const currentOkr: OkrType | undefined = getCurrentOkr();
+    if (currentOkr === undefined) {
+      failureToast('Something went wrong!');
+      return;
+    }
 
-    if (currentOkr === undefined) return;
     addKeyResultsToDB([keyResult], currentOkr.id)
       .then((insertedKeyResult: KeyResultType[]) => {
-        currentOkr.keyResults.push({
-          ...keyResult,
-          id: insertedKeyResult[0].id,
-          objectiveId: insertedKeyResult[0].objectiveId,
-        });
-
-        const okrsToBeUpdated: OkrType[] = okrs.map((objective: OkrType, idx: number) => {
-          return idx === keyResultModal.objectiveIndex ? currentOkr : objective;
-        });
-        setOkrs(okrsToBeUpdated);
+        addKeyResultsToOkrState(currentOkr, insertedKeyResult);
+        successToast('Key Result successfully added!');
       })
       .catch((error: Error) => {
-        toast(`Something went wrong! ${error.message}`, {
-          position: 'top-center',
-          type: 'error',
-          autoClose: 3000,
-        });
+        failureToast(`Something went wrong! ${error.message}`);
       });
 
     closeModal();
   }
 
   function handleInputOnChange(key: string, value: number | string) {
-    const updatedKeyResult: KeyResultToBeInsertedType = { ...keyResult, [key]: value };
-    setKeyResult(updatedKeyResult);
+    const keyResultInputToBeChanged: KeyResultToBeInsertedType = { ...keyResult, [key]: value };
+    setKeyResult(keyResultInputToBeChanged);
   }
 
   return (
