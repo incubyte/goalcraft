@@ -1,7 +1,7 @@
 import { Tooltip } from '@mui/material';
 import { BetweenHorizonalStart, Goal, LoaderCircle, Sparkles, Trash2 } from 'lucide-react';
 import { ChangeEvent, useContext, useEffect, useState } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 
 import { OkrContext } from '../context/okr.provider.tsx';
 import {
@@ -10,9 +10,15 @@ import {
   getOkrsFromDB,
   updateOkrsToDB,
 } from '../database/okr.store.ts';
-import { KeyResultToBeInsertedType, KeyResultType, OkrType } from '../types/okr.types.ts';
+import {
+  KeyResultToBeInsertedType,
+  KeyResultType,
+  ObjectiveToBeInsertedType,
+  OkrType,
+} from '../types/okr.types.ts';
+import GenerateKeyResultModal from './GenerateKeyResultModal.tsx';
 import Input from './Input';
-import NumberOfKeyResultsModal from './NumberOfKeyResultsModal.tsx';
+import Toast from './Toast.tsx';
 
 export default function OKRForm() {
   const {
@@ -26,7 +32,9 @@ export default function OKRForm() {
     defaultOKR,
   } = useContext(OkrContext);
 
-  const [isUpdateForm, setIsUpdateForm] = useState<boolean>(false);
+  const { failureToast, successToast } = Toast();
+
+  const [isFormForOkrToUpdate, setIsFormForOkrToUpdate] = useState<boolean>(false);
   const [newObjective, setNewObjective] = useState<string>('');
   const [keyResults, setKeyResults] = useState<KeyResultToBeInsertedType[]>([defaultKeyResult]);
   const [isNumberOfKeyResultModalOpen, setIsNumberOfKeyResultModalOpen] = useState<boolean>(false);
@@ -36,15 +44,15 @@ export default function OKRForm() {
     if (selectedOkrsToBeUpdated.id != '') {
       setNewObjective(selectedOkrsToBeUpdated.objective);
       setKeyResults(selectedOkrsToBeUpdated.keyResults);
-      setIsUpdateForm(true);
+      setIsFormForOkrToUpdate(true);
     }
   }, [selectedOkrsToBeUpdated]);
 
   function handleAbortOkrToBeUpdate() {
     setSelectedOkrsToBeUpdated(defaultOKR);
-    setKeyResults([defaultKeyResult]);
-    setNewObjective('');
-    setIsUpdateForm(false);
+    resetFormInputs();
+    turnFormIntoDefaultMode();
+
     (async () => {
       const objectivesResponse: OkrType[] = await getOkrsFromDB();
       setOkrs(objectivesResponse);
@@ -59,70 +67,81 @@ export default function OKRForm() {
     });
   }
 
+  function isObjectiveEmpty() {
+    return newObjective.trim().length === 0;
+  }
+
+  function isKeyResultsTitleEmpty() {
+    return (
+      keyResults.filter(
+        (keyResultInputGroup: KeyResultToBeInsertedType) =>
+          keyResultInputGroup.title.trim().length == 0
+      ) != undefined
+    );
+  }
+
+  function addOkrToState(insertedObjective: OkrType, insertedKeyResult: KeyResultType[]) {
+    const okrToBeAddedInState = {
+      ...insertedObjective,
+      keyResults: insertedKeyResult,
+    };
+    setOkrs([...okrs, okrToBeAddedInState]);
+  }
+
+  function getObjectiveToBeAdded(): ObjectiveToBeInsertedType {
+    return { objective: newObjective };
+  }
+
   function handleAddOkr() {
-    if (newObjective.length == 0 || keyResults.length == 0) {
-      toast('Please enter an Objective!', {
-        position: 'top-center',
-        type: 'error',
-        autoClose: 3000,
-      });
+    if (isObjectiveEmpty()) {
+      failureToast('Please enter an Objective!');
       return;
     }
 
     setIsWaitingForResponse(true);
-    const objectiveToBeAdded = { objective: newObjective };
+
+    const objectiveToBeAdded: ObjectiveToBeInsertedType = getObjectiveToBeAdded();
 
     addObjectiveToDB(objectiveToBeAdded)
       .then((insertedObjective: OkrType) => {
-        if (keyResults[0].title != '') {
+        if (isKeyResultsTitleEmpty()) {
           addKeyResultsToDB(keyResults, insertedObjective.id)
             .then((insertedKeyResult: KeyResultType[]) => {
-              const okrToBeAddedInState = {
-                ...insertedObjective,
-                keyResults: insertedKeyResult,
-              };
-              setOkrs(okrs != null ? [...okrs, okrToBeAddedInState] : [okrToBeAddedInState]);
+              addOkrToState(insertedObjective, insertedKeyResult);
+              successToast('Your goal has been added successfully.');
             })
             .catch((error: Error) => {
-              toast(`Something went wrong! ${error.message}`, {
-                position: 'top-center',
-                type: 'error',
-                autoClose: 3000,
-              });
+              failureToast(`Something went wrong! ${error.message}`);
             });
         } else {
-          setOkrs(okrs != null ? [...okrs, insertedObjective] : [insertedObjective]);
+          setOkrs([...okrs, insertedObjective]);
         }
 
-        setKeyResults([defaultKeyResult]);
-        setNewObjective('');
-        setIsWaitingForResponse(false);
+        resetFormInputs();
       })
       .catch((error: Error) => {
-        toast(`Something went wrong! ${error.message}`, {
-          position: 'top-center',
-          type: 'error',
-          autoClose: 3000,
-        });
+        failureToast(`Something went wrong! ${error.message}`);
       });
   }
 
   function handleGenerateKeyResultFromLLM() {
     if (newObjective.length == 0) {
-      toast('Please enter an Objective!', {
-        position: 'top-center',
-        type: 'error',
-        autoClose: 3000,
-      });
+      failureToast('Please enter an Objective!');
     } else {
       setIsNumberOfKeyResultModalOpen(true);
     }
   }
 
-  function handleUpdateOkr() {
-    setIsWaitingForResponse(true);
+  function updateOkrsToState(updatedOkr: OkrType, okrsToBeUpdatedInDB: OkrType) {
+    const okrsToBeUpdatedInState: OkrType[] = okrs.map((okr: OkrType) => {
+      return okr.id === updatedOkr.id ? okrsToBeUpdatedInDB : okr;
+    });
 
-    const okrsToBeUpdatedInDB = {
+    setOkrs([...okrsToBeUpdatedInState]);
+  }
+
+  function getOkrToBeUpdated(): OkrType {
+    return {
       id: selectedOkrsToBeUpdated.id,
       objective: newObjective,
       keyResults: keyResults.map((keyResult: KeyResultToBeInsertedType) => {
@@ -133,24 +152,34 @@ export default function OKRForm() {
         };
       }),
     };
+  }
 
-    updateOkrsToDB(okrsToBeUpdatedInDB).then((updatedOkr: OkrType) => {
-      if (okrs === null) return;
+  function resetFormInputs() {
+    setNewObjective('');
+    setKeyResults([defaultKeyResult]);
+    setIsWaitingForResponse(false);
+  }
 
-      const okrsToBeUpdatedInState: OkrType[] = okrs.map((okr: OkrType) => {
-        return okr.id === updatedOkr.id ? okrsToBeUpdatedInDB : okr;
+  function turnFormIntoDefaultMode() {
+    setIsFormForOkrToUpdate(false);
+  }
+
+  function handleUpdateOkr() {
+    setIsWaitingForResponse(true);
+
+    const okrToBeUpdatedInDB: OkrType = getOkrToBeUpdated();
+
+    updateOkrsToDB(okrToBeUpdatedInDB)
+      .then((updatedOkr: OkrType) => {
+        updateOkrsToState(updatedOkr, okrToBeUpdatedInDB);
+        resetFormInputs();
+        turnFormIntoDefaultMode();
+
+        successToast('Your okr has been updated successfully.');
+      })
+      .catch((error: Error) => {
+        failureToast(`Something went wrong ${error.message}`);
       });
-
-      setOkrs([...okrsToBeUpdatedInState]);
-      setNewObjective('');
-      setKeyResults([defaultKeyResult]);
-
-      //TODO: remove set timeout
-      setTimeout(() => {
-        setIsUpdateForm(false);
-        setIsWaitingForResponse(false);
-      }, 1000);
-    });
   }
 
   function handleAddKeyResultInputsGroup() {
@@ -190,7 +219,7 @@ export default function OKRForm() {
             }}
           />
         </div>
-        {!isUpdateForm && (
+        {!isFormForOkrToUpdate && (
           <>
             <Tooltip
               title="Use AI-Generated key-Results."
@@ -291,7 +320,7 @@ export default function OKRForm() {
       </div>
 
       <div className="w-full flex justify-between bg-gray-50 px-8 py-5" id="submitButton">
-        {isUpdateForm ? (
+        {isFormForOkrToUpdate ? (
           <button
             className="bg-secondary hover:bg-gray-800 ease-linear px-4 py-2 rounded-md text-white text-sm font-medium"
             onClick={handleAbortOkrToBeUpdate}
@@ -309,10 +338,10 @@ export default function OKRForm() {
         )}
         <button
           className="bg-primary hover:bg-gray-800 px-4 py-2 rounded-md text-white text-sm font-medium flex items-center"
-          onClick={isUpdateForm ? handleUpdateOkr : handleAddOkr}
+          onClick={isFormForOkrToUpdate ? handleUpdateOkr : handleAddOkr}
         >
           {isWaitingForResponse && <LoaderCircle className="w-4 h-4 mr-1 animate-spin" />}{' '}
-          {isUpdateForm ? (
+          {isFormForOkrToUpdate ? (
             'Update Objective'
           ) : (
             <p className="flex items-center gap-x-1">
@@ -322,7 +351,7 @@ export default function OKRForm() {
           )}
         </button>
         {isNumberOfKeyResultModalOpen && (
-          <NumberOfKeyResultsModal
+          <GenerateKeyResultModal
             setKeyResults={setKeyResults}
             setIsGenerating={setIsGenerating}
             isGenerating={isGenerating}
