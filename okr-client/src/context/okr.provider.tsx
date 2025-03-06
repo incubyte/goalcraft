@@ -27,8 +27,8 @@ const defaultKeyResult = {
 };
 
 interface OkrContextType {
-  okrs: OkrType[] | null;
-  setOkrs: Dispatch<SetStateAction<OkrType[] | null>>;
+  okrs: OkrType[];
+  setOkrs: Dispatch<SetStateAction<OkrType[]>>;
   isWaitingForResponse: boolean;
   setIsWaitingForResponse: Dispatch<SetStateAction<boolean>>;
   selectedOkrsToBeUpdated: OkrType;
@@ -49,7 +49,7 @@ export const OkrContext: Context<OkrContextType> = createContext<OkrContextType>
 });
 
 const OkrProvider = ({ children }: { children: ReactElement }) => {
-  const [okrs, setOkrs] = useState<OkrType[] | null>([]);
+  const [okrs, setOkrs] = useState<OkrType[]>([]);
   const [isWaitingForResponse, setIsWaitingForResponse] = useState<boolean>(false);
   const [selectedOkrsToBeUpdated, setSelectedOkrsToBeUpdated] = useState<OkrType>(defaultOKR);
 
