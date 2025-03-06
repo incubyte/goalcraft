@@ -8,6 +8,10 @@ interface KeyResultType {
   metric: string;
 }
 
+interface ObjectiveToBeInsertedType {
+  objective: string;
+}
+
 type KeyResultToBeInsertedType = Omit<KeyResultType, 'id' | 'objectiveId'>;
 
 interface OkrType {
@@ -27,6 +31,7 @@ export type {
   KeyResultModalType,
   KeyResultToBeInsertedType,
   KeyResultType,
+  ObjectiveToBeInsertedType,
   OkrToBeInsertedType,
   OkrType,
 };
