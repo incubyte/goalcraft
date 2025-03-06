@@ -1,11 +1,12 @@
 import { CircleX, Sparkles } from 'lucide-react';
 import * as React from 'react';
-import { useState } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
+import { ChangeEvent, useState } from 'react';
+import { ToastContainer } from 'react-toastify';
 
 import { generateKeyResultFromLLM } from '../database/okr.store.ts';
 import { KeyResultToBeInsertedType } from '../types/okr.types.ts';
 import Input from './Input';
+import Toast from './Toast.tsx';
 
 interface NumberOfKeyResultsModalPropType {
   setIsGenerating: React.Dispatch<React.SetStateAction<boolean>>;
@@ -15,7 +16,7 @@ interface NumberOfKeyResultsModalPropType {
   setIsGenerate: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function NumberOfKeyResultsModal({
+export default function GenerateKeyResultModal({
   setIsGenerating,
   newObjective,
   setKeyResults,
@@ -23,14 +24,11 @@ export default function NumberOfKeyResultsModal({
   setIsGenerate,
 }: NumberOfKeyResultsModalPropType) {
   const [numberOfKeyResults, setNumberOfKeyResults] = useState<number>(3);
+  const { successToast, failureToast } = Toast();
 
   function handleGenerateKeyResultFromLLM() {
     if (numberOfKeyResults < 1) {
-      toast('Number of key results must be greater than 0 !!', {
-        type: 'error',
-        position: 'top-center',
-        autoClose: 3000,
-      });
+      failureToast('Number of key results must be greater than 0 !!');
     } else {
       setIsGenerate(false);
       setIsGenerating(true);
@@ -39,9 +37,10 @@ export default function NumberOfKeyResultsModal({
         .then((generatedKeyResults: KeyResultToBeInsertedType[]) => {
           setKeyResults(generatedKeyResults);
           setIsGenerating(false);
+          successToast('Key Result has been generated successfully!');
         })
-        .catch(error => {
-          alert(error);
+        .catch((error: Error) => {
+          failureToast(`Something went wrong! ${error.message}`);
           setIsGenerating(false);
         });
     }
@@ -68,8 +67,8 @@ export default function NumberOfKeyResultsModal({
               placeholder=""
               className="flex-grow"
               value={numberOfKeyResults}
-              onChange={e => {
-                setNumberOfKeyResults(e.target.value);
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                setNumberOfKeyResults(parseInt(e.target.value));
               }}
             />
             <button
