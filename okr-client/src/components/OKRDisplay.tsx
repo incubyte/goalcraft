@@ -16,6 +16,7 @@ import { deleteKeyResultFromDB, deleteOkrsFromDB, getOkrsFromDB } from '../datab
 import { KeyResultModalType, KeyResultType, OkrType } from '../types/okr.types.ts';
 import KeyResultModal from './KeyResultModal.tsx';
 import MetricsLabel from './MetricLabel';
+import Toast from './Toast.tsx';
 
 enum PROGRESS_THRESHOLD {
   LOW = 0.33,
@@ -32,6 +33,8 @@ export default function OKRDisplay() {
     setSelectedOkrsToBeUpdated,
   } = useContext(OkrContext);
 
+  const { failureToast, successToast } = Toast();
+
   const [keyResultModal, setKeyResultModal] = useState<KeyResultModalType>({
     isOpen: false,
     objectiveIndex: -1,
@@ -46,26 +49,37 @@ export default function OKRDisplay() {
     }
   }, [keyResultModal.isOpen]);
 
+  function getCurrentOkr(objectiveIndex: number): OkrType | undefined {
+    return okrs.find((_, idx: number) => idx === objectiveIndex);
+  }
+
+  function deleteKeyResultFromCurrentOkr(keyResultIndex: number, okr: OkrType) {
+    okr.keyResults = okr?.keyResults.filter((_, index: number) => index !== keyResultIndex);
+  }
+
+  function deleteKeyResultFromOkrState(objectiveIndex: number, okrWithDeletedKeyResult: OkrType) {
+    const updatedObjectives: OkrType[] = okrs.map((okr: OkrType, index: number) => {
+      return index === objectiveIndex ? okrWithDeletedKeyResult : okr;
+    });
+
+    setOkrs(updatedObjectives);
+  }
+
   function handleDeleteKeyResult(
-    objectiveIdx: number,
-    keyResultIdx: number,
-    keyResultDBId: string
+    objectiveIndex: number,
+    keyResultIndex: number,
+    KeyResultID: string
   ) {
-    if (okrs === null) return;
-    deleteKeyResultFromDB(keyResultDBId)
+    deleteKeyResultFromDB(KeyResultID)
       .then(() => {
-        const foundObj: OkrType | undefined = okrs.find((_, idx: number) => objectiveIdx === idx);
+        const currentOkr: OkrType | undefined = getCurrentOkr(objectiveIndex);
+        if (currentOkr === undefined) {
+          failureToast('Something went wrong');
+          return;
+        }
 
-        if (foundObj === undefined) return;
-        foundObj.keyResults = foundObj?.keyResults.filter(
-          (_, krIdx: number) => krIdx !== keyResultIdx
-        );
-
-        const updatedObjectives: OkrType[] = okrs.map((objective: OkrType, idx: number) => {
-          return idx === objectiveIdx ? foundObj : objective;
-        });
-
-        setOkrs(updatedObjectives);
+        deleteKeyResultFromCurrentOkr(keyResultIndex, currentOkr);
+        deleteKeyResultFromOkrState(objectiveIndex, currentOkr);
       })
       .catch((error: Error) => {
         toast(`Something went wrong! ${error.message}`, {
@@ -76,20 +90,18 @@ export default function OKRDisplay() {
       });
   }
 
-  async function handleDeleteOkrs(objectiveIdx: string, index: number) {
-    if (okrs === null) return;
-
-    try {
-      await deleteOkrsFromDB(objectiveIdx);
-    } catch (error) {
-      toast(`Something went wrong! ${error.toString()}`, {
-        position: 'top-center',
-        type: 'error',
-        autoClose: 3000,
+  function handleDeleteOkrs(objectiveId: string, objectiveIndex: number) {
+    deleteOkrsFromDB(objectiveId)
+      .then(() => {
+        const updatedObjectives: OkrType[] = okrs.filter(
+          (_, idx: number) => objectiveIndex !== idx
+        );
+        setOkrs(updatedObjectives);
+        successToast(`Your goal has been deleted.`);
+      })
+      .catch((error: Error) => {
+        failureToast(`Something went wrong! ${error.message}`);
       });
-    }
-    const updatedObjectives: OkrType[] = okrs.filter((_, idx: number) => index !== idx);
-    setOkrs(updatedObjectives);
   }
 
   function isAlreadyCompleted(init: number, current: number, target: number): boolean {
