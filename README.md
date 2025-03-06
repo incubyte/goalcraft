@@ -54,3 +54,7 @@ cd okr-nest
 # Run all tests
 pnpm test
 ```
+
+## 🤝 Contribution
+
+You can learn more about [contributing guidelines here](./CONTRIBUTING.md).
