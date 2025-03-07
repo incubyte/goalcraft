@@ -88,7 +88,11 @@ export default function KeyResultModal({
             <CircleX className="w-5 h-5" />
           </button>
         </div>
-        <KeyResultInputs keyResult={keyResult} handleInputOnChange={handleInputOnChange} />
+        <KeyResultInputs
+          keyResult={keyResult}
+          keyResultInputIndex={0}
+          handleInputOnChange={handleInputOnChange}
+        />
         <button
           onClick={() => handleAddKeyResult()}
           className="hover:bg-white h-full border hover:border-[#12a6a7] bg-primary text-white hover:text-[#12a6a7] p-3 px-4 rounded-md text-sm font-medium flex items-center justify-center gap-x-1.5 ease-in-out"
