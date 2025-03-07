@@ -9,21 +9,21 @@ import { OkrType } from './types/okr.types.ts';
 
 function App() {
   const { setOkrs } = useContext(OkrContext);
-  const [isLoadingInitData, setIsLoadingInitData] = useState<boolean>(true);
+  const [isLoadingInitialData, setIsLoadingInitialData] = useState<boolean>(true);
 
   useEffect(() => {
     void (async () => {
       const objectivesResponse: OkrType[] = await getOkrsFromDB();
       setTimeout(() => {
         setOkrs(objectivesResponse);
-        setIsLoadingInitData(false);
+        setIsLoadingInitialData(false);
       }, 3000);
     })();
   }, []);
 
   return (
-    <main className="w-full bg-[url(https://www.toptal.com/designers/subtlepatterns/uploads/dot-grid.png)] bg-opacity-30 h-screen flex justify-around items-center space-y-4">
-      {isLoadingInitData ? (
+    <main className="w-full bg-dot bg-opacity-30 h-screen flex justify-around items-center space-y-4">
+      {isLoadingInitialData ? (
         <InitialLoader />
       ) : (
         <>
