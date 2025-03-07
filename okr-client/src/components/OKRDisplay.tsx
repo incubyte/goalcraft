@@ -94,38 +94,21 @@ export default function OKRDisplay() {
       });
   }
 
-  function isAlreadyCompleted(init: number, current: number, target: number): boolean {
-    return current === target && target === init;
-  }
-
-  function getCompletionPercentage(init: number, current: number, target: number): number {
-    if (isAlreadyCompleted(init, current, target)) return 100;
-    const percentage: number = ((current - init) / (target - init)) * 100;
-    const absolutePercentage: number = Math.abs(percentage);
-    return parseFloat(absolutePercentage.toFixed(2));
-  }
-
-  function getProgressThreshold(target: number, threshold: number): number {
-    return ((target * threshold) / target) * 100;
-  }
-
   return (
     <div
       id="showObjectives"
       className="w-1/2 h-[90%] rounded-md p-10 bg-white border-1 shadow overflow-y-scroll flex flex-wrap justify-between gap-14"
     >
-      {okrs.length > 0 ? (
+      {okrs.length == 0 ? (
+        <EmptyGoalSetup />
+      ) : (
         okrs.map((okr: OkrType, objectiveIndex: number) => {
           return (
             <div
               key={objectiveIndex}
               className="relative w-72 h-max border border-gray-200 rounded-md p-5 shadow group"
             >
-              {okr.id === selectedOkrsToBeUpdated.id && isWaitingForResponse && (
-                <div className="w-full h-full absolute top-0 left-0 flex items-center justify-center bg-white z-10 bg-opacity-80 border-gray-200">
-                  <LoaderCircle className="w-10 h-10 mr-1 animate-spin" />
-                </div>
-              )}
+              {okr.id === selectedOkrsToBeUpdated.id && isWaitingForResponse && <LoaderOKRCard />}
               <div className="flex items-center justify-between mb-3">
                 <h1 className="font-bold text-center text-base w-full truncate mb-2">
                   {okr.objective}
@@ -148,30 +131,27 @@ export default function OKRDisplay() {
                   <div
                     key={keyResultIndex}
                     className={`relative pt-2 p-3 ${
-                      isAlreadyCompleted(
+                      getCompletionPercentage(
                         keyResult.initialValue,
                         keyResult.currentValue,
                         keyResult.targetValue
-                      ) && keyResultIndex == 0
+                      ) == 100 && keyResultIndex == 0
                         ? 'mt-4'
-                        : isAlreadyCompleted(
+                        : getCompletionPercentage(
                               keyResult.initialValue,
                               keyResult.currentValue,
                               keyResult.targetValue
-                            )
+                            ) == 100
                           ? 'mt-8'
                           : 'mt-3'
                     } bg-gray-100 rounded-md shadow`}
                   >
-                    {isAlreadyCompleted(
+                    {getCompletionPercentage(
                       keyResult.initialValue,
                       keyResult.currentValue,
                       keyResult.targetValue
-                    ) && (
-                      <p className="absolute -top-3 left-5 flex items-center gap-x-1 text-xs bg-gray-600 font-medium text-white rounded-full px-2 py-1">
-                        <CircleCheck className="w-3.5 h-3.5" /> Done
-                      </p>
-                    )}
+                    ) == 100 && <DoneBadge />}
+
                     <button
                       onClick={() =>
                         handleDeleteKeyResult(objectiveIndex, keyResultIndex, keyResult.id)
@@ -180,13 +160,14 @@ export default function OKRDisplay() {
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
+
                     <div
                       className={`mb-3 bg-white ${
-                        isAlreadyCompleted(
+                        getCompletionPercentage(
                           keyResult.initialValue,
                           keyResult.currentValue,
                           keyResult.targetValue
-                        )
+                        ) == 100
                           ? 'mt-3'
                           : 'mt-1'
                       } rounded-md flex items-center justify-between shadow-sm`}
@@ -196,43 +177,20 @@ export default function OKRDisplay() {
                         {keyResult.title}
                       </p>
                     </div>
-                    {keyResult.metric && <MetricsLabel label={'Metric'} value={keyResult.metric} />}
-                    <div className="w-full flex items-center justify-between mt-3">
-                      <StatisticsCard label={'Initial'} value={keyResult.initialValue} />
-                      <StatisticsCard label={'Current'} value={keyResult.currentValue} />
-                      <StatisticsCard label={'Target'} value={keyResult.targetValue} />
-                    </div>
-                    <meter
-                      className="w-full rounded-full mt-2"
-                      min={0}
-                      max={100}
-                      optimum={getProgressThreshold(
-                        keyResult.targetValue,
-                        PROGRESS_THRESHOLD.OPTIMUM
-                      )}
-                      low={getProgressThreshold(keyResult.targetValue, PROGRESS_THRESHOLD.LOW)}
-                      high={getProgressThreshold(keyResult.targetValue, PROGRESS_THRESHOLD.HIGH)}
-                      value={getCompletionPercentage(
-                        keyResult.initialValue,
-                        keyResult.currentValue,
-                        keyResult.targetValue
-                      )}
-                    ></meter>
 
-                    <div className="flex w-full font-medium items-center justify-between">
-                      <p className="text-xs flex items-center">
-                        {keyResult.initialValue} <ArrowRight className="w-3 mx-1 h-3" />
-                        <span className="text-gray-500">{keyResult.targetValue} (Progress)</span>
-                      </p>
-                      <p className="text-xs text-primary">
-                        {getCompletionPercentage(
-                          keyResult.initialValue,
-                          keyResult.currentValue,
-                          keyResult.targetValue
-                        )}{' '}
-                        %
-                      </p>
-                    </div>
+                    {keyResult.metric && <MetricsLabel label={'Metric'} value={keyResult.metric} />}
+
+                    <MetricStatsGroup
+                      initial={keyResult.initialValue}
+                      current={keyResult.currentValue}
+                      target={keyResult.targetValue}
+                    />
+
+                    <KeyResultProgress
+                      initial={keyResult.initialValue}
+                      current={keyResult.currentValue}
+                      target={keyResult.targetValue}
+                    />
                   </div>
                 ))
               ) : (
@@ -241,7 +199,6 @@ export default function OKRDisplay() {
                   No Key-Results Defined.
                 </p>
               )}
-
               <button
                 onClick={() =>
                   setKeyResultModal({
@@ -256,14 +213,8 @@ export default function OKRDisplay() {
             </div>
           );
         })
-      ) : (
-        <div className="w-full h-full flex flex-col items-center justify-center">
-          <img src={NoGoalImage} alt="No Goal" width={300} />
-          <p className="mt-6 font-medium text-gray-700">
-            Ready to <span className="text-primary">level up?</span> Set your first goal.
-          </p>
-        </div>
       )}
+
       {keyResultModal.isOpen && (
         <KeyResultModal
           keyResultModal={keyResultModal}
@@ -273,6 +224,100 @@ export default function OKRDisplay() {
     </div>
   );
 }
+
+const MetricStatsGroup = ({
+  initial,
+  current,
+  target,
+}: {
+  initial: number;
+  current: number;
+  target: number;
+}) => {
+  return (
+    <div className="w-full flex items-center justify-between mt-3">
+      <StatisticsCard label={'Initial'} value={initial} />
+      <StatisticsCard label={'Current'} value={current} />
+      <StatisticsCard label={'Target'} value={target} />
+    </div>
+  );
+};
+
+function isAlreadyCompleted(init: number, current: number, target: number): boolean {
+  return current === target && target === init;
+}
+
+function getCompletionPercentage(init: number, current: number, target: number): number {
+  if (isAlreadyCompleted(init, current, target)) return 100;
+  const percentage: number = ((current - init) / (target - init)) * 100;
+  const absolutePercentage: number = Math.abs(percentage);
+  return parseFloat(absolutePercentage.toFixed(2));
+}
+
+function getProgressThreshold(target: number, threshold: number): number {
+  return ((target * threshold) / target) * 100;
+}
+
+const KeyResultProgress = ({
+  initial,
+  current,
+  target,
+}: {
+  initial: number;
+  current: number;
+  target: number;
+}) => {
+  return (
+    <>
+      <meter
+        className="w-full rounded-full mt-2"
+        min={0}
+        max={100}
+        optimum={getProgressThreshold(target, PROGRESS_THRESHOLD.OPTIMUM)}
+        low={getProgressThreshold(target, PROGRESS_THRESHOLD.LOW)}
+        high={getProgressThreshold(target, PROGRESS_THRESHOLD.HIGH)}
+        value={getCompletionPercentage(initial, current, target)}
+      ></meter>
+
+      <div className="flex w-full font-medium items-center justify-between">
+        <p className="text-xs flex items-center">
+          {initial} <ArrowRight className="w-3 mx-1 h-3" />
+          <span className="text-gray-500">{target} (Progress)</span>
+        </p>
+        <p className="text-xs text-primary">
+          {getCompletionPercentage(initial, current, target)} %
+        </p>
+      </div>
+    </>
+  );
+};
+
+const EmptyGoalSetup = () => {
+  return (
+    <div className="w-full h-full flex flex-col items-center justify-center">
+      <img src={NoGoalImage} alt="No Goal" width={300} />
+      <p className="mt-6 font-medium text-gray-700">
+        Ready to <span className="text-primary">level up?</span> Set your first goal.
+      </p>
+    </div>
+  );
+};
+
+const LoaderOKRCard = () => {
+  return (
+    <div className="w-full h-full absolute top-0 left-0 flex items-center justify-center bg-white z-10 bg-opacity-80 border-gray-200">
+      <LoaderCircle className="w-10 h-10 mr-1 animate-spin" />
+    </div>
+  );
+};
+
+const DoneBadge = () => {
+  return (
+    <p className="absolute -top-3 left-5 flex items-center gap-x-1 text-xs bg-gray-600 font-medium text-white rounded-full px-2 py-1">
+      <CircleCheck className="w-3.5 h-3.5" /> Done
+    </p>
+  );
+};
 
 const StatisticsCard = ({ label, value }: { label: string; value: number | string }) => {
   return (
