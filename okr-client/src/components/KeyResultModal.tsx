@@ -13,10 +13,10 @@ import Input from './Input';
 import Toast from './Toast.tsx';
 
 export default function KeyResultModal({
-  closeModal,
+  closeKeyResultModal,
   keyResultModal,
 }: {
-  closeModal: () => void;
+  closeKeyResultModal: () => void;
   keyResultModal: KeyResultModalType;
 }) {
   const { okrs, setOkrs, defaultKeyResult } = useContext(OkrContext);
@@ -66,7 +66,7 @@ export default function KeyResultModal({
         failureToast(`Something went wrong! ${error.message}`);
       });
 
-    closeModal();
+    closeKeyResultModal();
   }
 
   function handleInputOnChange(key: string, value: number | string) {
@@ -84,7 +84,7 @@ export default function KeyResultModal({
           <h1 className="text-secondary font-medium mb-2">
             {okrs && okrs[keyResultModal.objectiveIndex].objective}
           </h1>
-          <button onClick={closeModal} className="text-red-500">
+          <button onClick={closeKeyResultModal} className="text-red-500">
             <CircleX className="w-5 h-5" />
           </button>
         </div>
