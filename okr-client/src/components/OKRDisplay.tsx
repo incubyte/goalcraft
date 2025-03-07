@@ -1,4 +1,5 @@
 import {
+  ArrowRight,
   CircleCheck,
   FilePenLine,
   Goal,
@@ -7,12 +8,11 @@ import {
   SquarePlus,
   Trash2,
 } from 'lucide-react';
-import { useContext, useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
+import { useContext, useState } from 'react';
 
 import NoGoalImage from '../assets/NoGoal.svg';
 import { OkrContext } from '../context/okr.provider.tsx';
-import { deleteKeyResultFromDB, deleteOkrsFromDB, getOkrsFromDB } from '../database/okr.store.ts';
+import { deleteKeyResultFromDB, deleteOkrsFromDB } from '../database/okr.store.ts';
 import { KeyResultModalType, KeyResultType, OkrType } from '../types/okr.types.ts';
 import KeyResultModal from './KeyResultModal.tsx';
 import MetricsLabel from './MetricLabel';
@@ -40,15 +40,6 @@ export default function OKRDisplay() {
     objectiveIndex: -1,
   });
 
-  useEffect(() => {
-    if (!keyResultModal.isOpen) {
-      (async () => {
-        const objectivesResponse: OkrType[] = await getOkrsFromDB();
-        setOkrs(objectivesResponse);
-      })();
-    }
-  }, [keyResultModal.isOpen]);
-
   function getCurrentOkr(objectiveIndex: number): OkrType | undefined {
     return okrs.find((_, idx: number) => idx === objectiveIndex);
   }
@@ -74,30 +65,29 @@ export default function OKRDisplay() {
       .then(() => {
         const currentOkr: OkrType | undefined = getCurrentOkr(objectiveIndex);
         if (currentOkr === undefined) {
-          failureToast('Something went wrong');
+          failureToast('Something went wrong!');
           return;
         }
 
         deleteKeyResultFromCurrentOkr(keyResultIndex, currentOkr);
         deleteKeyResultFromOkrState(objectiveIndex, currentOkr);
+        successToast('Key result has been deleted!');
       })
       .catch((error: Error) => {
-        toast(`Something went wrong! ${error.message}`, {
-          position: 'top-center',
-          type: 'error',
-          autoClose: 3000,
-        });
+        failureToast(`Something went wrong! ${error.message}`);
       });
+  }
+
+  function deleteOkrsFromState(objectiveIndex: number) {
+    const updatedObjectives: OkrType[] = okrs.filter((_, idx: number) => objectiveIndex !== idx);
+    setOkrs(updatedObjectives);
   }
 
   function handleDeleteOkrs(objectiveId: string, objectiveIndex: number) {
     deleteOkrsFromDB(objectiveId)
       .then(() => {
-        const updatedObjectives: OkrType[] = okrs.filter(
-          (_, idx: number) => objectiveIndex !== idx
-        );
-        setOkrs(updatedObjectives);
-        successToast(`Your goal has been deleted.`);
+        deleteOkrsFromState(objectiveIndex);
+        successToast(`Your goal has been deleted!`);
       })
       .catch((error: Error) => {
         failureToast(`Something went wrong! ${error.message}`);
@@ -105,15 +95,14 @@ export default function OKRDisplay() {
   }
 
   function isAlreadyCompleted(init: number, current: number, target: number): boolean {
-    return (
-      (target != 0 && current === target && target === init) ||
-      getCompletionPercentage(init, current, target) == 100
-    );
+    return current === target && target === init;
   }
 
   function getCompletionPercentage(init: number, current: number, target: number): number {
+    if (isAlreadyCompleted(init, current, target)) return 100;
     const percentage: number = ((current - init) / (target - init)) * 100;
-    return parseFloat(percentage.toFixed(2));
+    const absolutePercentage: number = Math.abs(percentage);
+    return parseFloat(absolutePercentage.toFixed(2));
   }
 
   function getProgressThreshold(target: number, threshold: number): number {
@@ -125,11 +114,11 @@ export default function OKRDisplay() {
       id="showObjectives"
       className="w-1/2 h-[90%] rounded-md p-10 bg-white border-1 shadow overflow-y-scroll flex flex-wrap justify-between gap-14"
     >
-      {okrs != null && okrs.length > 0 ? (
-        okrs.map((okr: OkrType, index: number) => {
+      {okrs.length > 0 ? (
+        okrs.map((okr: OkrType, objectiveIndex: number) => {
           return (
             <div
-              key={index}
+              key={objectiveIndex}
               className="relative w-72 h-max border border-gray-200 rounded-md p-5 shadow group"
             >
               {okr.id === selectedOkrsToBeUpdated.id && isWaitingForResponse && (
@@ -142,7 +131,10 @@ export default function OKRDisplay() {
                   {okr.objective}
                 </h1>
                 <div className="items-center gap-x-3 z-10 -mt-2 hidden group-hover:flex absolute -top-3 bg-white p-2 shadow px-5 border rounded-full left-1/2 -translate-x-1/2">
-                  <button onClick={() => handleDeleteOkrs(okr.id, index)} className="text-red-500">
+                  <button
+                    onClick={() => handleDeleteOkrs(okr.id, objectiveIndex)}
+                    className="text-red-500"
+                  >
                     <Trash2 className="w-4 h-4" />
                   </button>
                   <button onClick={() => setSelectedOkrsToBeUpdated({ ...okr })}>
@@ -151,16 +143,16 @@ export default function OKRDisplay() {
                 </div>
               </div>
 
-              {okr.keyResults && okr.keyResults.length > 0 ? (
-                okr.keyResults.map((keyResult: KeyResultType, index: number) => (
+              {okr.keyResults.length > 0 ? (
+                okr.keyResults.map((keyResult: KeyResultType, keyResultIndex: number) => (
                   <div
-                    key={index}
+                    key={keyResultIndex}
                     className={`relative pt-2 p-3 ${
                       isAlreadyCompleted(
                         keyResult.initialValue,
                         keyResult.currentValue,
                         keyResult.targetValue
-                      ) && index == 0
+                      ) && keyResultIndex == 0
                         ? 'mt-4'
                         : isAlreadyCompleted(
                               keyResult.initialValue,
@@ -181,7 +173,9 @@ export default function OKRDisplay() {
                       </p>
                     )}
                     <button
-                      onClick={() => handleDeleteKeyResult(index, index, keyResult.id)}
+                      onClick={() =>
+                        handleDeleteKeyResult(objectiveIndex, keyResultIndex, keyResult.id)
+                      }
                       className="border bg-red-500 text-white hover:text-red-500 hover:bg-white hover:border-red-500 absolute top-1/2 -translate-y-1/2 -right-10 shadow-lg hover:shadow-inner rounded-full p-2"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -202,7 +196,7 @@ export default function OKRDisplay() {
                         {keyResult.title}
                       </p>
                     </div>
-                    <MetricsLabel label={'Metric'} value={keyResult.metric} />
+                    {keyResult.metric && <MetricsLabel label={'Metric'} value={keyResult.metric} />}
                     <div className="w-full flex items-center justify-between mt-3">
                       <StatisticsCard label={'Initial'} value={keyResult.initialValue} />
                       <StatisticsCard label={'Current'} value={keyResult.currentValue} />
@@ -226,8 +220,8 @@ export default function OKRDisplay() {
                     ></meter>
 
                     <div className="flex w-full font-medium items-center justify-between">
-                      <p className="text-xs">
-                        {keyResult.currentValue} of{' '}
+                      <p className="text-xs flex items-center">
+                        {keyResult.initialValue} <ArrowRight className="w-3 mx-1 h-3" />
                         <span className="text-gray-500">{keyResult.targetValue} (Progress)</span>
                       </p>
                       <p className="text-xs text-primary">
@@ -252,7 +246,7 @@ export default function OKRDisplay() {
                 onClick={() =>
                   setKeyResultModal({
                     isOpen: true,
-                    objectiveIndex: index,
+                    objectiveIndex: objectiveIndex,
                   })
                 }
                 className="absolute -bottom-5 left-1/2 -translate-x-1/2 p-2 rounded-full border border-secondary hover:bg-white bg-secondary hover:text-[#91b30f] text-white shadow-md"
@@ -273,7 +267,7 @@ export default function OKRDisplay() {
       {keyResultModal.isOpen && (
         <KeyResultModal
           keyResultModal={keyResultModal}
-          closeModal={() => setKeyResultModal({ isOpen: false, objectiveIndex: -1 })}
+          closeKeyResultModal={() => setKeyResultModal({ isOpen: false, objectiveIndex: -1 })}
         />
       )}
     </div>
