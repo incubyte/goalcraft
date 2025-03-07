@@ -19,13 +19,13 @@ export default function GenerateKeyResultModal({
   setKeyResults,
   setIsNumberOfKeyResultModalOpen,
 }: NumberOfKeyResultsModalPropType) {
-  const [numberOfKeyResults, setNumberOfKeyResults] = useState<number>(3);
+  const [numberOfKeyResults, setNumberOfKeyResults] = useState<number>(2);
   const [isGeneratingKeyResult, setIsGeneratingKeyResult] = useState<boolean>(false);
   const { successToast, failureToast } = Toast();
 
   function handleGenerateKeyResultFromLLM() {
     if (numberOfKeyResults < 1) {
-      failureToast('Number of key results must be greater than 0 !!');
+      failureToast('Hmm, seems like zero won’t work.');
     } else {
       setIsGeneratingKeyResult(true);
 
@@ -50,17 +50,19 @@ export default function GenerateKeyResultModal({
         className="bg-white relative border-3 rounded-md p-5 w-1/3 flex flex-col space-y-2 justify-between"
         id="firstKeyResult"
       >
-        <CircleX
-          className="w-5 h-5 absolute top-3 right-3 cursor-pointer text-red-500"
-          onClick={() => {
-            setIsNumberOfKeyResultModalOpen(false);
-          }}
-        />
-        <div className="space-y-2">
-          <h2 className="text-[#12a6a7]">Enter number of key results you want to generate</h2>
+        <div className="w-full flex justify-between items-center mb-5">
+          <p className="font-medium text-sm">AI-Powered Target Crafting</p>
+          <CircleX
+            className="w-5 h-5 cursor-pointer text-red-500"
+            onClick={() => {
+              setIsNumberOfKeyResultModalOpen(false);
+            }}
+          />
+        </div>
+        <div>
           <div className="flex justify-between">
             <Input
-              label={''}
+              label={'No. of Key Result'}
               type="number"
               placeholder=""
               className="flex-grow"
@@ -70,13 +72,13 @@ export default function GenerateKeyResultModal({
               }}
             />
             <button
-              className="bg-white z-10 border-2 my-2 h-10 border-[#12a6a7] hover:border-gray-700 hover:bg-gray-700 hover:text-white text-primary ease-linear flex items-center gap-x-3 px-4 py-1 rounded-md text-sm font-medium shadow-md"
+              className="bg-white border-2 my-2 h-10 border-[#12a6a7] hover:border-gray-700 hover:bg-gray-700 hover:text-white text-primary ease-linear flex items-center gap-x-2 px-4 py-1 rounded-md text-sm font-medium shadow-md"
               onClick={() => handleGenerateKeyResultFromLLM()}
             >
               <Sparkles
-                className={`w-3 h-3 -rotate-45 ${isGeneratingKeyResult ? 'animate-ping' : ''}`}
+                className={`w-4 h-4 -rotate-45 ${isGeneratingKeyResult ? 'animate-ping' : ''}`}
               />{' '}
-              Generate
+              {isGeneratingKeyResult ? 'Crafting...' : 'Craft Targets'}
             </button>
           </div>
           <ToastContainer />
