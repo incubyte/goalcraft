@@ -9,39 +9,37 @@ import Input from './Input';
 import Toast from './Toast.tsx';
 
 interface NumberOfKeyResultsModalPropType {
-  setIsGenerating: React.Dispatch<React.SetStateAction<boolean>>;
-  newObjective: string;
+  objectivePrompt: string;
   setKeyResults: React.Dispatch<React.SetStateAction<KeyResultToBeInsertedType[]>>;
-  isGenerating: boolean;
-  setIsGenerate: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsNumberOfKeyResultModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function GenerateKeyResultModal({
-  setIsGenerating,
-  newObjective,
+  objectivePrompt,
   setKeyResults,
-  isGenerating,
-  setIsGenerate,
+  setIsNumberOfKeyResultModalOpen,
 }: NumberOfKeyResultsModalPropType) {
   const [numberOfKeyResults, setNumberOfKeyResults] = useState<number>(3);
+  const [isGeneratingKeyResult, setIsGeneratingKeyResult] = useState<boolean>(false);
   const { successToast, failureToast } = Toast();
 
   function handleGenerateKeyResultFromLLM() {
     if (numberOfKeyResults < 1) {
       failureToast('Number of key results must be greater than 0 !!');
     } else {
-      setIsGenerate(false);
-      setIsGenerating(true);
+      setIsGeneratingKeyResult(true);
 
-      generateKeyResultFromLLM(newObjective, numberOfKeyResults)
+      generateKeyResultFromLLM(objectivePrompt, numberOfKeyResults)
         .then((generatedKeyResults: KeyResultToBeInsertedType[]) => {
           setKeyResults(generatedKeyResults);
-          setIsGenerating(false);
           successToast('Key Result has been generated successfully!');
         })
         .catch((error: Error) => {
           failureToast(`Something went wrong! ${error.message}`);
-          setIsGenerating(false);
+        })
+        .finally(() => {
+          setIsGeneratingKeyResult(false);
+          setIsNumberOfKeyResultModalOpen(false);
         });
     }
   }
@@ -55,7 +53,7 @@ export default function GenerateKeyResultModal({
         <CircleX
           className="w-5 h-5 absolute top-3 right-3 cursor-pointer text-red-500"
           onClick={() => {
-            setIsGenerate(false);
+            setIsNumberOfKeyResultModalOpen(false);
           }}
         />
         <div className="space-y-2">
@@ -75,7 +73,9 @@ export default function GenerateKeyResultModal({
               className="bg-white z-10 border-2 my-2 h-10 border-[#12a6a7] hover:border-gray-700 hover:bg-gray-700 hover:text-white text-primary ease-linear flex items-center gap-x-3 px-4 py-1 rounded-md text-sm font-medium shadow-md"
               onClick={() => handleGenerateKeyResultFromLLM()}
             >
-              <Sparkles className={`w-3 h-3 -rotate-45 ${isGenerating ? 'animate-ping' : ''}`} />{' '}
+              <Sparkles
+                className={`w-3 h-3 -rotate-45 ${isGeneratingKeyResult ? 'animate-ping' : ''}`}
+              />{' '}
               Generate
             </button>
           </div>
