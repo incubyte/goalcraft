@@ -219,7 +219,7 @@ export default memo(function OKRForm() {
     >
       <div className="relative top-0 bg-gray-50 space-y-8 px-8 py-4 z-10">
         <h1 className="font-medium text-lg mt-2 text-center">
-          <span className="text-primary">Goal</span>Sync -{' '}
+          <span className="text-primary">Goal</span>Craft -{' '}
           <span className="text-secondary">OKR Application</span>
         </h1>
 
