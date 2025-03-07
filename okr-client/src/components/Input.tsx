@@ -22,6 +22,7 @@ export default function Input({
       </p>
       <input
         value={value}
+        min={0}
         type={type}
         className={`border ${label === 'Objective' || label === 'Title' ? 'w-full' : ''} focus:outline-none focus:outline-[#12a6a7] rounded-md px-4 py-2 ${className}`}
         placeholder={placeholder}
