@@ -1,5 +1,5 @@
 import { Tooltip } from '@mui/material';
-import { BetweenHorizonalStart, Goal, LoaderCircle, Sparkles, Trash2 } from 'lucide-react';
+import { BetweenHorizonalStart, Goal, LoaderCircle, Sparkles } from 'lucide-react';
 import { ChangeEvent, memo, useContext, useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 
@@ -13,6 +13,7 @@ import {
 } from '../types/okr.types.ts';
 import GenerateKeyResultModal from './GenerateKeyResultModal.tsx';
 import Input from './Input';
+import { KeyResultInputs } from './KeyResultInputs.tsx';
 import Toast from './Toast.tsx';
 
 export default memo(function OKRForm() {
@@ -35,12 +36,14 @@ export default memo(function OKRForm() {
   const [isNumberOfKeyResultModalOpen, setIsNumberOfKeyResultModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    if (selectedOkrsToBeUpdated.id != '') {
-      setNewObjective(selectedOkrsToBeUpdated.objective);
-      setKeyResults([...selectedOkrsToBeUpdated.keyResults]);
-      setIsFormForOkrToUpdate(true);
-    }
+    if (selectedOkrsToBeUpdated.id != '') turnFormIntoUpdateMode();
   }, [selectedOkrsToBeUpdated]);
+
+  function turnFormIntoUpdateMode() {
+    setNewObjective(selectedOkrsToBeUpdated.objective);
+    setKeyResults([...selectedOkrsToBeUpdated.keyResults]);
+    setIsFormForOkrToUpdate(true);
+  }
 
   function isObjectiveEmpty(): boolean {
     return newObjective.trim().length === 0;
@@ -127,7 +130,7 @@ export default memo(function OKRForm() {
 
   function handleGenerateKeyResultFromLLM() {
     if (newObjective.length == 0) {
-      failureToast('Please enter an Objective!');
+      failureToast('Please enter an objective!');
     } else {
       setIsNumberOfKeyResultModalOpen(true);
     }
@@ -194,6 +197,7 @@ export default memo(function OKRForm() {
   }
 
   function handleKeyResultInputOnChange(key: string, value: string | number, index: number) {
+    console.warn(index);
     setKeyResults((keyResultsInState: KeyResultToBeInsertedType[]) => {
       const keyResultToBeUpdated = { ...keyResultsInState[index] };
       keyResultsInState[index] = { ...keyResultToBeUpdated, [key]: value };
@@ -235,6 +239,7 @@ export default memo(function OKRForm() {
             }}
           />
         </div>
+
         {!isFormForOkrToUpdate && (
           <>
             <Tooltip
@@ -255,7 +260,7 @@ export default memo(function OKRForm() {
                 className="bg-white absolute left-1/2 -translate-x-1/2 z-10 -bottom-7 border-2 border-[#12a6a7] hover:border-gray-700 hover:bg-gray-700 hover:text-white text-primary ease-linear flex items-center gap-x-1.5 px-4 py-2 rounded-md text-sm font-medium shadow-md"
               >
                 <Sparkles className={`w-4 h-4 -rotate-45`} />
-                Generate
+                Craft With AI
               </button>
             </Tooltip>
             <ToastContainer />
@@ -277,77 +282,12 @@ export default memo(function OKRForm() {
                 id="firstKeyResult"
                 key={keyResultInputIndex}
               >
-                <Input
-                  label={'Title'}
-                  type="text"
-                  placeholder="E.g.: Increase website traffic by 30%"
-                  className="flex-grow"
-                  value={keyResultInput.title}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    handleKeyResultInputOnChange('title', e.target.value, keyResultInputIndex);
-                  }}
+                <KeyResultInputs
+                  keyResult={keyResultInput}
+                  keyResultInputIndex={keyResultInputIndex}
+                  handleInputOnChange={handleKeyResultInputOnChange}
+                  handleDeleteKeyResultInputsGroup={handleDeleteKeyResultInputsGroup}
                 />
-                <div
-                  className="flex justify-between flex-wrap gap-y-2 relative"
-                  id="firstKeyResultMetrics"
-                >
-                  <Input
-                    label={'Initial Value'}
-                    type="number"
-                    placeholder="Initial Value"
-                    value={keyResultInput.initialValue}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      handleKeyResultInputOnChange(
-                        'initialValue',
-                        parseInt(e.target.value),
-                        keyResultInputIndex
-                      );
-                    }}
-                  />
-                  <Input
-                    label={'Current Value'}
-                    type="number"
-                    placeholder="Current Value"
-                    value={keyResultInput.currentValue}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      handleKeyResultInputOnChange(
-                        'currentValue',
-                        parseInt(e.target.value),
-                        keyResultInputIndex
-                      );
-                    }}
-                  />
-                  <Input
-                    label={'Target Value'}
-                    type="number"
-                    placeholder="Target Value"
-                    value={keyResultInput.targetValue}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      handleKeyResultInputOnChange(
-                        'targetValue',
-                        parseInt(e.target.value),
-                        keyResultInputIndex
-                      );
-                    }}
-                  />
-                  <Input
-                    label={'Metric'}
-                    type="text"
-                    placeholder="Number of visitors"
-                    value={keyResultInput.metric}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      handleKeyResultInputOnChange('metric', e.target.value, keyResultInputIndex);
-                    }}
-                  />
-                  <button
-                    className={`bg-white border border-red-500 text-red-500 hover:bg-red-500 hover:text-white absolute left-1/2 -translate-x-1/2 top-1/2 ${
-                      keyResults.length == 1 ? 'hidden' : 'visible'
-                    } -translate-y-1/2 shadow-lg hover:shadow-inner rounded-full p-2`}
-                    onClick={() => handleDeleteKeyResultInputsGroup(keyResultInputIndex)}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
               </div>
             )
           )}
@@ -384,6 +324,7 @@ export default memo(function OKRForm() {
             </p>
           )}
         </button>
+
         {isNumberOfKeyResultModalOpen && (
           <GenerateKeyResultModal
             objectivePrompt={newObjective}
