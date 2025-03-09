@@ -3,33 +3,17 @@ import { useContext, useEffect, useState } from 'react';
 import InitialLoader from './components/InitialLoader.tsx';
 import OKRDisplay from './components/OKRDisplay';
 import OKRForm from './components/OKRForm';
-import { OkrContext } from './context/OkrProvider';
+import { OkrContext } from './context/okr.provider.tsx';
 import { getOkrsFromDB } from './database/okr.store.ts';
-import { ObjectiveType } from './types/OKRTypes';
+import { OkrType } from './types/okr.types.ts';
 
 function App() {
   const { setObjectives } = useContext(OkrContext);
   const [isLoadingInitData, setIsLoadingInitData] = useState<boolean>(true);
 
-  const [objectiveForUpdate, setObjectiveForUpdate] = useState<ObjectiveType>({
-    id: '',
-    objective: '',
-    keyResults: [
-      {
-        id: '',
-        title: '',
-        initialValue: 0,
-        currentValue: 0,
-        targetValue: 0,
-        metric: '',
-        objectiveId: '',
-      },
-    ],
-  });
-
   useEffect(() => {
     void (async () => {
-      const objectivesResponse: ObjectiveType[] = await getOkrsFromDB();
+      const objectivesResponse: OkrType[] = await getOkrsFromDB();
       setTimeout(() => {
         setObjectives(objectivesResponse);
         setIsLoadingInitData(false);
@@ -43,14 +27,8 @@ function App() {
         <InitialLoader />
       ) : (
         <>
-          <OKRForm
-            objectiveForUpdate={objectiveForUpdate}
-            setObjectiveForUpdate={setObjectiveForUpdate}
-          />
-          <OKRDisplay
-            objectiveForUpdate={objectiveForUpdate}
-            setObjectiveForUpdate={setObjectiveForUpdate}
-          />
+          <OKRForm />
+          <OKRDisplay />
         </>
       )}
     </main>

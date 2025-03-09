@@ -1,17 +1,15 @@
 import { CircleX, PackagePlus } from 'lucide-react';
 import { useContext, useState } from 'react';
-import { OkrContext } from '../context/OkrProvider';
-import { addKeyResultsToDB } from '../database/okr.store.ts';
-import { InsertKeyResultType, KeyResultModalType } from '../types/OKRTypes';
-import Input from './Input';
 
-const defaultKeyResults: InsertKeyResultType = {
-  title: '',
-  initialValue: 0,
-  currentValue: 0,
-  targetValue: 0,
-  metric: '',
-};
+import { OkrContext } from '../context/okr.provider.tsx';
+import { addKeyResultsToDB } from '../database/okr.store.ts';
+import {
+  KeyResultModalType,
+  KeyResultToBeInsertedType,
+  KeyResultType,
+  OkrType,
+} from '../types/okr.types.ts';
+import Input from './Input';
 
 export default function AddKeyResultModal({
   closeModal,
@@ -20,9 +18,9 @@ export default function AddKeyResultModal({
   closeModal: () => void;
   keyResultModal: KeyResultModalType;
 }) {
-  const { objectives, setObjectives } = useContext(OkrContext);
+  const { objectives, setObjectives, defaultKeyResult } = useContext(OkrContext);
 
-  const [keyResult, setKeyResult] = useState<InsertKeyResultType>(defaultKeyResults);
+  const [keyResult, setKeyResult] = useState<KeyResultToBeInsertedType>(defaultKeyResult);
 
   function handleAddKeyResult() {
     if (objectives === null) return;
@@ -33,18 +31,20 @@ export default function AddKeyResultModal({
 
     console.log(keyResult);
 
-    const foundObj = objectives.find((_, idx) => keyResultModal.objectiveIndex === idx);
+    const foundObj: OkrType | undefined = objectives.find(
+      (_, idx: number) => keyResultModal.objectiveIndex === idx
+    );
 
     if (foundObj === undefined) return;
     addKeyResultsToDB([keyResult], foundObj.id)
-      .then(data => {
+      .then((data: KeyResultType[]) => {
         foundObj.keyResults.push({
           ...keyResult,
           id: data[0].id,
           objectiveId: data[0].objectiveId,
         });
 
-        const updatedObjectives = objectives.map((objective, idx) => {
+        const updatedObjectives: OkrType[] = objectives.map((objective, idx) => {
           return idx === keyResultModal.objectiveIndex ? foundObj : objective;
         });
         setObjectives(updatedObjectives);
@@ -56,7 +56,7 @@ export default function AddKeyResultModal({
   }
 
   function handleChange(key: string, value: number | string) {
-    const updatedKeyResult: InsertKeyResultType = { ...keyResult, [key]: value };
+    const updatedKeyResult: KeyResultToBeInsertedType = { ...keyResult, [key]: value };
     setKeyResult(updatedKeyResult);
   }
 
