@@ -7,5 +7,6 @@ import { ObjectivesService } from './objectives.service';
 @Module({
   controllers: [ObjectivesController],
   providers: [ObjectivesService, PrismaService],
+  exports: [ObjectivesService],
 })
 export class ObjectivesModule {}

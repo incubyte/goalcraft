@@ -1,93 +1,117 @@
 import { Injectable } from '@nestjs/common';
 import { parse } from 'csv-parse/sync';
-import { KeyResultReqDTO, KeyResultResDTO } from 'src/key-results/keyResult.dto';
-import { ObjectiveResDTO, OkrDTO } from 'src/objectives/objectives.dto';
+import { json2csv } from 'json-2-csv';
+import { KeyResultReqDTO } from 'src/key-results/keyResult.dto';
+import { OkrDTO } from 'src/objectives/objectives.dto';
 import { v4 as uuidv4 } from 'uuid';
 
-import { parsedOkrs } from '../parsedOkr.dto';
+import { ParsedOkrs } from '../parsedOkr.dto';
 
-type csvRowType = {
+type UnformattedOkrType = {
   currentValue: string;
   initialValue: string;
   keyresultTitle: string;
-  metrics: string;
+  metric: string;
   objective: string;
   targetValue: string;
 };
 
 @Injectable()
 export class CsvHandlerService {
-  parseCsvToOkr(files: Express.Multer.File[]): parsedOkrs[] {
+  parseOkrsToCsv(okrs: OkrDTO[]): string {
+    return json2csv(okrs, {
+      expandArrayObjects: true,
+      unwindArrays: true,
+      keys: [
+        { field: 'objective', title: 'Objective Title' },
+        { field: 'keyResults.title', title: 'Key-Result Title' },
+        { field: 'keyResults.initialValue', title: 'Initial Value' },
+        { field: 'keyResults.currentValue', title: 'Current Value' },
+        { field: 'keyResults.targetValue', title: 'Target Value' },
+        { field: 'keyResults.metric', title: 'Metric' },
+      ],
+      emptyFieldValue: '',
+    });
+  }
+
+  parseCsvToOkr(files: Express.Multer.File[]): ParsedOkrs[] {
     const result = files.map(file => {
       const { fileName, csvData } = this.parseFileToCsv(file);
-      const okrsInJson: csvRowType[] = this.parseCsvToJson(csvData);
-      const okrs: OkrDTO[] = this.parseJsonToOkrs(okrsInJson);
-      return { parsedFile: fileName, parsedContent: okrs };
+      const unformattedOkrs: UnformattedOkrType[] = this.parseCsvToJson(csvData);
+      const formattedOkrs: OkrDTO[] = this.assignKeyResultsToRespectiveOkr(unformattedOkrs);
+      return { parsedFile: fileName, parsedContent: formattedOkrs };
     });
     return result;
   }
 
-  parseFileToCsv(file: Express.Multer.File): { fileName: string; csvData: string } {
+  private parseFileToCsv(file: Express.Multer.File): { fileName: string; csvData: string } {
     const result = { fileName: file.originalname, csvData: file.buffer.toString('utf-8') };
     return result;
   }
 
-  parseCsvToJson(csvData: string): csvRowType[] {
-    const okrsInJson: csvRowType[] = parse(csvData, {
+  private parseCsvToJson(csvData: string): UnformattedOkrType[] {
+    const getInternalKeysValueForColumns = () => {
+      return [
+        'objective',
+        'keyresultTitle',
+        'initialValue',
+        'currentValue',
+        'targetValue',
+        'metric',
+      ];
+    };
+
+    const okrsInJson: UnformattedOkrType[] = parse(csvData, {
       delimiter: ',',
-      columns: true,
+      columns: getInternalKeysValueForColumns,
       skip_empty_lines: true,
     });
+
     return okrsInJson;
   }
 
-  parseJsonToOkrs(okrsInJson: csvRowType[]): OkrDTO[] {
-    const okrs: OkrDTO[] = [];
+  private assignKeyResultsToRespectiveOkr(okrsInJson: UnformattedOkrType[]): OkrDTO[] {
+    const sortFunction = (okr1: UnformattedOkrType, okr2: UnformattedOkrType) => {
+      return okr1.objective.localeCompare(okr2.objective);
+    };
+    okrsInJson.sort(sortFunction);
 
-    function extractKeyResult(row: csvRowType, objectiveId: string): KeyResultReqDTO {
-      return {
+    const extractKeyResult = (row: UnformattedOkrType, objectiveId: string): KeyResultReqDTO => {
+      const keyResult = {
         title: row.keyresultTitle,
         initialValue: parseInt(row.initialValue),
         currentValue: parseInt(row.currentValue),
         targetValue: parseInt(row.targetValue),
-        metric: row.metrics,
+        metric: row.metric,
         objectiveId,
       };
-    }
-    function extractObjective(row: csvRowType): string {
+
+      return keyResult;
+    };
+
+    const extractObjectiveTitle = (row: UnformattedOkrType): string => {
       return row.objective;
-    }
+    };
 
+    const parsedOkrs: OkrDTO[] = [];
     let objectiveId: string = uuidv4();
-    let parsedObjective: ObjectiveResDTO;
-    let keyResults: KeyResultResDTO[] = [];
-    okrsInJson.map((row, index) => {
-      if ('' === row.objective) {
-        const keyResult: KeyResultReqDTO = extractKeyResult(row, objectiveId);
-        keyResults.push({
-          ...keyResult,
-          id: uuidv4(),
+    okrsInJson.map(row => {
+      if (
+        parsedOkrs.length === 0 ||
+        parsedOkrs[parsedOkrs.length - 1].objective !== row.objective
+      ) {
+        const objective = extractObjectiveTitle(row);
+        parsedOkrs.push({
+          objective,
+          id: objectiveId,
+          keyResults: [],
         });
-      } else {
-        if (parsedObjective) {
-          const okr: OkrDTO = { ...parsedObjective, keyResults: keyResults };
-          // console.log(okr);
-
-          okrs.push({ ...okr });
-          keyResults = [];
-          objectiveId = uuidv4();
-        }
-        parsedObjective = { id: objectiveId, objective: extractObjective(row) };
-        const keyResult: KeyResultReqDTO = extractKeyResult(row, objectiveId);
-        keyResults.push({
-          ...keyResult,
-          id: uuidv4(),
-        });
+        objectiveId = uuidv4();
       }
-      if (index === okrsInJson.length - 1) {
-        okrs.push({ ...parsedObjective, keyResults });
-      }
+      const recentObjective = parsedOkrs[parsedOkrs.length - 1];
+      const keyResult = extractKeyResult(row, recentObjective.id);
+      recentObjective.keyResults.push({ id: uuidv4(), ...keyResult });
     });
-    return okrs;
+    return parsedOkrs;
   }
 }

@@ -1,14 +1,18 @@
+import { StreamableFile } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { mockDeep } from 'jest-mock-extended';
-import { parsedOkrs } from 'test/test-types';
+import { Readable } from 'stream';
+import { Okr, ParsedOkrs } from 'test/test-types';
 
 import createMulterFile from '../../test/utils/createMulterFile';
+import { ObjectivesService } from '../objectives/objectives.service';
 import { CsvHandlerService } from './csv-handler/csv-handler.service';
 import { FilesService } from './files.service';
 
 describe('FilesService', () => {
   let service: FilesService;
-  const csvService = mockDeep<CsvHandlerService>();
+  const mockCsvHandlerService = mockDeep<CsvHandlerService>();
+  const mockObjectiveService = mockDeep<ObjectivesService>();
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -16,7 +20,11 @@ describe('FilesService', () => {
         FilesService,
         {
           provide: CsvHandlerService,
-          useValue: csvService,
+          useValue: mockCsvHandlerService,
+        },
+        {
+          provide: ObjectivesService,
+          useValue: mockObjectiveService,
         },
       ],
     }).compile();
@@ -37,7 +45,7 @@ describe('FilesService', () => {
       files = [createMulterFile(testFileDir)];
     });
 
-    const mockedOutput: parsedOkrs[] = [
+    const fakeParsedOkrs: ParsedOkrs[] = [
       {
         parsedFile: fileName,
         parsedContent: [
@@ -60,17 +68,57 @@ describe('FilesService', () => {
       },
     ];
 
-    it.skip('should accept only the defined (Express.Multer.Files[]) parameter type', () => {
+    it('should accept the defined (Express.Multer.Files[]) parameter type', () => {
       expect(() => service.uploadFile(files)).not.toThrow();
     });
 
-    it('should call parseCsvToOkr and return the exact output', () => {
-      csvService.parseCsvToOkr.mockReturnValue(mockedOutput);
+    it('should call parseCsvToOkr of csv-handler.service and return the exact output', () => {
+      mockCsvHandlerService.parseCsvToOkr.mockReturnValue(fakeParsedOkrs);
 
       const result = service.uploadFile(files);
 
-      expect(csvService.parseCsvToOkr).toHaveBeenCalled();
-      expect(result).toEqual(mockedOutput);
+      expect(mockCsvHandlerService.parseCsvToOkr).toHaveBeenCalled();
+      expect(result).toEqual(fakeParsedOkrs);
+    });
+  });
+
+  describe('downloadFile method', () => {
+    it('should call parseOkrsToCsv of csv-handler.service and return the exact output', async () => {
+      const fakeOkrs: Okr[] = [
+        {
+          id: 'FAKE_OKR_ID',
+          objective: 'FAKE_OBJECTIVE',
+          keyResults: [
+            {
+              id: 'fake_kr_id',
+              title: 'file_service_test_kr',
+              initialValue: 0,
+              currentValue: 0,
+              targetValue: 0,
+              metric: 'test',
+              objectiveId: 'FAKE_OKR_ID',
+            },
+          ],
+        },
+      ];
+      mockObjectiveService.fetchAll.mockResolvedValue(fakeOkrs);
+
+      const mockedCsvServiceResponse =
+        'TEST_CSV_FILE_CONTENT,TEST_CSV_FILE_CONTENT,TEST_CSV_FILE_CONTENT';
+      mockCsvHandlerService.parseOkrsToCsv.mockReturnValue(mockedCsvServiceResponse);
+
+      const streamableFile = new StreamableFile(Readable.from(mockedCsvServiceResponse));
+      const getContent = async (streamableFile: StreamableFile) => {
+        (await streamableFile.getStream().toArray()).toString();
+      };
+      const expectedResponse = await getContent(streamableFile);
+
+      const result = await service.downloadAllOkrs();
+
+      expect(mockObjectiveService.fetchAll).toHaveBeenCalled();
+      expect(mockCsvHandlerService.parseOkrsToCsv).toHaveBeenCalled();
+
+      expect(await getContent(result)).toBe(expectedResponse);
     });
   });
 });
