@@ -1,6 +1,8 @@
+import { StreamableFile } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { mockDeep } from 'jest-mock-extended';
-import { parsedOkrs } from 'test/test-types';
+import { Readable } from 'stream';
+import { ParsedOkrs } from 'test/test-types';
 
 import createMulterFile from '../../test/utils/createMulterFile';
 import { FilesController } from './files.controller';
@@ -29,9 +31,10 @@ describe('FilesController', () => {
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });
+
   describe('uploadFile method', () => {
-    it('should call FileService and return the exact output', () => {
-      const mockedResponse: parsedOkrs[] = [
+    it('should call uploadFile method of file service and return the exact output', () => {
+      const mockedResponse: ParsedOkrs[] = [
         {
           parsedFile: 'testFile1.csv',
           parsedContent: [
@@ -60,6 +63,17 @@ describe('FilesController', () => {
 
       expect(filesService.uploadFile).toHaveBeenCalled();
       expect(result).toEqual(mockedResponse);
+    });
+  });
+
+  describe('downloadFile method', () => {
+    it('should call downloadFile method of file service and return the exact response', async () => {
+      const mockedReturnValue = new StreamableFile(Readable.from('test csv'));
+      filesService.downloadAllOkrs.mockResolvedValue(mockedReturnValue);
+
+      const result = await controller.downloadAllOkrs();
+
+      expect(result).toEqual(mockedReturnValue);
     });
   });
 });
