@@ -23,6 +23,8 @@ interface KeyResultModalType {
 
 type InsertObjectiveType = Omit<ObjectiveType, 'id'>;
 
+type ParsedFile = { parsedFile: string; parsedContent: ObjectiveType[] };
+
 export type {
   InsertKeyResultType,
   InsertObjectiveType,
@@ -30,4 +32,5 @@ export type {
   KeyResultToBeRead,
   KeyResultType,
   ObjectiveType,
+  ParsedFile,
 };

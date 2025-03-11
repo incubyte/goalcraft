@@ -1,20 +1,20 @@
+import { Tooltip } from '@mui/material';
+import { BetweenHorizonalStart, Goal, LoaderCircle, Sparkles, Trash2 } from 'lucide-react';
+import * as React from 'react';
 import { useContext, useEffect, useState } from 'react';
-import Input from './Input';
-import { KeyResultType, ObjectiveType } from '../types/OKRTypes';
+import { toast, ToastContainer } from 'react-toastify';
+import { OkrContext } from '../context/OkrProvider';
 import {
   addKeyResultsToDB,
   addObjectiveToDB,
-  generateKeyResultFromLLM,
   getOkrsFromDB,
   updateOkrsToDB,
 } from '../database/okr.store.ts';
-import { BetweenHorizonalStart, Goal, LoaderCircle, Sparkles, Trash2 } from 'lucide-react';
-import { OkrContext } from '../context/OkrProvider';
-import { toast } from 'react-toastify';
-import { ToastContainer } from 'react-toastify';
-import * as React from 'react';
+import { KeyResultType, ObjectiveType } from '../types/OKRTypes';
+import CsvUploader from './CsvUploader.tsx';
+import DownloadAllOkrsButton from './DownloadAllOkrsButton.tsx';
+import Input from './Input';
 import NumberOfKeyResultsModal from './NumberOfKeyResultsModal.tsx';
-import { Tooltip } from '@mui/material';
 
 const defaultKeyResult = {
   title: '',
@@ -188,7 +188,7 @@ export default function OKRForm({ objectiveForUpdate, setObjectiveForUpdate }: O
           <span className="text-secondary">OKR Application</span>
         </h1>
 
-        <div id="objectForm" className="w-full">
+        <div id="objectForm" className="w-full flex">
           <Input
             label={'Objective'}
             type="text"
@@ -199,21 +199,19 @@ export default function OKRForm({ objectiveForUpdate, setObjectiveForUpdate }: O
               setNewObjective(e.target.value);
             }}
           />
+          {!isUpdateForm && (
+            <>
+              <CsvUploader />
+              <DownloadAllOkrsButton />
+            </>
+          )}
         </div>
         {!isUpdateForm && (
           <>
             <Tooltip
               title="Generates key results from given objective using AI"
+              arrow
               placement="right"
-              slotProps={{
-                tooltip: {
-                  sx: {
-                    color: 'black',
-                    backgroundColor: '#E1E1E1',
-                    fontSize: '0.7em',
-                  },
-                },
-              }}
             >
               <button
                 onClick={() => handleGenerateKeyResultFromLLM()}

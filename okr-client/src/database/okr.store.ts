@@ -86,10 +86,10 @@ async function deleteKeyResultFromDB(keyResultId: string): Promise<
 
 type ResponseKeyResultType = KeyResultType & { id: string; objectiveId: string };
 async function addKeyResultsToDB(
-  keyResult: InsertKeyResultType[],
+  keyResults: InsertKeyResultType[],
   objectiveId: string
 ): Promise<ResponseKeyResultType[]> {
-  const keyResultToBeInserted: InsertKeyResultType[] = keyResult.map(
+  const keyResultToBeInserted: InsertKeyResultType[] = keyResults.map(
     (keyResult: InsertKeyResultType) => {
       return { ...keyResult, objectiveId: objectiveId };
     }
@@ -116,6 +116,26 @@ async function generateKeyResultFromLLM(
   return await response.json();
 }
 
+async function saveCsvDataToDB(okrs: ObjectiveType[]): Promise<ObjectiveType[]> {
+  if (okrs) {
+    try {
+      const createdOkrs = Promise.all(
+        okrs.map(async (okr: ObjectiveType) => {
+          const createdObjective = await addObjectiveToDB({ objective: okr.objective });
+          const createdKeyResults = await addKeyResultsToDB(okr.keyResults, createdObjective.id);
+          createdObjective.keyResults = createdKeyResults;
+          return createdObjective;
+        })
+      );
+      return createdOkrs;
+    } catch (error) {
+      throw new Error('Failed to create okrs in server');
+    }
+  } else {
+    throw new Error('okrs are undefined');
+  }
+}
+
 export {
   addKeyResultsToDB,
   addObjectiveToDB,
@@ -123,5 +143,6 @@ export {
   deleteOkrsFromDB,
   generateKeyResultFromLLM,
   getOkrsFromDB,
+  saveCsvDataToDB,
   updateOkrsToDB,
 };
