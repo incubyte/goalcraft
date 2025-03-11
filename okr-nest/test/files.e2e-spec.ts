@@ -48,10 +48,6 @@ describe('Filehandler', () => {
     ];
 
     const expectedParsedContentOfTestFile_2 = [
-      //       Objective Title,Key-Result Title,Initial Value,Current Value,Target Value,Metric
-      // TEST_OBJECTIVE,kr-1,10,20,30,count
-      // TEST_OBJECTIVE,kr-2,10,200,300,count
-      // TEST_OBJECTIVE_2,kr-3,10,200,300,percentage
       {
         id: expect.any(String),
         objective: 'TEST_OBJECTIVE',
@@ -180,6 +176,9 @@ describe('Filehandler', () => {
   });
 
   afterAll(async () => {
+    await prismaService.objectives.deleteMany();
+    await prismaService.keyResults.deleteMany();
+
     await app.close();
   });
 });
