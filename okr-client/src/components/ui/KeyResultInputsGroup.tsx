@@ -1,22 +1,22 @@
 import { Trash2 } from 'lucide-react';
 import { ChangeEvent } from 'react';
 
-import { KeyResultToBeInsertedType } from '../types/okr.types.ts';
+import { KeyResultToBeInsertedType } from '../../types/okr.types.ts';
 import Input from './Input.tsx';
 
-interface KeyResultInputsPropsType {
+interface KeyResultInputsGroupPropsType {
   keyResult: KeyResultToBeInsertedType;
   keyResultInputIndex: number;
   handleInputOnChange: (key: string, value: number | string, index: number) => void;
   handleDeleteKeyResultInputsGroup?: (inputsGroupId: number) => void;
 }
 
-export function KeyResultInputs({
+export function KeyResultInputsGroup({
   keyResult,
   handleInputOnChange,
   keyResultInputIndex,
   handleDeleteKeyResultInputsGroup,
-}: KeyResultInputsPropsType) {
+}: KeyResultInputsGroupPropsType) {
   return (
     <div id="firstKeyResultMetrics" className="flex justify-between flex-wrap gap-1 relative">
       <Input
@@ -67,9 +67,7 @@ export function KeyResultInputs({
       />
 
       <button
-        className={`bg-white border border-red-500 text-red-500 hover:bg-red-500 hover:text-white absolute left-1/2 -translate-x-1/2 top-1/2 ${
-          !handleDeleteKeyResultInputsGroup ? 'hidden' : 'visible'
-        } -translate-y-1/2 shadow-lg hover:shadow-inner rounded-full p-2`}
+        className={`bg-white border border-red-500 text-red-500 hover:bg-red-500 hover:text-white absolute left-1/2 -translate-x-1/2 top-1/2 ${!handleDeleteKeyResultInputsGroup ? 'hidden' : 'visible'} -translate-y-1/2 shadow-lg hover:shadow-inner rounded-full p-2`}
         onClick={() =>
           handleDeleteKeyResultInputsGroup && handleDeleteKeyResultInputsGroup(keyResultInputIndex)
         }
