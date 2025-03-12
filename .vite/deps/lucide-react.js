@@ -1,8 +1,4 @@
-import {
-  __export,
-  __toESM,
-  require_react
-} from "./chunk-JRE55LYH.js";
+import {__export, __toESM, require_react} from "./chunk-JRE55LYH.js";
 
 // node_modules/lucide-react/dist/esm/icons/index.js
 var icons_exports = {};
@@ -18290,7 +18286,7 @@ var __iconNode1491 = [
 ];
 var Utensils = createLucideIcon("Utensils", __iconNode1491);
 
-// node_modules/lucide-react/dist/esm/icons/utility-pole.js
+// node_modules/lucide-react/dist/esm/icons/handlers-pole.js
 var __iconNode1492 = [
   ["path", { d: "M12 2v20", key: "t6zp3m" }],
   ["path", { d: "M2 5h20", key: "1fs1ex" }],
@@ -36247,7 +36243,7 @@ lucide-react/dist/esm/icons/utensils.js:
    * See the LICENSE file in the root directory of this source tree.
    *)
 
-lucide-react/dist/esm/icons/utility-pole.js:
+lucide-react/dist/esm/icons/handlers-pole.js:
   (**
    * @license lucide-react v0.473.0 - ISC
    *
