@@ -5,7 +5,11 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      backgroundImage:{
+        'dot': "url('https://www.toptal.com/designers/subtlepatterns/uploads/dot-grid.png')"
+      }
+    },
   },
   plugins: [],
 }
