@@ -1,32 +1,10 @@
 import { useReducer } from 'react';
 
+import { defaultOkrFormStateType, okrFormStateActionType } from '../context/okr-form/types.ts';
+import { defaultOkrFormState } from '../default/data.ts';
 import { KeyResultToBeInsertedType } from '../types/okr.types.ts';
 
-interface defaultOkrFormStateType {
-  objective: string;
-  keyResults: KeyResultToBeInsertedType[];
-  isFormForOkrToUpdate: boolean;
-}
-
-type okrFormStateActionType =
-  | { type: 'SET_OBJECTIVE'; payload: string }
-  | { type: 'SET_KEYRESULTS'; payload: KeyResultToBeInsertedType[] }
-  | { type: 'ADD_KEYRESULT' }
-  | { type: 'UPDATE_KEYRESULT'; payload: { key: string; value: string | number; index: number } }
-  | { type: 'DELETE_KEYRESULT'; payload: number }
-  | { type: 'RESET_FORM' }
-  | {
-      type: 'TURN_INTO_EDITOR';
-      payload: { objective: string; keyResults: KeyResultToBeInsertedType[] };
-    };
-
-export default function useFormState(defaultKeyResult: KeyResultToBeInsertedType) {
-  const defaultOkrFormState: defaultOkrFormStateType = {
-    objective: '',
-    keyResults: [defaultKeyResult],
-    isFormForOkrToUpdate: false,
-  };
-
+export default function useFormReducer(defaultKeyResult: KeyResultToBeInsertedType) {
   function formReducer(state: defaultOkrFormStateType, action: okrFormStateActionType) {
     if (action.type === 'SET_OBJECTIVE') {
       return { ...state, objective: action.payload };
