@@ -1,12 +1,12 @@
 import { useContext } from 'react';
 
 import Toast from '../components/ui/Toast.tsx';
-import { OkrContext } from '../context/okr-data/okr.provider.tsx';
+import { formContext } from '../context/okr-form/form.provider.tsx';
 import { KeyResultToBeInsertedType } from '../types/okr.types.ts';
 
 export default function UseFormValidators() {
   const { failureToast } = Toast();
-  const { okrForm } = useContext(OkrContext);
+  const { okrForm } = useContext(formContext);
 
   function isObjectiveEmpty(): boolean {
     return okrForm.objective.trim().length === 0;
