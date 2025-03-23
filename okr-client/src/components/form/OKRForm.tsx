@@ -2,7 +2,7 @@ import { BetweenHorizonalStart, Goal, LoaderCircle } from 'lucide-react';
 import { ChangeEvent, memo, useContext, useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
 
-import { OkrContext } from '../../context/okr.provider.tsx';
+import { OkrContext } from '../../context/okr-data/okr.provider.tsx';
 import { KeyResultToBeInsertedType } from '../../types/okr.types.ts';
 import PromptModal from '../prompt-modal/PromptModal.tsx';
 import Input from '../ui/Input.tsx';

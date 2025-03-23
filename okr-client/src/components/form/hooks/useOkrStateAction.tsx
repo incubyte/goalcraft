@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { OkrContext } from '../../../context/okr.provider.tsx';
+import { OkrContext } from '../../../context/okr-data/okr.provider.tsx';
 import {
   KeyResultToBeInsertedType,
   KeyResultType,
@@ -9,7 +9,7 @@ import {
 } from '../../../types/okr.types.ts';
 
 export default function useOkrStateAction() {
-  const { okrs, setOkrs, setIsWaitingForResponse, selectedOkrsToBeUpdated, okrForm } =
+  const { okrs, setOkrs, setIsWaitingForResponse, selectedOkrsToBeUpdated } =
     useContext(OkrContext);
 
   const objectiveToBeUpdated: ObjectiveToBeInsertedType = { objective: okrForm.objective };

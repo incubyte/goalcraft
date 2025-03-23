@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 
 import Toast from '../components/ui/Toast.tsx';
-import { OkrContext } from '../context/okr.provider.tsx';
+import { OkrContext } from '../context/okr-data/okr.provider.tsx';
 import { KeyResultToBeInsertedType } from '../types/okr.types.ts';
 
 export default function UseFormValidators() {

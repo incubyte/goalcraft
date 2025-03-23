@@ -11,7 +11,7 @@ import { useContext } from 'react';
 import { ToastContainer } from 'react-toastify';
 
 import NoGoalImage from '../../assets/NoGoal.svg';
-import { OkrContext } from '../../context/okr.provider.tsx';
+import { OkrContext } from '../../context/okr-data/okr.provider.tsx';
 import { KeyResultType, OkrType } from '../../types/okr.types.ts';
 import KeyResultModal from '../keyresult-modal/KeyResultModal.tsx';
 import useQuery from './actions/okr.query.tsx';
