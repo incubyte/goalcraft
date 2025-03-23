@@ -3,6 +3,7 @@ import { ChangeEvent, memo, useContext, useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
 
 import { OkrContext } from '../../context/okr-data/okr.provider.tsx';
+import { formContext } from '../../context/okr-form/form.provider.tsx';
 import { KeyResultToBeInsertedType } from '../../types/okr.types.ts';
 import PromptModal from '../prompt-modal/PromptModal.tsx';
 import Input from '../ui/Input.tsx';
@@ -11,8 +12,8 @@ import useQuery from './actions/form.query.tsx';
 import useStateAction from './actions/form.state.tsx';
 
 export default memo(function OKRForm() {
-  const { isWaitingForResponse, selectedOkrsToBeUpdated, okrForm } = useContext(OkrContext);
-
+  const { isWaitingForResponse, selectedOkrsToBeUpdated } = useContext(OkrContext);
+  const { okrForm } = useContext(formContext);
   const { handleAddOkr, handleUpdateOkr } = useQuery();
   const {
     handleObjectiveInputOnChange,
