@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { OkrContext } from '../../../context/okr.provider.tsx';
+import { OkrContext } from '../../../context/okr-data/okr.provider.tsx';
 import { KeyResultToBeInsertedType, ObjectiveToBeInsertedType } from '../../../types/okr.types.ts';
 
 export default function useStateAction() {

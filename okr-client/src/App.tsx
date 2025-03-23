@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from 'react';
 import OKRDisplay from './components/display/OKRDisplay.tsx';
 import OKRForm from './components/form/OKRForm.tsx';
 import InitialLoader from './components/loader/InitialLoader.tsx';
-import { OkrContext } from './context/okr.provider.tsx';
+import { OkrContext } from './context/okr-data/okr.provider.tsx';
 import { getOkrsFromDB } from './database/okr.store.ts';
 import { OkrType } from './types/okr.types.ts';
 

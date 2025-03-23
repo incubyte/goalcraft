@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { OkrContext } from '../../../context/okr.provider.tsx';
+import { OkrContext } from '../../../context/okr-data/okr.provider.tsx';
 import { generateKeyResultFromLLM } from '../../../database/okr.store.ts';
 import { KeyResultToBeInsertedType } from '../../../types/okr.types.ts';
 import Toast from '../../ui/Toast.tsx';
