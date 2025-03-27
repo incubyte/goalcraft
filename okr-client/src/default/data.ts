@@ -22,4 +22,10 @@ const defaultKeyResult = {
   metric: '',
 };
 
-export { defaultKeyResult, defaultOKR };
+const defaultOkrFormState = {
+  objective: '',
+  keyResults: [defaultKeyResult],
+  isFormForOkrToUpdate: false,
+};
+
+export { defaultKeyResult, defaultOKR, defaultOkrFormState };

@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { OkrContext } from '../../../context/okr.provider.tsx';
+import { OkrContext } from '../../../context/okr-data/okr.provider.tsx';
 import { OkrType } from '../../../types/okr.types.ts';
 
 export default function useStateAction() {

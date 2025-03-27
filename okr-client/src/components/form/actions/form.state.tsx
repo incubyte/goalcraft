@@ -1,13 +1,14 @@
 import { useContext } from 'react';
 
-import { OkrContext } from '../../../context/okr.provider.tsx';
+import { OkrContext } from '../../../context/okr-data/okr.provider.tsx';
+import { formContext } from '../../../context/okr-form/form.provider.tsx';
+import { defaultOKR } from '../../../default/data.ts';
 import { KeyResultToBeInsertedType, ObjectiveToBeInsertedType } from '../../../types/okr.types.ts';
 
 export default function useStateAction() {
-  const { selectedOkrsToBeUpdated, setSelectedOkrsToBeUpdated, defaultOKR } =
-    useContext(OkrContext);
+  const { selectedOkrsToBeUpdated, setSelectedOkrsToBeUpdated } = useContext(OkrContext);
 
-  const { okrForm, dispatch } = useContext(OkrContext);
+  const { okrForm, dispatch } = useContext(formContext);
 
   function handleObjectiveInputOnChange(objective: string) {
     dispatch({ type: 'SET_OBJECTIVE', payload: objective });

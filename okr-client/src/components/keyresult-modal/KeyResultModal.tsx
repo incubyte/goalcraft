@@ -2,7 +2,7 @@ import { CircleX, PackagePlus, SquarePlus } from 'lucide-react';
 import { useContext } from 'react';
 import { ToastContainer } from 'react-toastify';
 
-import { OkrContext } from '../../context/okr.provider.tsx';
+import { OkrContext } from '../../context/okr-data/okr.provider.tsx';
 import { KeyResultInputsGroup } from '../ui/KeyResultInputsGroup.tsx';
 import useQuery from './actions/keyresult.query.tsx';
 import { useStateAction } from './actions/keyresult.state.tsx';

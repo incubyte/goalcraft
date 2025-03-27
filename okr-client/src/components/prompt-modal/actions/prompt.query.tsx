@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { OkrContext } from '../../../context/okr.provider.tsx';
+import { formContext } from '../../../context/okr-form/form.provider.tsx';
 import { generateKeyResultFromLLM } from '../../../database/okr.store.ts';
 import { KeyResultToBeInsertedType } from '../../../types/okr.types.ts';
 import Toast from '../../ui/Toast.tsx';
@@ -12,7 +12,7 @@ interface useQueryPropsType {
 
 export default function useQuery({ handleSetKeyResults }: useQueryPropsType) {
   const { successToast, failureToast } = Toast();
-  const { okrForm } = useContext(OkrContext);
+  const { okrForm } = useContext(formContext);
   const { numberOfKeyResults, startActionLoading, stopActionLoading, closePromptModal } =
     useStateAction();
 
