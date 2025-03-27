@@ -6,6 +6,15 @@ With GoalCraft, you define your targets, document your current standing, and vis
 
 ## Getting Started
 
+### To run both client and server
+
+```bash
+# In root directory of the project 
+./start
+```
+
+OR
+
 ### To run the client:
 
 ```bash

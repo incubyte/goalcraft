@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "preinstall": "node ./hooks/preInstall.ts",
-    "prestart": "node ./hooks/preStart.ts",
+    "preinstall": "node hooks/preInstall.js",
+    "prestart": "node hooks/preStart.js",
     "start": "vite",
     "build": "tsc -b && vite build",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
