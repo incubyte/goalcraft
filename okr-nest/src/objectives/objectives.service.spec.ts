@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 
-import { Objective, Okrs } from '../../test/test-types';
+import { Objective, Okr } from '../../test/test-types';
 import { PrismaService } from '../prisma/prisma.service';
 import { ObjectivesService } from './objectives.service';
 
@@ -36,7 +36,7 @@ describe('Objectives Service', () => {
     });
 
     it('should return all objectives', async () => {
-      const okrs: Okrs[] = [
+      const okrs: Okr[] = [
         {
           id: 'FAKE_OBJECTIVE_ID',
           objective: 'FAKE OBJECTIVE',
@@ -45,7 +45,7 @@ describe('Objectives Service', () => {
       ];
       prismaMock.objectives.findMany.mockResolvedValue(okrs);
 
-      const response: Okrs[] = await service.fetchAll();
+      const response: Okr[] = await service.fetchAll();
 
       expect(response).toBeDefined();
       expect(response).toEqual(okrs);

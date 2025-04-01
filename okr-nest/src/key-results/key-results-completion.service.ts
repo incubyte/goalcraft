@@ -1,4 +1,4 @@
-import { KeyResultReqDTO } from './keyResultDTO';
+import { KeyResultReqDTO } from './keyResult.dto';
 
 export class keyResultCompletionService {
   isCompleted(keyResultDTO: KeyResultReqDTO) {

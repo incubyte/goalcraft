@@ -110,6 +110,26 @@ async function generateKeyResultFromLLM(
   return await response.json();
 }
 
+async function saveCsvDataToDB(okrs: OkrType[]): Promise<OkrType[]> {
+  if (okrs) {
+    try {
+      const createdOkrs = Promise.all(
+        okrs.map(async (okr: OkrType) => {
+          const createdObjective = await addObjectiveToDB({ objective: okr.objective });
+          const createdKeyResults = await addKeyResultsToDB(okr.keyResults, createdObjective.id);
+          createdObjective.keyResults = createdKeyResults;
+          return createdObjective;
+        })
+      );
+      return createdOkrs;
+    } catch (error) {
+      throw new Error(`Failed to create okrs in server ${error}`);
+    }
+  } else {
+    throw new Error('okrs are undefined');
+  }
+}
+
 export {
   addKeyResultsToDB,
   addObjectiveToDB,
@@ -117,5 +137,6 @@ export {
   deleteOkrsFromDB,
   generateKeyResultFromLLM,
   getOkrsFromDB,
+  saveCsvDataToDB,
   updateOkrsToDB,
 };

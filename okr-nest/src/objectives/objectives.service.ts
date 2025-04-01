@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
-import { KeyResultResDTO } from '../key-results/keyResultDTO';
+import { KeyResultResDTO } from '../key-results/keyResult.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { ObjectiveReqDTO, ObjectiveResDTO, OkrsDTO } from './objectives.dto';
+import { ObjectiveReqDTO, ObjectiveResDTO, OkrDTO } from './objectives.dto';
 
 @Injectable()
 export class ObjectivesService {
@@ -35,7 +35,7 @@ export class ObjectivesService {
     });
   }
 
-  async put(objective: OkrsDTO) {
+  async put(objective: OkrDTO) {
     return await this.prismaService.objectives.update({
       where: { id: objective.id },
       data: {

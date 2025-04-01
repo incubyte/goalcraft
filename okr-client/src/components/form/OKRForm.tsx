@@ -5,6 +5,8 @@ import { ToastContainer } from 'react-toastify';
 import { OkrContext } from '../../context/okr-data/okr.provider.tsx';
 import { formContext } from '../../context/okr-form/form.provider.tsx';
 import { KeyResultToBeInsertedType } from '../../types/okr.types.ts';
+import CsvUploader from '../file-handling/CsvUploader.tsx';
+import DownloadAllOkrsButton from '../file-handling/DownloadAllOkrsButton.tsx';
 import PromptModal from '../prompt-modal/PromptModal.tsx';
 import Input from '../ui/Input.tsx';
 import { KeyResultInputsGroup } from '../ui/KeyResultInputsGroup.tsx';
@@ -39,20 +41,22 @@ export default memo(function OKRForm() {
           <span className="text-primary">Goal</span>Craft -{' '}
           <span className="text-secondary">OKR Application</span>
         </h1>
-
-        <div id="objectForm" className="w-full">
-          <Input
-            label={'Objective'}
-            type="text"
-            placeholder="E.g.: Increase brand awareness"
-            className="flex-grow"
-            value={okrForm.objective}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              handleObjectiveInputOnChange(e.target.value);
-            }}
-          />
+        <div className="flex items-center justify-between">
+          <div id="objectForm" className="w-full">
+            <Input
+              label={'Objective'}
+              type="text"
+              placeholder="E.g.: Increase brand awareness"
+              className="flex-grow"
+              value={okrForm.objective}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                handleObjectiveInputOnChange(e.target.value);
+              }}
+            />
+          </div>
+          <CsvUploader />
+          <DownloadAllOkrsButton />
         </div>
-
         {!okrForm.isFormForOkrToUpdate && <PromptModal handleSetKeyResults={handleSetKeyResults} />}
       </div>
       <hr />

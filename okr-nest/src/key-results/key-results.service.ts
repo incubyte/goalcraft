@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
-import { KeyResultReqDTO, KeyResultResDTO } from './keyResultDTO';
+import { KeyResultReqDTO, KeyResultResDTO } from './keyResult.dto';
 
 @Injectable()
 export class KeyResultsService {
