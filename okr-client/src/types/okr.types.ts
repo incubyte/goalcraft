@@ -27,6 +27,11 @@ interface KeyResultModalType {
   objectiveIndex: number;
 }
 
+interface ParsedFileType {
+  parsedFile: string;
+  parsedContent: OkrType[];
+}
+
 export type {
   KeyResultModalType,
   KeyResultToBeInsertedType,
@@ -34,4 +39,5 @@ export type {
   ObjectiveToBeInsertedType,
   OkrToBeInsertedType,
   OkrType,
+  ParsedFileType,
 };
